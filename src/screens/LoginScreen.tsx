@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
   StyleSheet,
@@ -7,8 +8,11 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+import { HomeStackNavigationProps } from "../typesNavigation";
 
 export default function LoginScreen() {
+  const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
+
   return (
     <ImageBackground
       source={require("../../assets/background.jpg")}
@@ -38,13 +42,21 @@ export default function LoginScreen() {
             secureTextEntry
           />
           <TouchableOpacity style={styles.loginButton}>
-            <Text style={styles.loginButtonText}>Login</Text>
+            <Text
+              style={styles.loginButtonText}
+              onPress={() => navigation.navigate("HomeScreen")}
+            >
+              Login
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity>
             <Text style={styles.forgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Text style={styles.signUpText}>
+            <Text
+              style={styles.signUpText}
+              onPress={() => navigation.navigate("RegisterScreen")}
+            >
               Don't have an account? Sign Up
             </Text>
           </TouchableOpacity>

@@ -7,8 +7,77 @@ import {
   FlatList,
 } from "react-native";
 import PagerView from "react-native-pager-view";
+import {
+  MaterialCommunityIcons,
+  MaterialIcons,
+  FontAwesome6,
+  Entypo,
+} from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { HomeStackNavigationProps } from "../typesNavigation";
+
+interface CategoryItem {
+  name: string;
+  iconFrom: any;
+  iconName: string;
+}
+
+const categories: CategoryItem[] = [
+  {
+    name: "Plumbing",
+    iconFrom: MaterialIcons,
+    iconName: "plumbing",
+  },
+  {
+    name: "General Handyman",
+    iconFrom: MaterialIcons,
+    iconName: "handyman",
+  },
+  {
+    name: "Cleaning & Laundry",
+    iconFrom: MaterialIcons,
+    iconName: "cleaning-services",
+  },
+  {
+    name: "Electrical",
+    iconFrom: MaterialIcons,
+    iconName: "electrical-services",
+  },
+  {
+    name: "Painting",
+    iconFrom: FontAwesome6,
+    iconName: "paint-roller",
+  },
+  {
+    name: "Electronics and Gadgets",
+    iconFrom: Entypo,
+    iconName: "tablet-mobile-combo",
+  },
+  {
+    name: "Appliances Repair and Services",
+    iconFrom: MaterialCommunityIcons,
+    iconName: "washing-machine",
+  },
+];
 
 export default function HomeScreen() {
+  const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
+
+  const renderCategoryItem = ({ item }: { item: CategoryItem }) => {
+    const IconComponent = item.iconFrom;
+    return (
+      <TouchableOpacity
+        style={styles.categoryButton}
+        onPress={() =>
+          navigation.navigate("FillUpScreen", { category: item.name })
+        }
+      >
+        <Text style={styles.categoryButtonText}>{item.name}</Text>
+        <IconComponent name={item.iconName} size={40} color="black" />
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -27,17 +96,8 @@ export default function HomeScreen() {
       <Text style={styles.categoryTitle}>Category</Text>
       <FlatList
         horizontal
-        data={[
-          { name: "Cleaning" },
-          { name: "Repairing" },
-          { name: "Laundry" },
-          { name: "Painting" },
-        ]}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.categoryButton}>
-            <Text style={styles.categoryButtonText}>{item.name}</Text>
-          </TouchableOpacity>
-        )}
+        data={categories}
+        renderItem={renderCategoryItem}
         keyExtractor={(item) => item.name}
         contentContainerStyle={styles.categoryList}
         showsHorizontalScrollIndicator={false}
@@ -88,6 +148,7 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 18,
     color: "#333",
+    marginBottom: 10,
   },
   title: {
     fontSize: 22,
@@ -121,12 +182,17 @@ const styles = StyleSheet.create({
   categoryButton: {
     marginRight: 10,
     padding: 10,
+    width: 150,
+    height: 150,
+    alignItems: "center",
+    justifyContent: "space-around",
     backgroundColor: "#EAF3FF",
     borderRadius: 15,
   },
   categoryButtonText: {
     color: "#333",
     fontSize: 16,
+    textAlign: "center",
   },
   promotionTitle: {
     marginTop: 20,

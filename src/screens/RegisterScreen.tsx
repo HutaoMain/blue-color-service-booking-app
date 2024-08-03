@@ -1,4 +1,5 @@
-import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,9 +10,15 @@ import {
   ScrollView,
   KeyboardAvoidingView,
 } from "react-native";
-// import Checkbox from 'expo-checkbox';
+import { RadioButton } from "react-native-paper";
+import { HomeStackNavigationProps } from "../typesNavigation";
 
 export default function RegistrationScreen() {
+  const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
+
+  const [age, setAge] = useState<string>("");
+  const [selectedGender, setSelectedGender] = useState<string>("male");
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -25,16 +32,19 @@ export default function RegistrationScreen() {
             style={styles.registrationImage}
           />
         </View>
+
         <TextInput
           style={styles.input}
           placeholder="First name*"
           placeholderTextColor="#888"
         />
+
         <TextInput
           style={styles.input}
           placeholder="Last name*"
           placeholderTextColor="#888"
         />
+
         <View style={styles.phoneContainer}>
           <View style={styles.phoneCodeContainer}>
             <Text style={styles.phoneCodeText}>+63</Text>
@@ -46,16 +56,32 @@ export default function RegistrationScreen() {
             keyboardType="phone-pad"
           />
         </View>
+
+        <Text style={styles.label}>Age:</Text>
         <TextInput
           style={styles.input}
-          placeholder="City*"
-          placeholderTextColor="#888"
+          value={age}
+          onChangeText={setAge}
+          placeholder="Enter your age"
+          keyboardType="numeric"
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Referral code"
-          placeholderTextColor="#888"
-        />
+
+        <Text style={styles.label}>Gender:</Text>
+        <View style={styles.radioGroup}>
+          <RadioButton
+            value="male"
+            status={selectedGender === "male" ? "checked" : "unchecked"}
+            onPress={() => setSelectedGender("male")}
+          />
+          <Text style={styles.radioText}>Male</Text>
+          <RadioButton
+            value="female"
+            status={selectedGender === "female" ? "checked" : "unchecked"}
+            onPress={() => setSelectedGender("female")}
+          />
+          <Text style={styles.radioText}>Female</Text>
+        </View>
+
         <View style={styles.checkboxContainer}>
           {/* <Checkbox style={styles.checkbox} /> */}
           <Text style={styles.checkboxText}>
@@ -68,7 +94,12 @@ export default function RegistrationScreen() {
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Text style={styles.loginText}>Already have an account?</Text>
+          <Text
+            style={styles.loginText}
+            onPress={() => navigation.navigate("LoginScreen")}
+          >
+            Already have an account?
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -124,6 +155,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 10,
     borderRightWidth: 1,
     borderRightColor: "#ddd",
+    marginBottom: 15,
   },
   phoneCodeText: {
     fontSize: 16,
@@ -167,5 +199,17 @@ const styles = StyleSheet.create({
     color: "#1971E1",
     fontSize: 14,
     textAlign: "center",
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  radioGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  radioText: {
+    marginRight: 20,
   },
 });
