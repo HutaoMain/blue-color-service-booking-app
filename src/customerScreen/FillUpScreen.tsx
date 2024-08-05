@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TextInput, ScrollView } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  Button,
+  TouchableOpacity,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import regionData from "../../ph-json/region.json";
 import provinceData from "../../ph-json/province.json";
@@ -13,9 +20,17 @@ import {
   ProvinceInterface,
   RegionInterface,
 } from "../types";
+import { addDoc, collection } from "firebase/firestore";
+import { FIREBASE_DB } from "../firebaseConfig";
+import { useNavigation } from "@react-navigation/native";
+import useAuthStore from "../zustand/AuthStore";
 
 export default function FillUpScreen({ route }: HomeStackNavigationProps) {
   const { category } = route.params;
+
+  const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
+
+  const user = useAuthStore((state) => state.user);
 
   const options = categoryOptions[category as keyof CategoryOptions] || [];
 
@@ -23,10 +38,23 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
     options.length > 0 ? options[0] : ""
   );
 
-  const [selectedRegion, setSelectedRegion] = useState<string>("");
-  const [selectedProvince, setSelectedProvince] = useState<string>("");
-  const [selectedCity, setSelectedCity] = useState<string>("");
-  const [selectedBarangay, setSelectedBarangay] = useState<string>("");
+  const [selectedRegion, setSelectedRegion] = useState<{
+    code: string;
+    name: string;
+  }>({ code: "", name: "" });
+  const [selectedProvince, setSelectedProvince] = useState<{
+    code: string;
+    name: string;
+  }>({ code: "", name: "" });
+  const [selectedCity, setSelectedCity] = useState<{
+    code: string;
+    name: string;
+  }>({ code: "", name: "" });
+  const [selectedBarangay, setSelectedBarangay] = useState<{
+    code: string;
+    name: string;
+  }>({ code: "", name: "" });
+
   const [serviceDetails, setServiceDetails] = useState<string>("");
 
   const [provinces, setProvinces] = useState<ProvinceInterface[]>([]);
@@ -40,49 +68,89 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
   }, [category]);
 
   useEffect(() => {
-    if (selectedRegion) {
+    if (selectedRegion.code) {
       const filteredProvinces = (provinceData as ProvinceInterface[]).filter(
-        (province) => province.region_code === selectedRegion
+        (province) => province.region_code === selectedRegion.code
       );
       setProvinces(filteredProvinces);
       setSelectedProvince(
-        filteredProvinces.length > 0 ? filteredProvinces[0].province_code : ""
+        filteredProvinces.length > 0
+          ? {
+              code: filteredProvinces[0].province_code,
+              name: filteredProvinces[0].province_name,
+            }
+          : { code: "", name: "" }
       );
     } else {
       setProvinces([]);
       setCities([]);
       setBarangays([]);
     }
-  }, [selectedRegion]);
+  }, [selectedRegion.code]);
 
   useEffect(() => {
-    if (selectedProvince) {
+    if (selectedProvince.code) {
       const filteredCities = (cityData as CityInterface[]).filter(
-        (city) => city.province_code === selectedProvince
+        (city) => city.province_code === selectedProvince.code
       );
       setCities(filteredCities);
       setSelectedCity(
-        filteredCities.length > 0 ? filteredCities[0].city_code : ""
+        filteredCities.length > 0
+          ? {
+              code: filteredCities[0].city_code,
+              name: filteredCities[0].city_name,
+            }
+          : { code: "", name: "" }
       );
     } else {
       setCities([]);
       setBarangays([]);
     }
-  }, [selectedProvince]);
+  }, [selectedProvince.code]);
 
   useEffect(() => {
-    if (selectedCity) {
+    if (selectedCity.code) {
       const filteredBarangays = (barangayData as BarangayInterface[]).filter(
-        (barangay) => barangay.city_code === selectedCity
+        (barangay) => barangay.city_code === selectedCity.code
       );
       setBarangays(filteredBarangays);
       setSelectedBarangay(
-        filteredBarangays.length > 0 ? filteredBarangays[0].brgy_code : ""
+        filteredBarangays.length > 0
+          ? {
+              code: filteredBarangays[0].brgy_code,
+              name: filteredBarangays[0].brgy_name,
+            }
+          : { code: "", name: "" }
       );
     } else {
       setBarangays([]);
     }
-  }, [selectedCity]);
+  }, [selectedCity.code]);
+
+  const handleSubmit = async () => {
+    const bookingData = {
+      email: user,
+      categoryService: category,
+      specificService: selectedOption,
+      region: selectedRegion,
+      province: selectedProvince,
+      city: selectedCity,
+      barangay: selectedBarangay,
+      additionalDetail: serviceDetails,
+      status: "open",
+      createdAt: new Date(),
+    };
+
+    try {
+      await addDoc(collection(FIREBASE_DB, "bookings"), bookingData);
+      alert("Booking submitted successfully!");
+
+      navigation.navigate("HomeScreen");
+    } catch (error) {
+      console.error("Error submitting booking: ", error);
+      alert("Failed to submit booking. Please try again.");
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -100,9 +168,12 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
 
       <Text style={styles.label}>Region:</Text>
       <Picker
-        selectedValue={selectedRegion}
+        selectedValue={selectedRegion.code}
         style={styles.picker}
-        onValueChange={(itemValue) => setSelectedRegion(itemValue)}
+        onValueChange={(itemValue, itemIndex) => {
+          const selectedRegionName = regionData[itemIndex].region_name;
+          setSelectedRegion({ code: itemValue, name: selectedRegionName });
+        }}
       >
         {regionData.map((region: RegionInterface) => (
           <Picker.Item
@@ -117,9 +188,15 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
         <>
           <Text style={styles.label}>Province:</Text>
           <Picker
-            selectedValue={selectedProvince}
+            selectedValue={selectedProvince.code}
             style={styles.picker}
-            onValueChange={(itemValue) => setSelectedProvince(itemValue)}
+            onValueChange={(itemValue, itemIndex) => {
+              const selectedProvinceName = provinces[itemIndex].province_name;
+              setSelectedProvince({
+                code: itemValue,
+                name: selectedProvinceName,
+              });
+            }}
           >
             {provinces.map((province: ProvinceInterface) => (
               <Picker.Item
@@ -136,9 +213,12 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
         <>
           <Text style={styles.label}>City:</Text>
           <Picker
-            selectedValue={selectedCity}
+            selectedValue={selectedCity.code}
             style={styles.picker}
-            onValueChange={(itemValue) => setSelectedCity(itemValue)}
+            onValueChange={(itemValue, itemIndex) => {
+              const selectedCityName = cities[itemIndex].city_name;
+              setSelectedCity({ code: itemValue, name: selectedCityName });
+            }}
           >
             {cities.map((city: CityInterface) => (
               <Picker.Item
@@ -155,15 +235,18 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
         <>
           <Text style={styles.label}>Barangay:</Text>
           <Picker
-            selectedValue={selectedBarangay}
+            selectedValue={selectedBarangay.code}
             style={styles.picker}
-            onValueChange={(itemValue) => setSelectedBarangay(itemValue)}
+            onValueChange={(itemValue, itemIndex) => {
+              const selectedBarangay = barangays[itemIndex].brgy_name;
+              setSelectedBarangay({ code: itemValue, name: selectedBarangay });
+            }}
           >
             {barangays.map((barangay: BarangayInterface) => (
               <Picker.Item
                 key={barangay.brgy_code}
                 label={barangay.brgy_name}
-                value={barangay.brgy_code}
+                value={barangay.brgy_name}
               />
             ))}
           </Picker>
@@ -180,7 +263,9 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
         numberOfLines={4}
       />
 
-      {/* Add here additional form fields for booking confirmation */}
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text>Submit Booking</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -220,6 +305,15 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 100,
+  },
+  button: {
+    width: "100%",
+    height: 45,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "black",
     marginBottom: 50,
   },
 });

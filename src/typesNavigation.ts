@@ -1,9 +1,12 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-export interface ChildrenInterface {
-  children: React.ReactNode;
-}
+export type AuthStackNavigationType = {
+  LoginScreen: undefined;
+  RegisterScreen: undefined;
+  WorkerServiceSelectionScreen: undefined;
+};
 
+// Home Stack Navigation
 export type HomeStackNavigationType = {
   HomeScreen: undefined;
   LoginScreen: undefined;
@@ -11,9 +14,20 @@ export type HomeStackNavigationType = {
   FillUpScreen: {
     category: string;
   };
+  ListOfBookingScreen: undefined;
+  HistoryScreen: undefined;
 };
-
 export type HomeStackNavigationProps = NativeStackScreenProps<
   HomeStackNavigationType,
   "FillUpScreen"
+>;
+
+// Worker Registration Stack Navigation
+export type WorkerRegistrationNavigationType = {
+  RegisterScreen: undefined;
+  WorkerServiceSelectionScreen: undefined;
+};
+export type WorkerRegistrationNavigationProps = NativeStackScreenProps<
+  WorkerRegistrationNavigationType,
+  "WorkerServiceSelectionScreen"
 >;

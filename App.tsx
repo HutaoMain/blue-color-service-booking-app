@@ -1,12 +1,15 @@
 import { StyleSheet, View } from "react-native";
 import RootNavigation from "./src/navigations/RootNavigation";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { PaperProvider } from "react-native-paper";
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <RootNavigation />
-    </SafeAreaView>
+    <PaperProvider>
+      <SafeAreaView style={styles.container}>
+        <RootNavigation />
+      </SafeAreaView>
+    </PaperProvider>
   );
 }
 

@@ -15,6 +15,7 @@ import {
 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackNavigationProps } from "../typesNavigation";
+import useFetchUserData from "../utilities/useFetchUserData";
 
 interface CategoryItem {
   name: string;
@@ -62,6 +63,7 @@ const categories: CategoryItem[] = [
 
 export default function HomeScreen() {
   const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
+  const userData = useFetchUserData();
 
   const renderCategoryItem = ({ item }: { item: CategoryItem }) => {
     const IconComponent = item.iconFrom;
@@ -84,36 +86,75 @@ export default function HomeScreen() {
         <View style={styles.imageContainer}>
           <Image
             source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTugpmZJVjP8Rr0VEk7C-HEPk8_gJ8v8cs6jnHxiMfid_cM0XK8",
+              uri: userData?.imageUrl,
             }}
             style={styles.headerImage}
           />
         </View>
-        <Text style={styles.greeting}>Hi, Jawad</Text>
-        <Text style={styles.title}>What service do you need?</Text>
+        <Text style={styles.greeting}>
+          Hi,<Text style={styles.name}> {userData?.fullName}</Text>
+        </Text>
+        {userData?.role === "customer" ? (
+          <Text style={styles.title}> What service do you need?</Text>
+        ) : userData?.role === "worker" ? (
+          <Text style={styles.title}> Get your customer's booking</Text>
+        ) : (
+          <></>
+        )}
       </View>
 
-      <Text style={styles.categoryTitle}>Category</Text>
-      <FlatList
-        horizontal
-        data={categories}
-        renderItem={renderCategoryItem}
-        keyExtractor={(item) => item.name}
-        contentContainerStyle={styles.categoryList}
-        showsHorizontalScrollIndicator={false}
-      />
+      {userData?.role === "customer" ? (
+        <>
+          <Text style={styles.categoryTitle}>Category</Text>
+          <FlatList
+            horizontal
+            data={categories}
+            renderItem={renderCategoryItem}
+            keyExtractor={(item) => item.name}
+            contentContainerStyle={styles.categoryList}
+            showsHorizontalScrollIndicator={false}
+          />
+        </>
+      ) : userData?.role === "worker" ? (
+        <View style={{ marginBottom: 170, alignItems: "center" }}>
+          <Text style={styles.categoryTitle}>
+            List of existing client bookings:
+          </Text>
+          <TouchableOpacity
+            style={[styles.categoryButton, { width: "90%" }]}
+            onPress={() => navigation.navigate("ListOfBookingScreen")}
+          >
+            <Text style={styles.categoryButtonText}>Go to Client Bookings</Text>
+            <MaterialIcons name="cleaning-services" size={40} color="black" />
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <></>
+      )}
 
       <Text style={styles.promotionTitle}>Promotions</Text>
       <PagerView style={styles.container} initialPage={0}>
         <View style={styles.page} key="1">
-          <Text>First page</Text>
-          <Text>Swipe ➡️</Text>
+          <Image
+            source={require("../../assets/banner1.jpg")}
+            style={{
+              width: "100%",
+              height: 200,
+              objectFit: "cover",
+              marginHorizontal: 20,
+            }}
+          />
         </View>
         <View style={styles.page} key="2">
-          <Text>Second page</Text>
-        </View>
-        <View style={styles.page} key="3">
-          <Text>Third page</Text>
+          <Image
+            source={require("../../assets/banner2.jpg")}
+            style={{
+              width: "100%",
+              height: 200,
+              objectFit: "cover",
+              marginHorizontal: 20,
+            }}
+          />
         </View>
       </PagerView>
     </View>
@@ -149,6 +190,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#333",
     marginBottom: 10,
+  },
+  name: {
+    fontSize: 18,
+    color: "#333",
+    marginBottom: 10,
+    fontWeight: "bold",
   },
   title: {
     fontSize: 22,
@@ -195,11 +242,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   promotionTitle: {
-    marginTop: 20,
     marginLeft: 16,
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
+    marginTop: -150,
   },
   page: {
     justifyContent: "center",

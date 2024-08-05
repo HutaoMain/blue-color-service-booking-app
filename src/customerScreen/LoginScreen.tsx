@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,11 +7,50 @@ import {
   ImageBackground,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { HomeStackNavigationProps } from "../typesNavigation";
+import { FIREBASE_AUTH } from "../firebaseConfig";
+import {
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import useAuthStore from "../zustand/AuthStore";
 
 export default function LoginScreen() {
   const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
+
+  const setUser = useAuthStore((state) => state.setUser);
+
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loginLoading, setLoginLoading] = useState<boolean>(false);
+  const [forgotPassLoading, setForgotPassLoading] = useState<boolean>(false);
+
+  const handleLogin = async () => {
+    setLoginLoading(true);
+    try {
+      await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+      setLoginLoading(false);
+      setUser(email);
+    } catch (error) {
+      setLoginLoading(false);
+      Alert.alert("Email or password is incorrect!");
+      console.log(error);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setForgotPassLoading(true);
+    try {
+      await sendPasswordResetEmail(FIREBASE_AUTH, email);
+      Alert.alert("Please check your email to reset your password.");
+      setForgotPassLoading(false);
+    } catch (error) {
+      setForgotPassLoading(false);
+      Alert.alert("Not able to reset your password.");
+    }
+  };
 
   return (
     <ImageBackground
@@ -34,23 +73,24 @@ export default function LoginScreen() {
             placeholderTextColor="#aaa"
             keyboardType="email-address"
             autoCapitalize="none"
+            onChangeText={setEmail}
           />
           <TextInput
             style={styles.input}
             placeholder="Password"
             placeholderTextColor="#aaa"
             secureTextEntry
+            onChangeText={setPassword}
           />
-          <TouchableOpacity style={styles.loginButton}>
-            <Text
-              style={styles.loginButtonText}
-              onPress={() => navigation.navigate("HomeScreen")}
-            >
-              Login
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonText}>
+              {loginLoading ? "Please wait.." : "Login"}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.forgotPassword}>Forgot Password?</Text>
+          <TouchableOpacity onPress={handleForgotPassword}>
+            <Text style={styles.forgotPassword}>
+              {forgotPassLoading ? "Please wait" : "Forgot password?"}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity>
             <Text
