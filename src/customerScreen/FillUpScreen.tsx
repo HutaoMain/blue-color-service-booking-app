@@ -41,7 +41,7 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
   const [selectedRegion, setSelectedRegion] = useState<{
     code: string;
     name: string;
-  }>({ code: "", name: "" });
+  }>({ code: "04", name: "Region IV-A (CALABARZON)" });
   const [selectedProvince, setSelectedProvince] = useState<{
     code: string;
     name: string;

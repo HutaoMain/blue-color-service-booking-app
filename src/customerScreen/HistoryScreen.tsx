@@ -1,6 +1,7 @@
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import useFetchHistoryofBookings from "../utilities/useFetchHistoryOfBookings";
 import { BookingInterface } from "../types";
+import moment from "moment";
 
 export default function HistoryScreen() {
   const data = useFetchHistoryofBookings();
@@ -15,7 +16,10 @@ export default function HistoryScreen() {
       </Text>
       <Text style={styles.additionalDetail}>{item.additionalDetail}</Text>
       <Text style={styles.status}>Status: {item.status}</Text>
-      <Text style={styles.createdAt}>Created At: {item.createdAt}</Text>
+      <Text style={styles.createdAt}>
+        Created At:{" "}
+        {moment(item.createdAt?.toDate()).local().format("YYYY-MM-DD hh:mm A")}
+      </Text>
     </View>
   );
 

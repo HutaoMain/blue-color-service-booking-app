@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface RegionInterface {
   id: number;
   psgc_code: string;
@@ -59,5 +61,5 @@ export interface BookingInterface {
   categoryService: string;
   specificService: string;
   status: string;
-  createdAt: string;
+  createdAt: Timestamp;
 }
