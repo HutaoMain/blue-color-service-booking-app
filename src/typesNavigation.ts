@@ -31,3 +31,15 @@ export type WorkerRegistrationNavigationProps = NativeStackScreenProps<
   WorkerRegistrationNavigationType,
   "WorkerServiceSelectionScreen"
 >;
+
+// Chat Stack Navigation
+export type ChatStackNavigationType = {
+  ChatListScreen: undefined;
+  ChatScreen: {
+    id: string;
+  };
+};
+export type ChatStackNavigationProps = NativeStackScreenProps<
+  ChatStackNavigationType,
+  "ChatScreen"
+>;

@@ -63,3 +63,15 @@ export interface BookingInterface {
   status: string;
   createdAt: Timestamp;
 }
+
+export interface ConversationInterface {
+  id: string;
+  user1: string;
+  user2: string;
+  user1ImageUrl: string;
+  user2ImageUrl: string;
+  lastMessage: string;
+  createdAt: Timestamp;
+  read: boolean;
+  unreadCount: 2;
+}

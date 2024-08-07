@@ -5,6 +5,8 @@ import HomeStackNavigation from "./HomeStackNavigation";
 import ProfileScreen from "../customerScreen/ProfileScreen";
 import ChatScreen from "../customerScreen/ChatScreen";
 import HistoryScreen from "../customerScreen/HistoryScreen";
+import { bluegreen, yellowLabel } from "../reusbaleVariables";
+import ChatStackNavigation from "./ChatStackNavigation";
 
 const BottomTabNavigation = () => {
   const Tab = createBottomTabNavigator();
@@ -17,7 +19,7 @@ const BottomTabNavigation = () => {
 
           if (route.name === "Home") {
             iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "AI Chat") {
+          } else if (route.name === "Chat") {
             iconName = focused ? "chatbox" : "chatbox-outline";
           } else if (route.name === "Profile") {
             iconName = focused ? "person" : "person-outline";
@@ -29,7 +31,7 @@ const BottomTabNavigation = () => {
             <Ionicons
               name={iconName}
               size={size}
-              color={focused ? "blue" : "black"}
+              color={focused ? bluegreen : "black"}
             />
           );
         },
@@ -45,9 +47,9 @@ const BottomTabNavigation = () => {
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="AI Chat"
-        component={ChatScreen}
-        options={{ headerTitle: "Chatbot" }}
+        name="Chat"
+        component={ChatStackNavigation}
+        options={{ headerShown: false }}
       />
       <Tab.Screen
         name="History"
@@ -57,7 +59,7 @@ const BottomTabNavigation = () => {
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{ headerTitle: "Profile" }}
+        options={{ headerShown: false }}
       />
     </Tab.Navigator>
   );

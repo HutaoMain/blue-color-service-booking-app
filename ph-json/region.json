@@ -1,17 +1,5 @@
 [
   {
-    "id": 3,
-    "psgc_code": "030000000",
-    "region_name": "Region III (Central Luzon)",
-    "region_code": "03"
-  },
-  {
-    "id": 4,
-    "psgc_code": "040000000",
-    "region_name": "Region IV-A (CALABARZON)",
-    "region_code": "04"
-  },
-  {
     "id": 14,
     "psgc_code": "130000000",
     "region_name": "National Capital Region (NCR)",

@@ -4,10 +4,10 @@ import {
   StyleSheet,
   Text,
   View,
-  ImageBackground,
   TextInput,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
 } from "react-native";
 import { HomeStackNavigationProps } from "../typesNavigation";
 import { FIREBASE_AUTH } from "../firebaseConfig";
@@ -16,6 +16,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import useAuthStore from "../zustand/AuthStore";
+import { bluegreen, yellowLabel } from "../reusbaleVariables";
 
 export default function LoginScreen() {
   const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
@@ -53,17 +54,11 @@ export default function LoginScreen() {
   };
 
   return (
-    <ImageBackground
-      source={require("../../assets/background.jpg")}
-      style={styles.background}
-    >
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
       <View style={styles.overlay}>
         <View style={styles.textContainer}>
-          <Text style={styles.title}>Home Maintenance Service</Text>
-          <Text style={styles.subtitle}>
-            Making <Text style={styles.highlight}>Home</Text> and {`\n`}
-            <Text style={styles.highlight}>Hassle-Free</Text>.
-          </Text>
+          <Text style={styles.title}>EC-AYOS</Text>
+          <Text style={styles.subtitle}>Maintenance and Services</Text>
         </View>
 
         <View style={styles.inputContainer}>
@@ -102,42 +97,42 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </ImageBackground>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
+  container: {
     flex: 1,
     alignItems: "center",
+    backgroundColor: bluegreen,
   },
   overlay: {
     flex: 1,
     width: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    justifyContent: "center",
   },
   textContainer: {
     marginHorizontal: 40,
-    flex: 2,
     justifyContent: "center",
     alignItems: "flex-start",
+    marginBottom: 30,
   },
   title: {
-    fontSize: 34,
+    fontSize: 45,
     fontWeight: "bold",
-    color: "#fff",
+    color: yellowLabel,
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 36,
-    color: "#fff",
+    color: "#ffff",
   },
   highlight: {
     color: "red",
     fontWeight: "bold",
   },
   inputContainer: {
-    flex: 2,
     width: "100%",
     alignItems: "center",
     justifyContent: "center",

@@ -6,6 +6,17 @@ import moment from "moment";
 export default function HistoryScreen() {
   const data = useFetchHistoryofBookings();
 
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case "open":
+        return styles.openStatus;
+      case "pending":
+        return styles.pendingStatus;
+      default:
+        return styles.defaultStatus;
+    }
+  };
+
   const renderItem = ({ item }: { item: BookingInterface }) => (
     <View style={styles.itemContainer}>
       <Text style={styles.categoryService}>{item.categoryService}</Text>
@@ -15,7 +26,9 @@ export default function HistoryScreen() {
         {item.barangay.name}
       </Text>
       <Text style={styles.additionalDetail}>{item.additionalDetail}</Text>
-      <Text style={styles.status}>Status: {item.status}</Text>
+      <Text style={[styles.status, getStatusStyle(item.status)]}>
+        Status: {item.status}
+      </Text>
       <Text style={styles.createdAt}>
         Created At:{" "}
         {moment(item.createdAt?.toDate()).local().format("YYYY-MM-DD hh:mm A")}
@@ -78,12 +91,25 @@ const styles = StyleSheet.create({
   },
   status: {
     fontSize: 14,
-    color: "#666",
+    fontWeight: "bold",
     marginTop: 4,
+    width: 150,
+    padding: 10,
+    borderRadius: 10,
+    textTransform: "capitalize",
   },
   createdAt: {
     fontSize: 12,
     color: "#999",
     marginTop: 4,
+  },
+  openStatus: {
+    backgroundColor: "lightgreen",
+  },
+  pendingStatus: {
+    backgroundColor: "yellow",
+  },
+  defaultStatus: {
+    backgroundColor: "lightgray",
   },
 });

@@ -16,6 +16,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackNavigationProps } from "../typesNavigation";
 import useFetchUserData from "../utilities/useFetchUserData";
+import { bluegreen, yellowLabel } from "../reusbaleVariables";
 
 interface CategoryItem {
   name: string;
@@ -75,7 +76,7 @@ export default function HomeScreen() {
         }
       >
         <Text style={styles.categoryButtonText}>{item.name}</Text>
-        <IconComponent name={item.iconName} size={40} color="black" />
+        <IconComponent name={item.iconName} size={40} color={yellowLabel} />
       </TouchableOpacity>
     );
   };
@@ -164,14 +165,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffff",
   },
   headerContainer: {
     padding: 16,
     height: 200,
-    backgroundColor: "#F1F9FE",
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    backgroundColor: bluegreen,
   },
   imageContainer: {
     width: "100%",
@@ -184,37 +183,24 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     borderRadius: 75,
     borderWidth: 5,
-    borderColor: "#ffffff",
+    borderColor: yellowLabel,
   },
   greeting: {
     fontSize: 18,
-    color: "#333",
+    color: "#ffffff",
     marginBottom: 10,
   },
   name: {
     fontSize: 18,
-    color: "#333",
+    color: yellowLabel,
     marginBottom: 10,
     fontWeight: "bold",
   },
   title: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#333",
+    color: "#ffffff",
   },
-  getStartButton: {
-    marginTop: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: "#FF7B29",
-    borderRadius: 25,
-  },
-  getStartButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-
   categoryTitle: {
     marginTop: 20,
     marginLeft: 16,
@@ -233,11 +219,11 @@ const styles = StyleSheet.create({
     height: 150,
     alignItems: "center",
     justifyContent: "space-around",
-    backgroundColor: "#EAF3FF",
+    backgroundColor: bluegreen,
     borderRadius: 15,
   },
   categoryButtonText: {
-    color: "#333",
+    color: "#ffffff",
     fontSize: 16,
     textAlign: "center",
   },
