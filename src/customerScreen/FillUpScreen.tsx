@@ -4,7 +4,6 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
-  Button,
   TouchableOpacity,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";

@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 import PagerView from "react-native-pager-view";
 import {
@@ -17,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { HomeStackNavigationProps } from "../typesNavigation";
 import useFetchUserData from "../utilities/useFetchUserData";
 import { bluegreen, yellowLabel } from "../reusbaleVariables";
+import { useState } from "react";
 
 interface CategoryItem {
   name: string;
@@ -64,7 +67,16 @@ const categories: CategoryItem[] = [
 
 export default function HomeScreen() {
   const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
-  const userData = useFetchUserData();
+
+  const { userData, refresh } = useFetchUserData();
+
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refresh();
+    setRefreshing(false);
+  };
 
   const renderCategoryItem = ({ item }: { item: CategoryItem }) => {
     const IconComponent = item.iconFrom;
@@ -82,7 +94,12 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.headerContainer}>
         <View style={styles.imageContainer}>
           <Image
@@ -158,7 +175,7 @@ export default function HomeScreen() {
           />
         </View>
       </PagerView>
-    </View>
+    </ScrollView>
   );
 }
 

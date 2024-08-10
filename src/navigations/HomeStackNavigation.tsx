@@ -5,7 +5,6 @@ import { HomeStackNavigationType } from "../typesNavigation";
 import FillUpScreen from "../customerScreen/FillUpScreen";
 import ListOfBookingScreen from "../workerScreen/ListOfBookingScreen";
 import HistoryScreen from "../customerScreen/HistoryScreen";
-import ChatStackNavigation from "./ChatStackNavigation";
 
 const HomeStackNavigation = () => {
   const HomeStack = createNativeStackNavigator<HomeStackNavigationType>();
@@ -25,7 +24,7 @@ const HomeStackNavigation = () => {
       <HomeStack.Screen
         name="ListOfBookingScreen"
         component={ListOfBookingScreen}
-        options={{ title: "List of available Bookings" }}
+        options={{ headerShown: false }}
       />
       <HomeStack.Screen
         name="HistoryScreen"

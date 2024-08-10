@@ -13,26 +13,35 @@ import { FIREBASE_DB } from "../firebaseConfig";
 import { ConversationInterface } from "../types";
 import { ChatStackNavigationProps } from "../typesNavigation";
 import moment from "moment";
+import useFetchUserData from "../utilities/useFetchUserData";
 
 const ChatListScreen = () => {
-  const [chats, setChats] = useState<ConversationInterface[]>([]);
-  const navigation = useNavigation<ChatStackNavigationProps["navigation"]>();
+  const { userData } = useFetchUserData();
 
-  console.log(chats.map((item) => item.id));
+  const [chats, setChats] = useState<ConversationInterface[]>([]);
+
+  const navigation = useNavigation<ChatStackNavigationProps["navigation"]>();
 
   useEffect(() => {
     const fetchChats = async () => {
-      const q = query(collection(FIREBASE_DB, "conversation"));
+      const q = query(collection(FIREBASE_DB, "chats"));
       const querySnapshot = await getDocs(q);
 
       const chatsData: ConversationInterface[] = [];
       querySnapshot.forEach((doc) => {
+        const data = doc.data();
         chatsData.push({
           id: doc.id,
-          chatName: doc.data().chatName,
-          lastMessage: doc.data().lastMessage,
-          imageUrl: doc.data().imageUrl,
-          createdAt: doc.data().createdAt,
+          user1Id: data.user1Id,
+          user2Id: data.user2Id,
+          user1FullName: data.user1FullName,
+          user2FullName: data.user2FullName,
+          user1ImageUrl: data.user1ImageUrl,
+          user2ImageUrl: data.user2ImageUrl,
+          lastMessage: data.lastMessage,
+          createdAt: data.createdAt,
+          read: data.read,
+          unreadCount: data.unreadCount,
         });
       });
       setChats(chatsData);
@@ -41,30 +50,54 @@ const ChatListScreen = () => {
     fetchChats();
   }, []);
 
-  const handleChatPress = (chatId: string) => {
-    navigation.navigate("ChatScreen", { id: chatId });
+  const handleChatPress = (user2: string) => {
+    navigation.navigate("ChatScreen", { id: user2 });
   };
 
-  const renderItem = ({ item }: { item: ConversationInterface }) => (
-    <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => handleChatPress(item.id)}
-    >
-      <Image source={{ uri: item.user2ImageUrl }} style={styles.profileImage} />
-      <View style={styles.textContainer}>
-        <Text style={styles.chatName}>{item.user2}</Text>
-        {/*condition that if the user1 is equivalent to the current user then render user2 viseversa */}
-        <Text style={styles.lastMessage}>{item.lastMessage}</Text>
-      </View>
-      <View style={styles.timeUnreadCountContainer}>
-        <Text style={styles.time}>
-          {moment(item.createdAt?.toDate())
-            .local()
-            .format("YYYY-MM-DD hh:mm A")}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+  console.log(userData?.id);
+
+  const renderItem = ({ item }: { item: ConversationInterface }) => {
+    const isCurrentUserUser1 = item.user1Id === userData?.id;
+    const chatPartnerName = isCurrentUserUser1
+      ? item.user2FullName
+      : item.user1FullName;
+    const chatPartnerImage = isCurrentUserUser1
+      ? item.user2ImageUrl
+      : item.user1ImageUrl;
+
+    return (
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() =>
+          handleChatPress(isCurrentUserUser1 ? item.user2Id : item.user1Id)
+        }
+      >
+        <Image source={{ uri: chatPartnerImage }} style={styles.profileImage} />
+        <View style={styles.textContainer}>
+          <Text style={styles.chatName}>{chatPartnerName}</Text>
+          <Text style={styles.lastMessage}>
+            {item.lastMessage.startsWith(userData?.id || "")
+              ? `You: ${item.lastMessage.slice(
+                  userData?.id ? userData?.id.length : 1 + 2
+                )}`
+              : item.lastMessage}
+          </Text>
+        </View>
+        <View style={styles.timeUnreadCountContainer}>
+          <Text style={styles.time}>
+            {moment(item.createdAt?.toDate())
+              .local()
+              .format("YYYY-MM-DD hh:mm A")}
+          </Text>
+          {item.unreadCount > 0 && (
+            <View style={styles.unreadCountContainer}>
+              <Text style={styles.unreadCount}>{item.unreadCount}</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -122,6 +155,19 @@ const styles = StyleSheet.create({
     height: 80,
     paddingBottom: 15,
     justifyContent: "space-around",
+    alignItems: "flex-end",
+  },
+  unreadCountContainer: {
+    backgroundColor: "#f00",
+    borderRadius: 12,
+    padding: 4,
+    minWidth: 24,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  unreadCount: {
+    color: "#fff",
+    fontSize: 12,
   },
 });
 

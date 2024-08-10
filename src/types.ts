@@ -31,6 +31,7 @@ export interface BarangayInterface {
 }
 
 export interface UserInterface {
+  id: string;
   email: string;
   fullName: string;
   age: string;
@@ -42,6 +43,13 @@ export interface UserInterface {
 export interface BookingInterface {
   id: string;
   additionalDetail: string;
+  userId: string;
+  userName: string;
+  categoryService: string;
+  specificService: string;
+  status: string;
+  createdAt: Timestamp;
+
   barangay: {
     code: string;
     name: string;
@@ -58,16 +66,14 @@ export interface BookingInterface {
     code: string;
     name: string;
   };
-  categoryService: string;
-  specificService: string;
-  status: string;
-  createdAt: Timestamp;
 }
 
 export interface ConversationInterface {
   id: string;
-  user1: string;
-  user2: string;
+  user1Id: string;
+  user2Id: string;
+  user1FullName: string;
+  user2FullName: string;
   user1ImageUrl: string;
   user2ImageUrl: string;
   lastMessage: string;
