@@ -1,97 +1,68 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   View,
-  Text,
   FlatList,
   TouchableOpacity,
-  StyleSheet,
+  Text,
   Image,
+  StyleSheet,
+  RefreshControl,
 } from "react-native";
-import { collection, getDocs, query } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
-import { FIREBASE_DB } from "../firebaseConfig";
-import { ConversationInterface } from "../types";
-import { ChatStackNavigationProps } from "../typesNavigation";
 import moment from "moment";
+import { ConversationInterface } from "../types";
 import useFetchUserData from "../utilities/useFetchUserData";
+import { ChatStackNavigationProps } from "../typesNavigation";
+import { useFetchConversations } from "../utilities/useFetchConversations";
 
 const ChatListScreen = () => {
   const { userData } = useFetchUserData();
 
-  const [chats, setChats] = useState<ConversationInterface[]>([]);
+  const { conversations, fetchConversations, refreshing } =
+    useFetchConversations(userData?.id || "");
 
   const navigation = useNavigation<ChatStackNavigationProps["navigation"]>();
 
-  useEffect(() => {
-    const fetchChats = async () => {
-      const q = query(collection(FIREBASE_DB, "chats"));
-      const querySnapshot = await getDocs(q);
-
-      const chatsData: ConversationInterface[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        chatsData.push({
-          id: doc.id,
-          user1Id: data.user1Id,
-          user2Id: data.user2Id,
-          user1FullName: data.user1FullName,
-          user2FullName: data.user2FullName,
-          user1ImageUrl: data.user1ImageUrl,
-          user2ImageUrl: data.user2ImageUrl,
-          lastMessage: data.lastMessage,
-          createdAt: data.createdAt,
-          read: data.read,
-          unreadCount: data.unreadCount,
-        });
-      });
-      setChats(chatsData);
-    };
-
-    fetchChats();
-  }, []);
-
-  const handleChatPress = (user2: string) => {
-    navigation.navigate("ChatScreen", { id: user2 });
+  const handleChatPress = (conversation: ConversationInterface) => {
+    conversation.participants[0] === userData?.id;
+    console.log("conversationId", conversation.conversationId);
+    navigation.navigate("ChatScreen", { id: conversation.conversationId });
   };
 
-  console.log(userData?.id);
-
   const renderItem = ({ item }: { item: ConversationInterface }) => {
-    const isCurrentUserUser1 = item.user1Id === userData?.id;
+    const isCurrentUserUser1 = item.participants[0] === userData?.id;
     const chatPartnerName = isCurrentUserUser1
-      ? item.user2FullName
-      : item.user1FullName;
+      ? item.conversationName[1]
+      : item.conversationName[0];
     const chatPartnerImage = isCurrentUserUser1
-      ? item.user2ImageUrl
-      : item.user1ImageUrl;
+      ? item.conversationImageUrl[1]
+      : item.conversationImageUrl[0];
 
     return (
       <TouchableOpacity
         style={styles.itemContainer}
-        onPress={() =>
-          handleChatPress(isCurrentUserUser1 ? item.user2Id : item.user1Id)
-        }
+        onPress={() => handleChatPress(item)}
       >
         <Image source={{ uri: chatPartnerImage }} style={styles.profileImage} />
         <View style={styles.textContainer}>
           <Text style={styles.chatName}>{chatPartnerName}</Text>
           <Text style={styles.lastMessage}>
             {item.lastMessage.startsWith(userData?.id || "")
-              ? `You: ${item.lastMessage.slice(
-                  userData?.id ? userData?.id.length : 1 + 2
-                )}`
-              : item.lastMessage}
+              ? `You: ${item.lastMessage.slice(0, 20)}`
+              : item.lastMessage.slice(0, 20)}
           </Text>
         </View>
         <View style={styles.timeUnreadCountContainer}>
           <Text style={styles.time}>
-            {moment(item.createdAt?.toDate())
+            {moment(item.lastMessageTimestamp?.toDate())
               .local()
               .format("YYYY-MM-DD hh:mm A")}
           </Text>
-          {item.unreadCount > 0 && (
+          {item.unreadCount[userData?.id || ""] > 0 && (
             <View style={styles.unreadCountContainer}>
-              <Text style={styles.unreadCount}>{item.unreadCount}</Text>
+              <Text style={styles.unreadCount}>
+                {item.unreadCount[userData?.id || ""]}
+              </Text>
             </View>
           )}
         </View>
@@ -102,9 +73,15 @@ const ChatListScreen = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={chats}
+        data={conversations}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.conversationId}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={fetchConversations}
+          />
+        }
       />
     </View>
   );
@@ -113,30 +90,30 @@ const ChatListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#f0f0f0",
+    padding: 20,
   },
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
     padding: 15,
-    marginVertical: 8,
+    marginBottom: 10,
+    backgroundColor: "#fff",
     borderRadius: 8,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 2,
-    height: 80,
   },
   profileImage: {
     width: 50,
     height: 50,
     borderRadius: 25,
+    marginRight: 15,
   },
   textContainer: {
     flex: 1,
-    marginLeft: 15,
   },
   chatName: {
     fontSize: 16,
@@ -145,25 +122,20 @@ const styles = StyleSheet.create({
   lastMessage: {
     fontSize: 14,
     color: "#666",
-    marginTop: 4,
+  },
+  timeUnreadCountContainer: {
+    alignItems: "flex-end",
   },
   time: {
     fontSize: 12,
-    color: "#666",
-  },
-  timeUnreadCountContainer: {
-    height: 80,
-    paddingBottom: 15,
-    justifyContent: "space-around",
-    alignItems: "flex-end",
+    color: "#999",
   },
   unreadCountContainer: {
-    backgroundColor: "#f00",
+    marginTop: 5,
+    backgroundColor: "#ff3b30",
     borderRadius: 12,
-    padding: 4,
-    minWidth: 24,
-    justifyContent: "center",
-    alignItems: "center",
+    paddingVertical: 2,
+    paddingHorizontal: 6,
   },
   unreadCount: {
     color: "#fff",

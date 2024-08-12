@@ -6,10 +6,9 @@ import {
   StyleSheet,
   FlatList,
   Alert,
-  ScrollView,
   RefreshControl,
 } from "react-native";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../firebaseConfig";
 import useFetchListOfBookings from "../utilities/useFetchListOfBookings";
 import useFetchUserData from "../utilities/useFetchUserData";
@@ -21,7 +20,7 @@ export default function ListOfBookingScreen() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const { userData, refresh } = useFetchUserData();
-  const { ListOfBooking, refreshBookings } = useFetchListOfBookings();
+  const { ListOfBooking, refreshBookings } = useFetchListOfBookings({});
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -30,25 +29,34 @@ export default function ListOfBookingScreen() {
     setRefreshing(false);
   };
 
-  const handleAcceptBooking = async (bookingId: string) => {
+  const handleAcceptBooking = async (
+    bookingId: string,
+    customerId: string,
+    customerName: string,
+    customerProfileImg: string
+  ) => {
     try {
+      setLoading(true);
+
+      await createConversationIfNotExists(
+        userData?.id || "",
+        customerId,
+        userData?.fullName || "",
+        customerName,
+        userData?.imageUrl || "",
+        customerProfileImg
+      );
+
       const bookingRef = doc(FIREBASE_DB, "bookings", bookingId);
-      const bookingSnapshot = await getDoc(bookingRef);
-
-      if (bookingSnapshot.exists()) {
-        const bookingData = bookingSnapshot.data();
-        const customerId = bookingData?.userId;
-
-        await createConversationIfNotExists(userData?.id || "", customerId);
-      }
-
       await updateDoc(bookingRef, {
         status: "accepted",
       });
 
       Alert.alert("Booking Accepted", "The booking has been accepted.");
+      setLoading(false);
     } catch (error) {
       Alert.alert("Error", "Failed to accept the booking.");
+      setLoading(false);
       console.error("Failed to accept booking: ", error);
     }
   };
@@ -57,7 +65,7 @@ export default function ListOfBookingScreen() {
     <View style={styles.bookingContainer}>
       <View style={styles.detailsContainer}>
         <Text style={styles.serviceName}>{item.specificService}</Text>
-        <Text style={styles.customerName}>Customer: {item.userName}</Text>
+        <Text style={styles.customerName}>Customer: {item.customerName}</Text>
         <Text style={styles.location}>
           Location: {item.barangay.name}, {item.city.name}, {item.province.name}
         </Text>
@@ -73,31 +81,40 @@ export default function ListOfBookingScreen() {
           styles.acceptButton,
           item.status === "accepted" && { backgroundColor: "#ccc" },
         ]}
-        onPress={() => handleAcceptBooking(item.id)}
-        disabled={item.status === "accepted"}
+        onPress={() =>
+          handleAcceptBooking(
+            item.id,
+            item.customerId,
+            item.customerName,
+            item.customerProfileImg
+          )
+        }
+        disabled={loading || item.status === "accepted"}
       >
         <Text style={styles.buttonText}>
-          {item.status === "accepted" ? "Accepted" : "Accept"}
+          {loading
+            ? "Please wait.."
+            : item.status === "accepted"
+            ? "Accepted"
+            : "Accept"}
         </Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
+    <View style={styles.container}>
       <Text style={styles.title}>List of Bookings</Text>
       <FlatList
         data={ListOfBooking}
         renderItem={renderBookingItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
-    </ScrollView>
+    </View>
   );
 }
 
@@ -165,6 +182,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonText: {
+    textTransform: "capitalize",
     color: "#fff",
     fontWeight: "bold",
   },

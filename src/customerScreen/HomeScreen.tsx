@@ -150,31 +150,33 @@ export default function HomeScreen() {
         <></>
       )}
 
-      <Text style={styles.promotionTitle}>Promotions</Text>
-      <PagerView style={styles.container} initialPage={0}>
-        <View style={styles.page} key="1">
-          <Image
-            source={require("../../assets/banner1.jpg")}
-            style={{
-              width: "100%",
-              height: 200,
-              objectFit: "cover",
-              marginHorizontal: 20,
-            }}
-          />
-        </View>
-        <View style={styles.page} key="2">
-          <Image
-            source={require("../../assets/banner2.jpg")}
-            style={{
-              width: "100%",
-              height: 200,
-              objectFit: "cover",
-              marginHorizontal: 20,
-            }}
-          />
-        </View>
-      </PagerView>
+      {/* <View>
+        <Text style={styles.promotionTitle}>Promotions</Text>
+        <PagerView initialPage={0}>
+          <View style={styles.page} key="1">
+            <Image
+              source={require("../../assets/banner1.jpg")}
+              style={{
+                width: "100%",
+                height: 200,
+                objectFit: "cover",
+                marginHorizontal: 20,
+              }}
+            />
+          </View>
+          <View style={styles.page} key="2">
+            <Image
+              source={require("../../assets/banner2.jpg")}
+              style={{
+                width: "100%",
+                height: 200,
+                objectFit: "cover",
+                marginHorizontal: 20,
+              }}
+            />
+          </View>
+        </PagerView> 
+      </View>*/}
     </ScrollView>
   );
 }
@@ -204,7 +206,7 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 18,
-    color: "#ffffff",
+    color: "#333",
     marginBottom: 10,
   },
   name: {
@@ -244,15 +246,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
   },
-  promotionTitle: {
-    marginLeft: 16,
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-    marginTop: -150,
-  },
-  page: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  // promotionTitle: {
+  //   marginTop: 20,
+  //   marginLeft: 16,
+  //   fontSize: 18,
+  //   fontWeight: "bold",
+  //   color: "#333",
+  // },
+  // page: {
+  //   marginTop: -100,
+  // },
 });

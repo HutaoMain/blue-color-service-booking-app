@@ -42,11 +42,13 @@ export interface UserInterface {
 
 export interface BookingInterface {
   id: string;
-  additionalDetail: string;
-  userId: string;
-  userName: string;
+  customerEmail: string;
+  customerId: string;
+  customerName: string;
+  customerProfileImg: string;
   categoryService: string;
   specificService: string;
+  additionalDetail: string;
   status: string;
   createdAt: Timestamp;
 
@@ -69,15 +71,21 @@ export interface BookingInterface {
 }
 
 export interface ConversationInterface {
-  id: string;
-  user1Id: string;
-  user2Id: string;
-  user1FullName: string;
-  user2FullName: string;
-  user1ImageUrl: string;
-  user2ImageUrl: string;
+  conversationId: string;
+  participants: string[]; // [user1Id, user2Id]
   lastMessage: string;
+  lastMessageTimestamp: Timestamp;
+  conversationName: string[]; // [user1Name, user2Name]
+  conversationImageUrl: string[]; // [user1ImageUrl, user2ImageUrl]
+  unreadCount: Record<string, number>;
   createdAt: Timestamp;
-  read: boolean;
-  unreadCount: 2;
+}
+
+export interface MessageInterface {
+  messageId: string;
+  senderId: string;
+  text: string;
+  timestamp: Timestamp;
+  type: string;
+  status: string;
 }

@@ -6,8 +6,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  RefreshControl,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import useFetchUserData from "../utilities/useFetchUserData";
 import useAuthStore from "../zustand/AuthStore";
 import { signOut } from "firebase/auth";
@@ -15,9 +16,17 @@ import { FIREBASE_AUTH } from "../firebaseConfig";
 import HorizontalLine from "../components/HorizontalLine";
 
 export default function ProfileScreen() {
-  const data = useFetchUserData();
+  const { userData: data, refresh } = useFetchUserData();
+
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const clearUser = useAuthStore((state) => state.clearUser);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refresh();
+    setRefreshing(false);
+  };
 
   const handleLogout = () => {
     signOut(FIREBASE_AUTH)
@@ -38,6 +47,9 @@ export default function ProfileScreen() {
           width: "100%",
           paddingHorizontal: 20,
         }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         <View style={styles.coverPhotoContainer}>
           <Image
@@ -74,11 +86,6 @@ export default function ProfileScreen() {
           <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
       </ScrollView>
-      {/* <EditModal
-        isVisible={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        whatToEdit={whatToEdit}
-      /> */}
     </View>
   );
 }

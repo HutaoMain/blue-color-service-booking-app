@@ -1,10 +1,13 @@
-import { View, Text, FlatList, StyleSheet } from "react-native";
-import useFetchHistoryofBookings from "../utilities/useFetchHistoryOfBookings";
+import { View, Text, FlatList, StyleSheet, RefreshControl } from "react-native";
 import { BookingInterface } from "../types";
 import moment from "moment";
+import useFetchListOfBookings from "../utilities/useFetchListOfBookings";
+import { useState } from "react";
 
 export default function HistoryScreen() {
-  const data = useFetchHistoryofBookings();
+  const { ListOfBooking, refreshBookings } = useFetchListOfBookings({});
+
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -15,6 +18,12 @@ export default function HistoryScreen() {
       default:
         return styles.defaultStatus;
     }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refreshBookings();
+    setRefreshing(false);
   };
 
   const renderItem = ({ item }: { item: BookingInterface }) => (
@@ -39,10 +48,13 @@ export default function HistoryScreen() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={data}
+        data={ListOfBooking}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </View>
   );

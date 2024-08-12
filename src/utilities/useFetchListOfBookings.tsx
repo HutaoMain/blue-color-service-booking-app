@@ -1,13 +1,32 @@
 import { useState, useEffect, useCallback } from "react";
-import { collection, getDocs, query } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { BookingInterface } from "../types";
 import { FIREBASE_DB } from "../firebaseConfig";
 
-const useFetchListOfBookings = () => {
+interface UseFetchListOfBookingsProps {
+  filterField?: string; // The field you want to filter on (optional)
+  filterValue?: string; // The value you want to filter by (optional)
+}
+
+const useFetchListOfBookings = ({
+  filterField,
+  filterValue,
+}: UseFetchListOfBookingsProps) => {
   const [data, setData] = useState<BookingInterface[]>([]);
 
   const fetchData = useCallback(async () => {
-    const q = query(collection(FIREBASE_DB, "bookings"));
+    let q;
+
+    if (filterField && filterValue) {
+      // Apply the filter if the props are provided
+      q = query(
+        collection(FIREBASE_DB, "bookings"),
+        where(filterField, "==", filterValue)
+      );
+    } else {
+      // Fetch all bookings if no filter is provided
+      q = query(collection(FIREBASE_DB, "bookings"));
+    }
 
     try {
       const querySnapshot = await getDocs(q);
@@ -16,6 +35,10 @@ const useFetchListOfBookings = () => {
       querySnapshot.forEach((doc) => {
         fetchedData.push({
           id: doc.id,
+          customerEmail: doc.data().customerEmail,
+          customerId: doc.data().customerId,
+          customerName: doc.data().customerName,
+          customerProfileImg: doc.data().customerProfileImg,
           categoryService: doc.data().categoryService,
           specificService: doc.data().specificService,
           region: doc.data().region,
@@ -25,8 +48,6 @@ const useFetchListOfBookings = () => {
           additionalDetail: doc.data().additionalDetail,
           status: doc.data().status,
           createdAt: doc.data().createdAt,
-          userName: doc.data().userName,
-          userId: doc.data().userId,
         });
       });
 
@@ -34,9 +55,9 @@ const useFetchListOfBookings = () => {
         setData(fetchedData);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error fetching bookings data:", error);
     }
-  }, []);
+  }, [filterField, filterValue]);
 
   useEffect(() => {
     fetchData();

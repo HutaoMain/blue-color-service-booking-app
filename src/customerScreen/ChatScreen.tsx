@@ -7,43 +7,37 @@ import {
   onSnapshot,
   orderBy,
   query,
-  setDoc,
   Timestamp,
 } from "firebase/firestore";
 import { FIREBASE_DB } from "../firebaseConfig";
 import useFetchUserData from "../utilities/useFetchUserData";
-import {
-  createConversationIfNotExists,
-  getConversationId,
-} from "../reusbaleVariables";
 
 export default function ChatScreen({ route }: { route: any }) {
-  const { id } = route.params;
+  const { id } = route.params; // conversationId
 
   const { userData } = useFetchUserData();
 
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [text, setText] = useState<string>("");
 
+  console.log(messages);
+
   useEffect(() => {
     if (!id || !userData?.id) return;
 
-    createConversationIfNotExists(userData.id, id);
-
-    const roomId = getConversationId(userData.id, id);
-    const docRef = doc(FIREBASE_DB, "rooms", roomId);
-    const messagesRef = collection(docRef, "messages");
-    const q = query(messagesRef, orderBy("createdAt", "asc"));
+    const conversationRef = doc(FIREBASE_DB, "conversations", id);
+    const messagesRef = collection(conversationRef, "messages");
+    const q = query(messagesRef, orderBy("timestamp", "asc"));
 
     const unsub = onSnapshot(q, (snapshot) => {
       const allMessages = snapshot.docs.map((doc) => ({
         _id: doc.id,
         text: doc.data().text,
-        createdAt: doc.data().createdAt.toDate(),
+        createdAt: doc.data().timestamp.toDate(),
         user: {
-          _id: doc.data().userId,
+          _id: doc.data().senderId,
           name: doc.data().senderName,
-          avatar: doc.data().imageUrl,
+          avatar: doc.data().senderImageUrl,
         },
       }));
       setMessages(allMessages);
@@ -56,19 +50,20 @@ export default function ChatScreen({ route }: { route: any }) {
     if (newMessages.length === 0) return;
 
     try {
-      const roomId = getConversationId(userData?.id || "", id);
-      const docRef = doc(FIREBASE_DB, "rooms", roomId);
-      const messagesRef = collection(docRef, "messages");
+      const conversationRef = doc(FIREBASE_DB, "conversations", id);
+      const messagesRef = collection(conversationRef, "messages");
 
       const newMessage = newMessages[0];
       setText(""); // Clear the input
 
       await addDoc(messagesRef, {
-        userId: userData?.id,
+        senderId: userData?.id,
         text: newMessage.text,
-        imageUrl: userData?.imageUrl,
         senderName: userData?.fullName,
-        createdAt: Timestamp.fromDate(new Date()),
+        senderImageUrl: userData?.imageUrl,
+        timestamp: Timestamp.fromDate(new Date()),
+        type: "text",
+        status: "sent",
       });
     } catch (error) {
       console.error(error);
