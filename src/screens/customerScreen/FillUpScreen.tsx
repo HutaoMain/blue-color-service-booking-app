@@ -7,22 +7,22 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import regionData from "../../ph-json/region.json";
-import provinceData from "../../ph-json/province.json";
-import cityData from "../../ph-json/city.json";
-import barangayData from "../../ph-json/barangay.json";
-import { HomeStackNavigationProps } from "../typesNavigation";
-import { CategoryOptions, categoryOptions } from "../categoryOptions";
+import regionData from "../../../ph-json/region.json";
+import provinceData from "../../../ph-json/province.json";
+import cityData from "../../../ph-json/city.json";
+import barangayData from "../../../ph-json/barangay.json";
+import { addDoc, collection } from "firebase/firestore";
+import { useNavigation } from "@react-navigation/native";
+import { categoryOptions, CategoryOptions } from "../../categoryOptions";
+import { HomeStackNavigationProps } from "../../typesNavigation";
+import useAuthStore from "../../zustand/AuthStore";
 import {
   BarangayInterface,
   CityInterface,
   ProvinceInterface,
   RegionInterface,
-} from "../types";
-import { addDoc, collection } from "firebase/firestore";
-import { FIREBASE_DB } from "../firebaseConfig";
-import { useNavigation } from "@react-navigation/native";
-import useAuthStore from "../zustand/AuthStore";
+} from "../../types";
+import { FIREBASE_DB } from "../../firebaseConfig";
 
 export default function FillUpScreen({ route }: HomeStackNavigationProps) {
   const { category } = route.params;

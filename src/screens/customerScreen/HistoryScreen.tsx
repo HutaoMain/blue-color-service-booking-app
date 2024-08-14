@@ -1,10 +1,10 @@
 import { View, Text, FlatList, StyleSheet, RefreshControl } from "react-native";
-import { BookingInterface } from "../types";
 import moment from "moment";
-import useFetchListOfBookings from "../utilities/useFetchListOfBookings";
 import { useState } from "react";
-import Navbar from "../components/Navbar";
-import useFetchUserData from "../utilities/useFetchUserData";
+import useFetchListOfBookings from "../../utilities/useFetchListOfBookings";
+import useFetchUserData from "../../utilities/useFetchUserData";
+import { BookingInterface } from "../../types";
+import Navbar from "../../components/Navbar";
 
 export default function HistoryScreen() {
   const { ListOfBooking, refreshBookings } = useFetchListOfBookings({});

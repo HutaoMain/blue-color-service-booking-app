@@ -1,6 +1,6 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import React from "react";
-import { ashBlack, bluegreen, yellowLabel } from "../reusbaleVariables";
+import { bluegreen, yellowLabel } from "../reusbaleVariables";
 
 interface NavbarInterface {
   title: string;

@@ -1,9 +1,9 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "../customerScreen/LoginScreen";
-import RegistrationScreen from "../customerScreen/RegisterScreen";
-import WorkerServiceSelectionScreen from "../workerScreen/WorkerServiceSelectionScreen";
+import WorkerServiceSelectionScreen from "../screens/workerScreen/WorkerServiceSelectionScreen";
 import { AuthStackNavigationType } from "../typesNavigation";
+import LoginScreen from "../screens/customerScreen/LoginScreen";
+import RegistrationScreen from "../screens/customerScreen/RegisterScreen";
 
 const AuthStackNavigation = () => {
   const AuthStack = createNativeStackNavigator<AuthStackNavigationType>();

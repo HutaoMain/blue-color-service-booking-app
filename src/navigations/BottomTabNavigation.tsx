@@ -1,13 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
 import HomeStackNavigation from "./HomeStackNavigation";
-import ProfileScreen from "../customerScreen/ProfileScreen";
-import HistoryScreen from "../customerScreen/HistoryScreen";
 import { bluegreen } from "../reusbaleVariables";
 import ChatStackNavigation from "./ChatStackNavigation";
 import useFetchUserData from "../utilities/useFetchUserData";
-import ApplicantList from "../adminScreen/ApplicantList";
+import ApplicantList from "../screens/adminScreen/ApplicantList";
+import HistoryScreen from "../screens/customerScreen/HistoryScreen";
+import ProfileScreen from "../screens/customerScreen/ProfileScreen";
 
 const BottomTabNavigation = () => {
   const Tab = createBottomTabNavigator();

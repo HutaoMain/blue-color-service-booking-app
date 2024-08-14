@@ -1,8 +1,8 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ChatStackNavigationType } from "../typesNavigation";
-import ChatListScreen from "../customerScreen/ChatListScreen";
-import ChatScreen from "../customerScreen/ChatScreen";
+import ChatListScreen from "../screens/customerScreen/ChatListScreen";
+import ChatScreen from "../screens/customerScreen/ChatScreen";
 
 const ChatStackNavigation = () => {
   const ChatStack = createNativeStackNavigator<ChatStackNavigationType>();

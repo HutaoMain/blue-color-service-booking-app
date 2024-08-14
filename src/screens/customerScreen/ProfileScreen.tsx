@@ -9,13 +9,12 @@ import {
   RefreshControl,
 } from "react-native";
 import React, { useState } from "react";
-import useFetchUserData from "../utilities/useFetchUserData";
-import useAuthStore from "../zustand/AuthStore";
 import { signOut } from "firebase/auth";
-import { FIREBASE_AUTH } from "../firebaseConfig";
-import HorizontalLine from "../components/HorizontalLine";
-import Navbar from "../components/Navbar";
-import { bluegreen, yellowLabel } from "../reusbaleVariables";
+import useFetchUserData from "../../utilities/useFetchUserData";
+import useAuthStore from "../../zustand/AuthStore";
+import { FIREBASE_AUTH } from "../../firebaseConfig";
+import HorizontalLine from "../../components/HorizontalLine";
+import { bluegreen, yellowLabel } from "../../reusbaleVariables";
 
 export default function ProfileScreen() {
   const { userData: data, refresh } = useFetchUserData();

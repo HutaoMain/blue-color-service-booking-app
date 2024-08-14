@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import {
   addDoc,
@@ -10,13 +10,9 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-import { FIREBASE_DB } from "../firebaseConfig";
-import useFetchUserData from "../utilities/useFetchUserData";
-import { useNavigation } from "@react-navigation/native";
-// import ChatHeader from "../components/ChatHeader";
-import { Image, Text, View, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import ChatHeader from "../components/ChatHeader";
+import useFetchUserData from "../../utilities/useFetchUserData";
+import { FIREBASE_DB } from "../../firebaseConfig";
+import ChatHeader from "../../components/ChatHeader";
 
 export default function ChatScreen({ route }: { route: any }) {
   const { id, participants, conversationName, conversationImageUrl } =

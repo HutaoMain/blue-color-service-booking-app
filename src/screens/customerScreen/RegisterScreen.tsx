@@ -12,14 +12,14 @@ import {
   Alert,
 } from "react-native";
 import { RadioButton, ToggleButton, Tooltip } from "react-native-paper";
-import { HomeStackNavigationProps } from "../typesNavigation";
 import {
   createUserWithEmailAndPassword,
   // sendEmailVerification,
 } from "firebase/auth";
 import { addDoc, collection } from "firebase/firestore";
-import { FIREBASE_AUTH, FIREBASE_DB } from "../firebaseConfig";
 import * as ImagePicker from "expo-image-picker";
+import { HomeStackNavigationProps } from "../../typesNavigation";
+import { FIREBASE_AUTH, FIREBASE_DB } from "../../firebaseConfig";
 
 export default function RegistrationScreen() {
   const customerNavigation =

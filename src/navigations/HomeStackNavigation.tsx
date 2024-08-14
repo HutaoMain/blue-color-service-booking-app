@@ -1,10 +1,10 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "../customerScreen/HomeScreen";
 import { HomeStackNavigationType } from "../typesNavigation";
-import FillUpScreen from "../customerScreen/FillUpScreen";
-import ListOfBookingScreen from "../workerScreen/ListOfBookingScreen";
-import HistoryScreen from "../customerScreen/HistoryScreen";
+import ListOfBookingScreen from "../screens/workerScreen/ListOfBookingScreen";
+import FillUpScreen from "../screens/customerScreen/FillUpScreen";
+import HomeScreen from "../screens/customerScreen/HomeScreen";
+import HistoryScreen from "../screens/customerScreen/HistoryScreen";
 
 const HomeStackNavigation = () => {
   const HomeStack = createNativeStackNavigator<HomeStackNavigationType>();

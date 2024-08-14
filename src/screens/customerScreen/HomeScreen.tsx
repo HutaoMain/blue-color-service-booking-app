@@ -16,11 +16,11 @@ import {
   Entypo,
 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { HomeStackNavigationProps } from "../typesNavigation";
-import useFetchUserData from "../utilities/useFetchUserData";
-import { ashBlack, bluegreen, yellowLabel } from "../reusbaleVariables";
 import { useState } from "react";
-import Navbar from "../components/Navbar";
+import { HomeStackNavigationProps } from "../../typesNavigation";
+import useFetchUserData from "../../utilities/useFetchUserData";
+import { ashBlack, bluegreen, yellowLabel } from "../../reusbaleVariables";
+import Navbar from "../../components/Navbar";
 
 interface CategoryItem {
   name: string;

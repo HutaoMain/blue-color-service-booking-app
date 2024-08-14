@@ -9,11 +9,11 @@ import {
   RefreshControl,
 } from "react-native";
 import { doc, updateDoc } from "firebase/firestore";
-import { FIREBASE_DB } from "../firebaseConfig";
-import useFetchListOfBookings from "../utilities/useFetchListOfBookings";
-import useFetchUserData from "../utilities/useFetchUserData";
-import { createConversationIfNotExists } from "../reusbaleVariables";
-import { BookingInterface } from "../types";
+import { FIREBASE_DB } from "../../firebaseConfig";
+import useFetchListOfBookings from "../../utilities/useFetchListOfBookings";
+import useFetchUserData from "../../utilities/useFetchUserData";
+import { createConversationIfNotExists } from "../../reusbaleVariables";
+import { BookingInterface } from "../../types";
 
 export default function ListOfBookingScreen() {
   const [refreshing, setRefreshing] = useState<boolean>(false);

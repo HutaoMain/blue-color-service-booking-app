@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Checkbox } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import { HomeStackNavigationProps } from "../typesNavigation";
+import { HomeStackNavigationProps } from "../../typesNavigation";
 
 const services = [
   "Electrical Work",

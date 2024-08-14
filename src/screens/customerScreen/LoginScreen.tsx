@@ -9,14 +9,14 @@ import {
   Alert,
   KeyboardAvoidingView,
 } from "react-native";
-import { HomeStackNavigationProps } from "../typesNavigation";
-import { FIREBASE_AUTH } from "../firebaseConfig";
 import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import useAuthStore from "../zustand/AuthStore";
-import { bluegreen, yellowLabel } from "../reusbaleVariables";
+import { HomeStackNavigationProps } from "../../typesNavigation";
+import useAuthStore from "../../zustand/AuthStore";
+import { FIREBASE_AUTH } from "../../firebaseConfig";
+import { bluegreen, yellowLabel } from "../../reusbaleVariables";
 
 export default function LoginScreen() {
   const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();

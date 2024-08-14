@@ -10,11 +10,11 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
-import { ConversationInterface } from "../types";
-import useFetchUserData from "../utilities/useFetchUserData";
-import { ChatStackNavigationProps } from "../typesNavigation";
-import { useFetchConversations } from "../utilities/useFetchConversations";
-import Navbar from "../components/Navbar";
+import useFetchUserData from "../../utilities/useFetchUserData";
+import { useFetchConversations } from "../../utilities/useFetchConversations";
+import { ChatStackNavigationProps } from "../../typesNavigation";
+import { ConversationInterface } from "../../types";
+import Navbar from "../../components/Navbar";
 
 const ChatListScreen = () => {
   const { userData } = useFetchUserData();

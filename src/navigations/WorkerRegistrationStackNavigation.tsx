@@ -1,8 +1,8 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RegisterScreen from "../customerScreen/RegisterScreen";
 import { WorkerRegistrationNavigationType } from "../typesNavigation";
-import WorkerServiceSelectionScreen from "../workerScreen/WorkerServiceSelectionScreen";
+import WorkerServiceSelectionScreen from "../screens/workerScreen/WorkerServiceSelectionScreen";
+import RegistrationScreen from "../screens/customerScreen/RegisterScreen";
 
 const WorkerRegistrationStackNavigation = () => {
   const WorkerRegistrationStack =
@@ -12,7 +12,7 @@ const WorkerRegistrationStackNavigation = () => {
     <WorkerRegistrationStack.Navigator>
       <WorkerRegistrationStack.Screen
         name="RegisterScreen"
-        component={RegisterScreen}
+        component={RegistrationScreen}
         options={{ headerShown: false }}
       />
       <WorkerRegistrationStack.Screen
