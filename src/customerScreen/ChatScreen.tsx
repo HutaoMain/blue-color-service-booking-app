@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import {
   addDoc,
@@ -8,17 +8,28 @@ import {
   orderBy,
   query,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { FIREBASE_DB } from "../firebaseConfig";
 import useFetchUserData from "../utilities/useFetchUserData";
+import { useNavigation } from "@react-navigation/native";
+// import ChatHeader from "../components/ChatHeader";
+import { Image, Text, View, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import ChatHeader from "../components/ChatHeader";
 
 export default function ChatScreen({ route }: { route: any }) {
-  const { id } = route.params; // conversationId
+  const { id, participants, conversationName, conversationImageUrl } =
+    route.params; // conversationId
 
   const { userData } = useFetchUserData();
 
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [text, setText] = useState<string>("");
+
+  const chatPartnerIndex = userData?.id === participants[0] ? 1 : 0;
+  const chatPartnerName = conversationName[chatPartnerIndex];
+  const chatPartnerImageUrl = conversationImageUrl[chatPartnerIndex];
 
   console.log(messages);
 
@@ -27,7 +38,7 @@ export default function ChatScreen({ route }: { route: any }) {
 
     const conversationRef = doc(FIREBASE_DB, "conversations", id);
     const messagesRef = collection(conversationRef, "messages");
-    const q = query(messagesRef, orderBy("timestamp", "asc"));
+    const q = query(messagesRef, orderBy("timestamp", "desc"));
 
     const unsub = onSnapshot(q, (snapshot) => {
       const allMessages = snapshot.docs.map((doc) => ({
@@ -65,22 +76,31 @@ export default function ChatScreen({ route }: { route: any }) {
         type: "text",
         status: "sent",
       });
+
+      // Update the lastMessage and lastMessageTimestamp fields in the conversation document
+      await updateDoc(conversationRef, {
+        lastMessage: newMessage.text,
+        lastMessageTimestamp: Timestamp.fromDate(new Date()),
+      });
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={(messages: IMessage[]) => handleSendMessage(messages)}
-      user={{
-        _id: userData?.id || "",
-        name: userData?.fullName || "User",
-        avatar: userData?.imageUrl || "https://placeimg.com/140/140/any",
-      }}
-      text={text} // Bind the text input
-      onInputTextChanged={(text: string) => setText(text)} // Handle input text change
-    />
+    <>
+      <ChatHeader name={chatPartnerName} imageUrl={chatPartnerImageUrl} />
+      <GiftedChat
+        messages={messages}
+        onSend={(messages: IMessage[]) => handleSendMessage(messages)}
+        user={{
+          _id: userData?.id || "",
+          name: userData?.fullName || "User",
+          avatar: userData?.imageUrl || "https://placeimg.com/140/140/any",
+        }}
+        text={text} // Bind the text input
+        onInputTextChanged={(text: string) => setText(text)} // Handle input text change
+      />
+    </>
   );
 }

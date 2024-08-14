@@ -54,7 +54,7 @@ const BottomTabNavigation = () => {
       <Tab.Screen
         name="History"
         component={HistoryScreen}
-        options={{ headerTitle: "Booking History" }}
+        options={{ headerShown: false }}
       />
       <Tab.Screen
         name="Profile"

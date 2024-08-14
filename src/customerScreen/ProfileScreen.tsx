@@ -14,6 +14,8 @@ import useAuthStore from "../zustand/AuthStore";
 import { signOut } from "firebase/auth";
 import { FIREBASE_AUTH } from "../firebaseConfig";
 import HorizontalLine from "../components/HorizontalLine";
+import Navbar from "../components/Navbar";
+import { bluegreen, yellowLabel } from "../reusbaleVariables";
 
 export default function ProfileScreen() {
   const { userData: data, refresh } = useFetchUserData();
@@ -40,57 +42,78 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={{
-          flex: 1,
-          width: "100%",
-          paddingHorizontal: 20,
-        }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        <View style={styles.coverPhotoContainer}>
-          <Image
-            source={{
-              uri: data?.imageUrl,
-            }}
-            style={styles.imageUrl}
-          />
-          <View style={styles.nameContainer}>
-            <Text style={styles.profileName}>{data?.fullName}</Text>
-          </View>
-          <Text style={styles.profileEmail}>{data?.email}</Text>
-        </View>
-
-        <HorizontalLine />
-
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoTitle}>Basic Info</Text>
-
-          <View style={styles.infoColumn}>
-            <Text style={styles.infoLabel}>Age: </Text>
-            <Text style={styles.infoValue}>{data?.age}</Text>
+    <>
+      <View style={styles.navbarContainer}>
+        <Text style={styles.title}>Profile</Text>
+      </View>
+      <View style={styles.container}>
+        <ScrollView
+          style={{
+            flex: 1,
+            width: "100%",
+            paddingHorizontal: 20,
+          }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <View style={styles.coverPhotoContainer}>
+            <Image
+              source={{
+                uri: data?.imageUrl,
+              }}
+              style={styles.imageUrl}
+            />
+            <View style={styles.nameContainer}>
+              <Text style={styles.profileName}>{data?.fullName}</Text>
+            </View>
+            <Text style={styles.profileEmail}>{data?.email}</Text>
           </View>
 
-          <View style={styles.infoColumn}>
-            <Text style={styles.infoLabel}>Gender: </Text>
-            <Text style={[styles.infoValue, { textTransform: "capitalize" }]}>
-              {data?.gender}
-            </Text>
-          </View>
-        </View>
+          <HorizontalLine />
 
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutButtonText}>Logout</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoTitle}>Basic Info</Text>
+
+            <View style={styles.infoColumn}>
+              <Text style={styles.infoLabel}>Age: </Text>
+              <Text style={styles.infoValue}>{data?.age}</Text>
+            </View>
+
+            <View style={styles.infoColumn}>
+              <Text style={styles.infoLabel}>Gender: </Text>
+              <Text style={[styles.infoValue, { textTransform: "capitalize" }]}>
+                {data?.gender}
+              </Text>
+            </View>
+          </View>
+
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Text style={styles.logoutButtonText}>Logout</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  navbarContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    height: 90,
+    backgroundColor: bluegreen,
+    borderBottomRightRadius: 15,
+    borderBottomLeftRadius: 15,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#ffffff",
+    marginLeft: 12,
+  },
   container: {
     flex: 1,
     alignItems: "center",
@@ -118,6 +141,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 30,
+    borderWidth: 3,
+    borderColor: yellowLabel,
   },
   profileEmail: {
     fontSize: 16,
@@ -143,7 +168,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   logoutButton: {
-    backgroundColor: "blue",
+    backgroundColor: bluegreen,
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 10,

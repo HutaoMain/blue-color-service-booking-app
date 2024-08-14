@@ -14,6 +14,7 @@ import { ConversationInterface } from "../types";
 import useFetchUserData from "../utilities/useFetchUserData";
 import { ChatStackNavigationProps } from "../typesNavigation";
 import { useFetchConversations } from "../utilities/useFetchConversations";
+import Navbar from "../components/Navbar";
 
 const ChatListScreen = () => {
   const { userData } = useFetchUserData();
@@ -26,7 +27,12 @@ const ChatListScreen = () => {
   const handleChatPress = (conversation: ConversationInterface) => {
     conversation.participants[0] === userData?.id;
     console.log("conversationId", conversation.conversationId);
-    navigation.navigate("ChatScreen", { id: conversation.conversationId });
+    navigation.navigate("ChatScreen", {
+      id: conversation.conversationId,
+      participants: conversation.participants,
+      conversationName: conversation.conversationName,
+      conversationImageUrl: conversation.conversationImageUrl,
+    });
   };
 
   const renderItem = ({ item }: { item: ConversationInterface }) => {
@@ -58,32 +64,42 @@ const ChatListScreen = () => {
               .local()
               .format("YYYY-MM-DD hh:mm A")}
           </Text>
-          {item.unreadCount[userData?.id || ""] > 0 && (
+          {/* {item.unreadCount[userData?.id || ""] > 0 && (
             <View style={styles.unreadCountContainer}>
               <Text style={styles.unreadCount}>
                 {item.unreadCount[userData?.id || ""]}
               </Text>
             </View>
-          )}
+          )} */}
         </View>
       </TouchableOpacity>
     );
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={conversations}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.conversationId}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={fetchConversations}
-          />
+    <>
+      <Navbar
+        title="Chat"
+        profileImageUrl={
+          userData
+            ? userData.imageUrl
+            : "../../assets/Profile_avatar_placeholder_large.png"
         }
       />
-    </View>
+      <View style={styles.container}>
+        <FlatList
+          data={conversations}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.conversationId}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={fetchConversations}
+            />
+          }
+        />
+      </View>
+    </>
   );
 };
 

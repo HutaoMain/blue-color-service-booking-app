@@ -3,20 +3,24 @@ import { BookingInterface } from "../types";
 import moment from "moment";
 import useFetchListOfBookings from "../utilities/useFetchListOfBookings";
 import { useState } from "react";
+import Navbar from "../components/Navbar";
+import useFetchUserData from "../utilities/useFetchUserData";
 
 export default function HistoryScreen() {
   const { ListOfBooking, refreshBookings } = useFetchListOfBookings({});
+
+  const { userData } = useFetchUserData();
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case "open":
-        return styles.openStatus;
+      case "accepted":
+        return styles.acceptedStatus;
       case "pending":
         return styles.pendingStatus;
-      default:
-        return styles.defaultStatus;
+      case "cancelled":
+        return styles.cancelledStatus;
     }
   };
 
@@ -46,17 +50,27 @@ export default function HistoryScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={ListOfBooking}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    <>
+      <Navbar
+        title="Booking History"
+        profileImageUrl={
+          userData
+            ? userData.imageUrl
+            : "../../assets/Profile_avatar_placeholder_large.png"
         }
       />
-    </View>
+      <View style={styles.container}>
+        <FlatList
+          data={ListOfBooking}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContainer}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      </View>
+    </>
   );
 }
 
@@ -115,13 +129,13 @@ const styles = StyleSheet.create({
     color: "#999",
     marginTop: 4,
   },
-  openStatus: {
+  acceptedStatus: {
     backgroundColor: "lightgreen",
   },
   pendingStatus: {
     backgroundColor: "yellow",
   },
-  defaultStatus: {
-    backgroundColor: "lightgray",
+  cancelledStatus: {
+    backgroundColor: "red",
   },
 });

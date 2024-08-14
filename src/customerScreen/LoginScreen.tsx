@@ -43,6 +43,13 @@ export default function LoginScreen() {
 
   const handleForgotPassword = async () => {
     setForgotPassLoading(true);
+
+    if (email === "") {
+      return Alert.alert(
+        "Please put your email in the email text box. The system will send an email to your email."
+      );
+    }
+
     try {
       await sendPasswordResetEmail(FIREBASE_AUTH, email);
       Alert.alert("Please check your email to reset your password.");

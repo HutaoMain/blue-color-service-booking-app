@@ -8,7 +8,7 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import PagerView from "react-native-pager-view";
+// import PagerView from "react-native-pager-view";
 import {
   MaterialCommunityIcons,
   MaterialIcons,
@@ -18,8 +18,9 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackNavigationProps } from "../typesNavigation";
 import useFetchUserData from "../utilities/useFetchUserData";
-import { bluegreen, yellowLabel } from "../reusbaleVariables";
+import { ashBlack, bluegreen, yellowLabel } from "../reusbaleVariables";
 import { useState } from "react";
+import Navbar from "../components/Navbar";
 
 interface CategoryItem {
   name: string;
@@ -101,14 +102,14 @@ export default function HomeScreen() {
       }
     >
       <View style={styles.headerContainer}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={{
-              uri: userData?.imageUrl,
-            }}
-            style={styles.headerImage}
-          />
-        </View>
+        <Navbar
+          title=""
+          profileImageUrl={
+            userData
+              ? userData.imageUrl
+              : "../../assets/Profile_avatar_placeholder_large.png"
+          }
+        />
         <Text style={styles.greeting}>
           Hi,<Text style={styles.name}> {userData?.fullName}</Text>
         </Text>
@@ -191,22 +192,9 @@ const styles = StyleSheet.create({
     height: 200,
     backgroundColor: bluegreen,
   },
-  imageContainer: {
-    width: "100%",
-    alignItems: "flex-end",
-    marginBottom: 10,
-  },
-  headerImage: {
-    width: 75,
-    height: 75,
-    resizeMode: "cover",
-    borderRadius: 75,
-    borderWidth: 5,
-    borderColor: yellowLabel,
-  },
   greeting: {
     fontSize: 18,
-    color: "#333",
+    color: ashBlack,
     marginBottom: 10,
   },
   name: {
@@ -225,7 +213,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: ashBlack,
   },
   categoryList: {
     paddingVertical: 10,
@@ -251,7 +239,7 @@ const styles = StyleSheet.create({
   //   marginLeft: 16,
   //   fontSize: 18,
   //   fontWeight: "bold",
-  //   color: "#333",
+  //   color: ashBlack,
   // },
   // page: {
   //   marginTop: -100,

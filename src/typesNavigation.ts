@@ -37,6 +37,9 @@ export type ChatStackNavigationType = {
   ChatListScreen: undefined;
   ChatScreen: {
     id: string;
+    participants: string[];
+    conversationName: string[];
+    conversationImageUrl: string[];
   };
 };
 export type ChatStackNavigationProps = NativeStackScreenProps<

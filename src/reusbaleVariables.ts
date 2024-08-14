@@ -10,6 +10,7 @@ import { FIREBASE_DB } from "./firebaseConfig";
 
 export const bluegreen = "#498176";
 export const yellowLabel = "#EDB232";
+export const ashBlack = "#333";
 
 export const createConversationIfNotExists = async (
   workerId: string,
