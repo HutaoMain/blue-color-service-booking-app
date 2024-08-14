@@ -3,13 +3,16 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import HomeStackNavigation from "./HomeStackNavigation";
 import ProfileScreen from "../customerScreen/ProfileScreen";
-import ChatScreen from "../customerScreen/ChatScreen";
 import HistoryScreen from "../customerScreen/HistoryScreen";
-import { bluegreen, yellowLabel } from "../reusbaleVariables";
+import { bluegreen } from "../reusbaleVariables";
 import ChatStackNavigation from "./ChatStackNavigation";
+import useFetchUserData from "../utilities/useFetchUserData";
+import ApplicantList from "../adminScreen/ApplicantList";
 
 const BottomTabNavigation = () => {
   const Tab = createBottomTabNavigator();
+
+  const { userData } = useFetchUserData();
 
   return (
     <Tab.Navigator
@@ -56,6 +59,15 @@ const BottomTabNavigation = () => {
         component={HistoryScreen}
         options={{ headerShown: false }}
       />
+
+      {userData?.role === "admin" && (
+        <Tab.Screen
+          name="ApplicantList"
+          component={ApplicantList}
+          options={{ headerShown: false }}
+        />
+      )}
+
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}

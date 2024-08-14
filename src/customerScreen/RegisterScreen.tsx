@@ -12,10 +12,7 @@ import {
   Alert,
 } from "react-native";
 import { RadioButton, ToggleButton, Tooltip } from "react-native-paper";
-import {
-  HomeStackNavigationProps,
-  WorkerRegistrationNavigationProps,
-} from "../typesNavigation";
+import { HomeStackNavigationProps } from "../typesNavigation";
 import {
   createUserWithEmailAndPassword,
   // sendEmailVerification,
@@ -25,8 +22,6 @@ import { FIREBASE_AUTH, FIREBASE_DB } from "../firebaseConfig";
 import * as ImagePicker from "expo-image-picker";
 
 export default function RegistrationScreen() {
-  const workerNavigation =
-    useNavigation<WorkerRegistrationNavigationProps["navigation"]>();
   const customerNavigation =
     useNavigation<HomeStackNavigationProps["navigation"]>();
 
@@ -42,14 +37,6 @@ export default function RegistrationScreen() {
   const [imageBase64, setImageBase64] = useState<string>("");
 
   const usersCollectionRef = collection(FIREBASE_DB, "users");
-
-  // const handleNextOrSignUp = () => {
-  //   if (isCustomer === "customer") {
-  //     alert("Customer signed up!");
-  //   } else {
-  //     workerNavigation.navigate("WorkerServiceSelectionScreen");
-  //   }
-  // };
 
   useEffect(() => {
     if (imageBase64) {
@@ -100,16 +87,13 @@ export default function RegistrationScreen() {
         gender: selectedGender,
         age: age,
         role: isCustomer ? "customer" : "worker",
+        isWorkerApproved: false,
       });
 
       Alert.alert("Registration Completed!.");
       setLoading(false);
       setTimeout(() => {
-        if (isCustomer === "customer") {
-          customerNavigation.navigate("LoginScreen");
-        } else {
-          workerNavigation.navigate("WorkerServiceSelectionScreen");
-        }
+        customerNavigation.navigate("LoginScreen");
       }, 2000);
     } catch (error) {
       setLoading(false);
@@ -243,11 +227,7 @@ export default function RegistrationScreen() {
         </View>
         <TouchableOpacity style={styles.button} onPress={handleRegistration}>
           <Text style={styles.buttonText}>
-            {isCustomer === "customer"
-              ? loading
-                ? "Please wait..."
-                : "Signup"
-              : "Next"}
+            {loading ? "Please wait..." : "Signup"}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity>

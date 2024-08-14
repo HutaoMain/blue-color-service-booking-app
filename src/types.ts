@@ -38,6 +38,7 @@ export interface UserInterface {
   gender: string;
   imageUrl: string;
   role: string;
+  isWorkerApproved: boolean;
 }
 
 export interface BookingInterface {

@@ -31,6 +31,7 @@ const useFetchUserData = () => {
           age: doc.data().age,
           gender: doc.data().gender,
           imageUrl: doc.data().imageUrl,
+          isWorkerApproved: doc.data().isWorkerApproved,
         });
       });
 

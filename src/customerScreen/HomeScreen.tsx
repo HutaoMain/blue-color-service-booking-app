@@ -142,6 +142,7 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={[styles.categoryButton, { width: "90%" }]}
             onPress={() => navigation.navigate("ListOfBookingScreen")}
+            disabled={!userData.isWorkerApproved}
           >
             <Text style={styles.categoryButtonText}>Go to Client Bookings</Text>
             <MaterialIcons name="cleaning-services" size={40} color="black" />
