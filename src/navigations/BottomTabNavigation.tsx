@@ -7,7 +7,7 @@ import useFetchUserData from "../utilities/useFetchUserData";
 import HistoryScreen from "../screens/customerScreen/HistoryScreen";
 import ProfileScreen from "../screens/customerScreen/ProfileScreen";
 import DocumentUploadScreen from "../screens/workerScreen/DocumentUploadScreen";
-import ApplicantList from "../screens/adminScreen/ApplicantList";
+import ApplicantListStackNavigation from "./ApplicantListStackNavigation";
 
 const BottomTabNavigation = () => {
   const Tab = createBottomTabNavigator();
@@ -29,6 +29,8 @@ const BottomTabNavigation = () => {
           } else if (route.name === "History") {
             iconName = focused ? "list" : "list-outline";
           } else if (route.name === "Documents") {
+            iconName = focused ? "document-text" : "document-text-outline";
+          } else if (route.name === "Applicant List") {
             iconName = focused ? "document-text" : "document-text-outline";
           }
 
@@ -73,7 +75,7 @@ const BottomTabNavigation = () => {
       {userData?.role === "admin" && (
         <Tab.Screen
           name="Applicant List"
-          component={ApplicantList}
+          component={ApplicantListStackNavigation}
           options={{ headerShown: false }}
         />
       )}

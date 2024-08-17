@@ -17,7 +17,7 @@ export default function UserDocumentDisplay() {
         <Text>License:</Text>
         <TouchableOpacity style={styles.pickDocumentBtn}>
           <Text>
-            {data?.license ? getFileName(data.license) : "Not uploaded"}
+            {data?.licenseUrl ? getFileName(data.licenseUrl) : "Not uploaded"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -25,15 +25,17 @@ export default function UserDocumentDisplay() {
         <Text>Certificate:</Text>
         <TouchableOpacity style={styles.pickDocumentBtn}>
           <Text>
-            {data?.certificate ? getFileName(data.certificate) : "Not uploaded"}
+            {data?.certificateUrl
+              ? getFileName(data.certificateUrl)
+              : "Not uploaded"}
           </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.pickDocumentContainer}>
         <Text>Valid ID:</Text>
-        {data?.validId ? (
+        {data?.validIdUrl ? (
           <Image
-            source={{ uri: data.validId }}
+            source={{ uri: data.validIdUrl }}
             style={styles.validIdImage}
             resizeMode="contain"
           />

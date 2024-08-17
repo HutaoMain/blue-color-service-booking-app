@@ -1,4 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Timestamp } from "firebase/firestore";
 
 export type AuthStackNavigationType = {
   LoginScreen: undefined;
@@ -45,4 +46,24 @@ export type ChatStackNavigationType = {
 export type ChatStackNavigationProps = NativeStackScreenProps<
   ChatStackNavigationType,
   "ChatScreen"
+>;
+
+// ApplicantList Stack Navigation
+export type ApplicantListNavigationType = {
+  ApplicantList: undefined;
+  ViewApplicantDocuments: {
+    id: string;
+    email: string;
+    certificateUrl: string;
+    certificateFileName: string;
+    licenseUrl: string;
+    licenseFileName: string;
+    validIdUrl: string;
+    validIdFileName: string;
+    createdAt: Timestamp;
+  };
+};
+export type ApplicantListNavigationProps = NativeStackScreenProps<
+  ApplicantListNavigationType,
+  "ViewApplicantDocuments"
 >;

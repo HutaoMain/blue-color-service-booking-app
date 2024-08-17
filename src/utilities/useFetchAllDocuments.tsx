@@ -14,9 +14,12 @@ export const useFetchAllDocuments = () => {
         fetchedDocuments.push({
           id: doc.id,
           email: doc.data().email,
-          certificate: doc.data().certificate,
-          license: doc.data().license,
-          validId: doc.data().validId,
+          certificateUrl: doc.data().certificateUrl,
+          certificateFileName: doc.data().certificateFileName,
+          licenseUrl: doc.data().licenseUrl,
+          licenseFileName: doc.data().licenseFileName,
+          validIdUrl: doc.data().validIdUrl,
+          validIdFileName: doc.data().validIdFileName,
           createdAt: doc.data().createdAt,
         });
       });

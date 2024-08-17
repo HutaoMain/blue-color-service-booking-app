@@ -1,8 +1,14 @@
-import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
-import React, { useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  RefreshControl,
+} from "react-native";
+import React, { useCallback, useState } from "react";
 import {
   collection,
-  doc,
   getDocs,
   query,
   updateDoc,
@@ -13,14 +19,29 @@ import { useFetchAllDocuments } from "../../utilities/useFetchAllDocuments";
 
 import { Button, Menu } from "react-native-paper";
 import { useFetchAllUsers } from "../../utilities/useFetchAllUsers";
+import { useNavigation } from "@react-navigation/native";
+import { ApplicantListNavigationProps } from "../../typesNavigation";
+import { DocumentInterface } from "../../types";
+import Navbar from "../../components/Navbar";
+import useFetchUserData from "../../utilities/useFetchUserData";
 
 export default function ApplicantList() {
   const [visible, setVisible] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<string>("");
   const closeMenu = () => setVisible(false);
+  const [refreshing, setRefreshing] = useState(false); // State for refresh control
+
+  const navigate = useNavigation<ApplicantListNavigationProps["navigation"]>();
 
   const { documents, refreshDocuments } = useFetchAllDocuments();
   const { users } = useFetchAllUsers();
+  const { userData } = useFetchUserData();
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    refreshDocuments();
+    setRefreshing(false);
+  }, [refreshDocuments]);
 
   const openMenu = (documentId: string) => {
     setSelectedDocument(documentId);
@@ -32,20 +53,18 @@ export default function ApplicantList() {
     isWorkerApproved: boolean
   ) => {
     try {
-      // Query the users collection to find the document with the matching email
       const q = query(
         collection(FIREBASE_DB, "users"),
         where("email", "==", email)
       );
       const querySnapshot = await getDocs(q);
 
-      // Assuming there's only one document per email
       if (!querySnapshot.empty) {
-        const userDoc = querySnapshot.docs[0].ref; // Get the reference to the document
+        const userDoc = querySnapshot.docs[0].ref;
         await updateDoc(userDoc, { isWorkerApproved: isWorkerApproved });
         console.log("User status updated successfully.");
         Alert.alert("User status updated successfully.");
-        refreshDocuments(); // Optional: refresh document list after status update
+        refreshDocuments();
       } else {
         console.log("No user found with the given email.");
       }
@@ -61,20 +80,53 @@ export default function ApplicantList() {
     closeMenu();
   };
 
+  const navigateToViewApplicantList = (document: DocumentInterface) => {
+    navigate.navigate("ViewApplicantDocuments", {
+      id: document.id,
+      certificateUrl: document.certificateUrl,
+      certificateFileName: document.certificateFileName,
+      email: document.email,
+      licenseUrl: document.licenseUrl,
+      licenseFileName: document.licenseFileName,
+      validIdUrl: document.validIdUrl,
+      validIdFileName: document.validIdFileName,
+      createdAt: document.createdAt,
+    });
+  };
+
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      <Navbar
+        profileImageUrl={
+          userData
+            ? userData.imageUrl
+            : "../../assets/Profile_avatar_placeholder_large.png"
+        }
+        title="Applicant List"
+      />
       {documents.map((document) => {
         const user = users.find((u) => u.email === document.email);
         return (
           <View key={document.id} style={styles.card}>
-            <Text>Email: {document.email}</Text>
-            <Text>Certificate: {document.certificate}</Text>
-            <Text>License: {document.license}</Text>
+            <Text>Worker Email: {document.email}</Text>
+            <Button
+              onPress={() => navigateToViewApplicantList(document)}
+              style={styles.btn}
+            >
+              View Application
+            </Button>
             <Menu
               visible={visible && selectedDocument === document.id}
               onDismiss={closeMenu}
               anchor={
-                <Button onPress={() => openMenu(document.id)}>
+                <Button
+                  onPress={() => openMenu(document.id)}
+                  style={styles.btn}
+                >
                   {user?.isWorkerApproved ? "Approved" : "Not Approved"}
                 </Button>
               }
@@ -100,5 +152,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
+  },
+  btn: {
+    marginTop: 8,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "black",
   },
 });

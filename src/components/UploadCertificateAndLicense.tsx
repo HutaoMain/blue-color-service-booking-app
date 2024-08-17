@@ -108,9 +108,12 @@ export default function UploadCertificateAndLicense() {
     setLoading(true);
     try {
       const data = {
-        license: cloudinaryLicenseUrl,
-        certificate: cloudinaryCertificateUrl,
-        validId: cloudinaryValidIdUrl,
+        licenseUrl: cloudinaryLicenseUrl,
+        licenseFileName: licenses?.name,
+        certificateUrl: cloudinaryCertificateUrl,
+        certificateFileName: certificates?.name,
+        validIdUrl: cloudinaryValidIdUrl,
+        validIdFileName: validId?.name,
         email: userData?.email,
         updatedAt: new Date().toISOString(),
       };

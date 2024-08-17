@@ -94,8 +94,11 @@ export interface MessageInterface {
 export interface DocumentInterface {
   id: string;
   email: string;
-  certificate: string;
-  license: string;
-  validId: string;
+  certificateUrl: string;
+  certificateFileName: string;
+  licenseUrl: string;
+  licenseFileName: string;
+  validIdUrl: string;
+  validIdFileName: string;
   createdAt: Timestamp;
 }
