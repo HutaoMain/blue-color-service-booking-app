@@ -7,9 +7,12 @@ import { BookingInterface } from "../../types";
 import Navbar from "../../components/Navbar";
 
 export default function HistoryScreen() {
-  const { ListOfBooking, refreshBookings } = useFetchListOfBookings({});
-
   const { userData } = useFetchUserData();
+
+  const { ListOfBooking, refreshBookings } = useFetchListOfBookings({
+    filterField: "customerEmail",
+    filterValue: userData?.email,
+  });
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 

@@ -140,7 +140,13 @@ export default function HomeScreen() {
             List of existing client bookings:
           </Text>
           <TouchableOpacity
-            style={[styles.categoryButton, { width: "90%" }]}
+            style={[
+              styles.categoryButton,
+              {
+                width: "90%",
+                backgroundColor: userData.isWorkerApproved ? bluegreen : "gray",
+              },
+            ]}
             onPress={() => navigation.navigate("ListOfBookingScreen")}
             disabled={!userData.isWorkerApproved}
           >
@@ -227,7 +233,6 @@ const styles = StyleSheet.create({
     height: 150,
     alignItems: "center",
     justifyContent: "space-around",
-    backgroundColor: bluegreen,
     borderRadius: 15,
   },
   categoryButtonText: {

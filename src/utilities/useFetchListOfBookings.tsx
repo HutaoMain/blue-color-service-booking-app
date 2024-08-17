@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { BookingInterface } from "../types";
 import { FIREBASE_DB } from "../firebaseConfig";
 
 interface UseFetchListOfBookingsProps {
-  filterField?: string; // The field you want to filter on (optional)
-  filterValue?: string; // The value you want to filter by (optional)
+  filterField?: string;
+  filterValue?: string;
 }
 
 const useFetchListOfBookings = ({
@@ -18,13 +18,12 @@ const useFetchListOfBookings = ({
     let q;
 
     if (filterField && filterValue) {
-      // Apply the filter if the props are provided
+      console.log(`Filtering on: ${filterField} == ${filterValue}`);
       q = query(
         collection(FIREBASE_DB, "bookings"),
         where(filterField, "==", filterValue)
       );
     } else {
-      // Fetch all bookings if no filter is provided
       q = query(collection(FIREBASE_DB, "bookings"));
     }
 
@@ -58,10 +57,6 @@ const useFetchListOfBookings = ({
       console.error("Error fetching bookings data:", error);
     }
   }, [filterField, filterValue]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   return { ListOfBooking: data, refreshBookings: fetchData };
 };

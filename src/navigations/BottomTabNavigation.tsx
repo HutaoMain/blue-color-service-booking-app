@@ -4,9 +4,10 @@ import HomeStackNavigation from "./HomeStackNavigation";
 import { bluegreen } from "../reusbaleVariables";
 import ChatStackNavigation from "./ChatStackNavigation";
 import useFetchUserData from "../utilities/useFetchUserData";
-import ApplicantList from "../screens/adminScreen/ApplicantList";
 import HistoryScreen from "../screens/customerScreen/HistoryScreen";
 import ProfileScreen from "../screens/customerScreen/ProfileScreen";
+import DocumentUploadScreen from "../screens/workerScreen/DocumentUploadScreen";
+import ApplicantList from "../screens/adminScreen/ApplicantList";
 
 const BottomTabNavigation = () => {
   const Tab = createBottomTabNavigator();
@@ -27,6 +28,8 @@ const BottomTabNavigation = () => {
             iconName = focused ? "person" : "person-outline";
           } else if (route.name === "History") {
             iconName = focused ? "list" : "list-outline";
+          } else if (route.name === "Documents") {
+            iconName = focused ? "document-text" : "document-text-outline";
           }
 
           return (
@@ -59,9 +62,17 @@ const BottomTabNavigation = () => {
         options={{ headerShown: false }}
       />
 
+      {userData?.role === "worker" && (
+        <Tab.Screen
+          name="Documents"
+          component={DocumentUploadScreen}
+          options={{ headerShown: false }}
+        />
+      )}
+
       {userData?.role === "admin" && (
         <Tab.Screen
-          name="ApplicantList"
+          name="Applicant List"
           component={ApplicantList}
           options={{ headerShown: false }}
         />

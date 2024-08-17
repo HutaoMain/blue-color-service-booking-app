@@ -20,6 +20,7 @@ import { addDoc, collection } from "firebase/firestore";
 import * as ImagePicker from "expo-image-picker";
 import { HomeStackNavigationProps } from "../../typesNavigation";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../firebaseConfig";
+import { cloudinaryUserName } from "../../env";
 
 export default function RegistrationScreen() {
   const customerNavigation =
@@ -45,13 +46,16 @@ export default function RegistrationScreen() {
         upload_preset: "upload",
       };
 
-      fetch("https://api.cloudinary.com/v1_1/alialcantara/image/upload", {
-        body: JSON.stringify(data),
-        headers: {
-          "content-type": "application/json",
-        },
-        method: "POST",
-      })
+      fetch(
+        `https://api.cloudinary.com/v1_1/${cloudinaryUserName}/image/upload`,
+        {
+          body: JSON.stringify(data),
+          headers: {
+            "content-type": "application/json",
+          },
+          method: "POST",
+        }
+      )
         .then(async (r) => {
           let data = await r.json();
           console.log(data.secure_url);
@@ -123,7 +127,7 @@ export default function RegistrationScreen() {
             <Text style={styles.subtitle}>Tell us about yourself.</Text>
           </View>
           <Image
-            source={require("../../assets/registrationImage.png")}
+            source={require("../../../assets/registrationImage.png")}
             style={styles.registrationImage}
           />
         </View>

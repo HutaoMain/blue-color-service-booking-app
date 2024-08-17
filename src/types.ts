@@ -43,8 +43,8 @@ export interface UserInterface {
 
 export interface BookingInterface {
   id: string;
-  customerEmail: string;
   customerId: string;
+  customerEmail: string;
   customerName: string;
   customerProfileImg: string;
   categoryService: string;
@@ -89,4 +89,13 @@ export interface MessageInterface {
   timestamp: Timestamp;
   type: string;
   status: string;
+}
+
+export interface DocumentInterface {
+  id: string;
+  email: string;
+  certificate: string;
+  license: string;
+  validId: string;
+  createdAt: Timestamp;
 }

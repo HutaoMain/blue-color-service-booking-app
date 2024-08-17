@@ -11,7 +11,7 @@ import regionData from "../../../ph-json/region.json";
 import provinceData from "../../../ph-json/province.json";
 import cityData from "../../../ph-json/city.json";
 import barangayData from "../../../ph-json/barangay.json";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { categoryOptions, CategoryOptions } from "../../categoryOptions";
 import { HomeStackNavigationProps } from "../../typesNavigation";
@@ -23,13 +23,14 @@ import {
   RegionInterface,
 } from "../../types";
 import { FIREBASE_DB } from "../../firebaseConfig";
+import useFetchUserData from "../../utilities/useFetchUserData";
 
 export default function FillUpScreen({ route }: HomeStackNavigationProps) {
   const { category } = route.params;
 
   const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
 
-  const user = useAuthStore((state) => state.user);
+  const { userData } = useFetchUserData();
 
   const options = categoryOptions[category as keyof CategoryOptions] || [];
 
@@ -128,16 +129,19 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
 
   const handleSubmit = async () => {
     const bookingData = {
-      email: user,
+      customerId: userData?.id,
+      customerEmail: userData?.email,
+      customerName: userData?.fullName,
+      customerProfileImg: userData?.imageUrl,
+      barangay: selectedBarangay,
+      city: selectedCity,
+      province: selectedProvince,
+      region: selectedRegion,
       categoryService: category,
       specificService: selectedOption,
-      region: selectedRegion,
-      province: selectedProvince,
-      city: selectedCity,
-      barangay: selectedBarangay,
       additionalDetail: serviceDetails,
-      status: "open",
-      createdAt: new Date(),
+      status: "pending",
+      createdAt: Timestamp.fromDate(new Date()),
     };
 
     try {
