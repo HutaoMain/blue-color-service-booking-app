@@ -28,7 +28,7 @@ const useFetchUserData = () => {
           email: doc.data().email,
           role: doc.data().role,
           fullName: doc.data().fullName,
-          age: doc.data().age,
+          birthDate: doc.data().birthDate,
           gender: doc.data().gender,
           imageUrl: doc.data().imageUrl,
           isWorkerApproved: doc.data().isWorkerApproved,

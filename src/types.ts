@@ -34,7 +34,7 @@ export interface UserInterface {
   id: string;
   email: string;
   fullName: string;
-  age: string;
+  birthDate: Timestamp;
   gender: string;
   imageUrl: string;
   role: string;
@@ -43,6 +43,7 @@ export interface UserInterface {
 
 export interface BookingInterface {
   id: string;
+  workerEmail: string;
   customerId: string;
   customerEmail: string;
   customerName: string;
@@ -51,6 +52,9 @@ export interface BookingInterface {
   specificService: string;
   additionalDetail: string;
   status: string;
+  ifDoneStatus: string;
+  serviceAmountPaid: string;
+  rating: number;
   createdAt: Timestamp;
 
   barangay: {
@@ -101,4 +105,11 @@ export interface DocumentInterface {
   validIdUrl: string;
   validIdFileName: string;
   createdAt: Timestamp;
+}
+
+export interface ReportInterface {
+  id: string;
+  customerEmail: string;
+  workerEmail: string;
+  reportedAt: string;
 }

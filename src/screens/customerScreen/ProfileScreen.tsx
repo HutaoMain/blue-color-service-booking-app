@@ -15,9 +15,16 @@ import useAuthStore from "../../zustand/AuthStore";
 import { FIREBASE_AUTH } from "../../firebaseConfig";
 import HorizontalLine from "../../components/HorizontalLine";
 import { bluegreen, yellowLabel } from "../../reusbaleVariables";
+import moment from "moment";
+import { StarRatingDisplay } from "react-native-star-rating-widget";
+import { useFetchWorkerRatings } from "../../utilities/useFetchWorkerRatings";
 
 export default function ProfileScreen() {
   const { userData: data, refresh } = useFetchUserData();
+
+  const { refreshRatings, averageRating } = useFetchWorkerRatings(
+    data?.email || ""
+  );
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -26,6 +33,7 @@ export default function ProfileScreen() {
   const onRefresh = async () => {
     setRefreshing(true);
     await refresh();
+    await refreshRatings();
     setRefreshing(false);
   };
 
@@ -67,6 +75,14 @@ export default function ProfileScreen() {
               <Text style={styles.profileName}>{data?.fullName}</Text>
             </View>
             <Text style={styles.profileEmail}>{data?.email}</Text>
+            {data?.role === "worker" && (
+              <StarRatingDisplay
+                rating={averageRating || 0}
+                enableHalfStar={false}
+                starSize={30}
+                color="#FFD700"
+              />
+            )}
           </View>
 
           <HorizontalLine />
@@ -75,8 +91,15 @@ export default function ProfileScreen() {
             <Text style={styles.infoTitle}>Basic Info</Text>
 
             <View style={styles.infoColumn}>
-              <Text style={styles.infoLabel}>Age: </Text>
-              <Text style={styles.infoValue}>{data?.age}</Text>
+              <Text style={styles.infoLabel}>Birth Date: </Text>
+              <Text style={styles.infoValue}>
+                {data?.birthDate
+                  ? moment(data?.birthDate.toDate())
+                      .local()
+                      .format("YYYY-MM-DD")
+                  : ""}
+              </Text>
+              {/* {moment(item.createdAt?.toDate()).local().format("YYYY-MM-DD hh:mm A")} */}
             </View>
 
             <View style={styles.infoColumn}>

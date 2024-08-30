@@ -8,6 +8,8 @@ import HistoryScreen from "../screens/customerScreen/HistoryScreen";
 import ProfileScreen from "../screens/customerScreen/ProfileScreen";
 import DocumentUploadScreen from "../screens/workerScreen/DocumentUploadScreen";
 import ApplicantListStackNavigation from "./ApplicantListStackNavigation";
+import ListOfBookingsAdminScreen from "../screens/adminScreen/ListOfBookingsAdminScreen";
+import ReportsListScreen from "../screens/adminScreen/ReportsListScreen";
 
 const BottomTabNavigation = () => {
   const Tab = createBottomTabNavigator();
@@ -32,6 +34,10 @@ const BottomTabNavigation = () => {
             iconName = focused ? "document-text" : "document-text-outline";
           } else if (route.name === "Applicant List") {
             iconName = focused ? "document-text" : "document-text-outline";
+          } else if (route.name === "List Of Bookings") {
+            iconName = focused ? "list" : "list-outline";
+          } else if (route.name === "Reports") {
+            iconName = focused ? "bug" : "bug-outline";
           }
 
           return (
@@ -53,16 +59,22 @@ const BottomTabNavigation = () => {
         component={HomeStackNavigation}
         options={{ headerShown: false }}
       />
-      <Tab.Screen
-        name="Chat"
-        component={ChatStackNavigation}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen
-        name="History"
-        component={HistoryScreen}
-        options={{ headerShown: false }}
-      />
+
+      {userData?.role !== "admin" && (
+        <>
+          <Tab.Screen
+            name="Chat"
+            component={ChatStackNavigation}
+            options={{ headerShown: false }}
+          />
+
+          <Tab.Screen
+            name="History"
+            component={HistoryScreen}
+            options={{ headerShown: false }}
+          />
+        </>
+      )}
 
       {userData?.role === "worker" && (
         <Tab.Screen
@@ -73,11 +85,25 @@ const BottomTabNavigation = () => {
       )}
 
       {userData?.role === "admin" && (
-        <Tab.Screen
-          name="Applicant List"
-          component={ApplicantListStackNavigation}
-          options={{ headerShown: false }}
-        />
+        <>
+          <Tab.Screen
+            name="List Of Bookings"
+            component={ListOfBookingsAdminScreen}
+            options={{ headerShown: false }}
+          />
+
+          <Tab.Screen
+            name="Applicant List"
+            component={ApplicantListStackNavigation}
+            options={{ headerShown: false }}
+          />
+
+          <Tab.Screen
+            name="Reports"
+            component={ReportsListScreen}
+            options={{ headerShown: false }}
+          />
+        </>
       )}
 
       <Tab.Screen

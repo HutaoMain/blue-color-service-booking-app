@@ -29,9 +29,5 @@ export const useFetchAllDocuments = () => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchDocuments();
-  }, [fetchDocuments]);
-
   return { documents, refreshDocuments: fetchDocuments };
 };

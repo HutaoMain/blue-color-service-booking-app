@@ -17,6 +17,8 @@ export type HomeStackNavigationType = {
   };
   ListOfBookingScreen: undefined;
   HistoryScreen: undefined;
+  ListOfBookingsAdminScreen: undefined;
+  ReportsListScreen: undefined;
 };
 export type HomeStackNavigationProps = NativeStackScreenProps<
   HomeStackNavigationType,

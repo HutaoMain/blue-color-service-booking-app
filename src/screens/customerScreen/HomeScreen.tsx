@@ -234,9 +234,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     borderRadius: 15,
+    borderWidth: 1,
+    borderColor: "black",
   },
   categoryButtonText: {
-    color: "#ffffff",
+    color: "black",
     fontSize: 16,
     textAlign: "center",
   },

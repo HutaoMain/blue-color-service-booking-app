@@ -1,10 +1,22 @@
-import { View, Text, FlatList, StyleSheet, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  RefreshControl,
+  Button,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 import moment from "moment";
 import { useState } from "react";
 import useFetchListOfBookings from "../../utilities/useFetchListOfBookings";
 import useFetchUserData from "../../utilities/useFetchUserData";
 import { BookingInterface } from "../../types";
 import Navbar from "../../components/Navbar";
+import Rating from "../../components/Rating";
+import { bluegreen } from "../../reusbaleVariables";
+import { StarRatingDisplay } from "react-native-star-rating-widget";
 
 export default function HistoryScreen() {
   const { userData } = useFetchUserData();
@@ -15,6 +27,15 @@ export default function HistoryScreen() {
   });
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<string>("");
+  const [selectedCustomerEmail, setSelectedCustomerEmail] =
+    useState<string>("");
+  const [selectedWorkerEmail, setSelectedWorkerEmail] = useState<string>("");
+
+  console.log("workerEmail", selectedWorkerEmail);
+  console.log("customerEmail", selectedCustomerEmail);
+  console.log("selectedBookingId", selectedBookingId);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -33,6 +54,17 @@ export default function HistoryScreen() {
     setRefreshing(false);
   };
 
+  const handleRateService = (
+    bookingId: string,
+    customerEmail: string,
+    workerEmail: string
+  ) => {
+    setSelectedBookingId(bookingId);
+    setSelectedCustomerEmail(customerEmail);
+    setSelectedWorkerEmail(workerEmail);
+    setModalVisible(true);
+  };
+
   const renderItem = ({ item }: { item: BookingInterface }) => (
     <View style={styles.itemContainer}>
       <Text style={styles.categoryService}>{item.categoryService}</Text>
@@ -42,6 +74,25 @@ export default function HistoryScreen() {
         {item.barangay.name}
       </Text>
       <Text style={styles.additionalDetail}>{item.additionalDetail}</Text>
+      {item.ifDoneStatus === "done" &&
+        (item.rating === 0 || !item.rating ? (
+          <TouchableOpacity
+            style={styles.ratingBtn}
+            onPress={() =>
+              handleRateService(item.id, item.customerEmail, item.workerEmail)
+            }
+          >
+            <Text style={styles.ratingTxt}>Rate Service</Text>
+          </TouchableOpacity>
+        ) : (
+          <StarRatingDisplay
+            rating={item.rating}
+            enableHalfStar={false}
+            starSize={30}
+            color="#FFD700"
+          />
+        ))}
+      {/* add a button here then create another reusable component where the user must rate a star*/}
       <Text style={[styles.status, getStatusStyle(item.status)]}>
         Status: {item.status}
       </Text>
@@ -73,6 +124,19 @@ export default function HistoryScreen() {
           }
         />
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <Rating
+          bookingId={selectedBookingId}
+          customerEmail={selectedCustomerEmail}
+          workerEmail={selectedWorkerEmail}
+          onClose={() => setModalVisible(false)}
+        />
+      </Modal>
     </>
   );
 }
@@ -140,5 +204,15 @@ const styles = StyleSheet.create({
   },
   cancelledStatus: {
     backgroundColor: "red",
+  },
+  ratingBtn: {
+    width: 150,
+    padding: 10,
+    borderRadius: 10,
+    marginVertical: 5,
+    backgroundColor: bluegreen,
+  },
+  ratingTxt: {
+    color: "#ffff",
   },
 });

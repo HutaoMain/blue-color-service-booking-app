@@ -10,17 +10,19 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Alert,
+  Platform,
 } from "react-native";
 import { RadioButton, ToggleButton, Tooltip } from "react-native-paper";
 import {
   createUserWithEmailAndPassword,
-  // sendEmailVerification,
+  sendEmailVerification,
 } from "firebase/auth";
 import { addDoc, collection } from "firebase/firestore";
 import * as ImagePicker from "expo-image-picker";
 import { HomeStackNavigationProps } from "../../typesNavigation";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../firebaseConfig";
 import { cloudinaryUserName } from "../../env";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function RegistrationScreen() {
   const customerNavigation =
@@ -31,13 +33,25 @@ export default function RegistrationScreen() {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isCustomer, setIsCustomer] = useState<string>("customer");
   const [fullName, setFullName] = useState<string>("");
-  const [age, setAge] = useState<string>("");
   const [selectedGender, setSelectedGender] = useState<string>("male");
   const [imageUrl, setImageUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [imageBase64, setImageBase64] = useState<string>("");
+  const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
   const usersCollectionRef = collection(FIREBASE_DB, "users");
+
+  const showPicker = () => {
+    setShowDatePicker(true);
+  };
+
+  const handleConfirm = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false); // Close the date picker
+    if (selectedDate) {
+      setBirthDate(selectedDate);
+    }
+  };
 
   useEffect(() => {
     if (imageBase64) {
@@ -68,29 +82,33 @@ export default function RegistrationScreen() {
 
   const handleRegistration = async () => {
     setLoading(true);
+
     try {
       if (password !== confirmPassword) {
         Alert.alert("Password do not match");
       }
 
-      // const userCredentials = await createUserWithEmailAndPassword(
-      //   FIREBASE_AUTH,
-      //   email,
-      //   password
-      // );
+      const userCredentials = await createUserWithEmailAndPassword(
+        FIREBASE_AUTH,
+        email,
+        password
+      );
 
-      await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
+      console.log("user credentials", userCredentials);
 
-      // const user = userCredentials.user;
-      // await sendEmailVerification(user);
+      const user = userCredentials.user;
+
+      console.log("user: ", user);
+
+      await sendEmailVerification(user);
 
       await addDoc(usersCollectionRef, {
         email: email,
         fullName: fullName,
         imageUrl: imageUrl,
         gender: selectedGender,
-        age: age,
-        role: isCustomer ? "customer" : "worker",
+        birthDate: birthDate,
+        role: isCustomer === "customer" ? "customer" : "worker",
         isWorkerApproved: false,
       });
 
@@ -188,15 +206,23 @@ export default function RegistrationScreen() {
           />
         </View>
 
-        <Text style={styles.label}>Age:</Text>
-        <TextInput
-          style={styles.input}
-          value={age}
-          onChangeText={setAge}
-          placeholder="Enter your age"
-          keyboardType="numeric"
-        />
-
+        <Text style={styles.label}>Birth Date:</Text>
+        <TouchableOpacity onPress={showPicker} style={styles.input}>
+          <Text style={styles.inputText}>
+            {birthDate
+              ? birthDate.toLocaleDateString()
+              : "Select your birth date"}
+          </Text>
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={birthDate || new Date()}
+            mode="date"
+            display="default"
+            onChange={handleConfirm}
+            maximumDate={new Date()} // Optional: Restrict future dates
+          />
+        )}
         <Text style={styles.label}>Gender:</Text>
         <View style={styles.radioGroup}>
           <RadioButton
@@ -366,5 +392,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 40,
     marginBottom: 20,
+  },
+  inputText: {
+    fontSize: 16,
+    color: "#333",
   },
 });

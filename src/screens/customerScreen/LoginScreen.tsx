@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import {
+  getAuth,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
@@ -28,12 +29,40 @@ export default function LoginScreen() {
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
   const [forgotPassLoading, setForgotPassLoading] = useState<boolean>(false);
 
+  // const handleLogin = async () => {
+  //   setLoginLoading(true);
+  //   try {
+  //     await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+  //     setLoginLoading(false);
+  //     setUser(email);
+  //   } catch (error) {
+  //     setLoginLoading(false);
+  //     Alert.alert("Email or password is incorrect!");
+  //     console.log(error);
+  //   }
+  // };
+
   const handleLogin = async () => {
     setLoginLoading(true);
     try {
-      await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        FIREBASE_AUTH,
+        email,
+        password
+      );
+
+      const user = userCredential.user;
+
+      if (user.emailVerified) {
+        setUser(email);
+      } else {
+        Alert.alert(
+          "Email not verified",
+          "Please verify your email before logging in."
+        );
+      }
+
       setLoginLoading(false);
-      setUser(email);
     } catch (error) {
       setLoginLoading(false);
       Alert.alert("Email or password is incorrect!");

@@ -7,6 +7,8 @@ import {
   FlatList,
   Alert,
   RefreshControl,
+  Modal,
+  TextInput,
 } from "react-native";
 import { doc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../firebaseConfig";
@@ -14,10 +16,16 @@ import useFetchListOfBookings from "../../utilities/useFetchListOfBookings";
 import useFetchUserData from "../../utilities/useFetchUserData";
 import { createConversationIfNotExists } from "../../reusbaleVariables";
 import { BookingInterface } from "../../types";
+import { StarRatingDisplay } from "react-native-star-rating-widget";
 
 export default function ListOfBookingScreen() {
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingBookingStatus, setLoadingBookingStatus] =
+    useState<boolean>(false);
+  const [loadingIfDoneStatus, setLoadingIfDoneStatus] =
+    useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [serviceAmount, setServiceAmount] = useState("");
 
   const { userData, refresh } = useFetchUserData();
   const { ListOfBooking, refreshBookings } = useFetchListOfBookings({});
@@ -36,7 +44,8 @@ export default function ListOfBookingScreen() {
     customerProfileImg: string
   ) => {
     try {
-      setLoading(true);
+      setLoadingBookingStatus(true);
+      setLoadingIfDoneStatus(true);
 
       await createConversationIfNotExists(
         userData?.id || "",
@@ -50,15 +59,38 @@ export default function ListOfBookingScreen() {
       const bookingRef = doc(FIREBASE_DB, "bookings", bookingId);
       await updateDoc(bookingRef, {
         status: "accepted",
+        workerEmail: userData?.email,
       });
 
       Alert.alert("Booking Accepted", "The booking has been accepted.");
-      setLoading(false);
+      setLoadingBookingStatus(false);
+      setLoadingIfDoneStatus(false);
     } catch (error) {
       Alert.alert("Error", "Failed to accept the booking.");
-      setLoading(false);
+      setLoadingBookingStatus(false);
+      setLoadingIfDoneStatus(false);
       console.error("Failed to accept booking: ", error);
     }
+  };
+
+  const handleUpdateIfDoneStatus = async (bookingId: string) => {
+    setLoadingIfDoneStatus(true);
+    const bookingRef = doc(FIREBASE_DB, "bookings", bookingId);
+    await updateDoc(bookingRef, {
+      ifDoneStatus: "done",
+      serviceAmountPaid: parseFloat(serviceAmount),
+    });
+    setLoadingIfDoneStatus(false);
+    setModalVisible(false);
+  };
+
+  const handlePress = () => {
+    setModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+    setServiceAmount("");
   };
 
   const renderBookingItem = ({ item }: { item: BookingInterface }) => (
@@ -69,36 +101,103 @@ export default function ListOfBookingScreen() {
         <Text style={styles.location}>
           Location: {item.barangay.name}, {item.city.name}, {item.province.name}
         </Text>
+        {item.serviceAmountPaid && (
+          <Text style={styles.location}>
+            Amount Paid: {item.serviceAmountPaid}
+          </Text>
+        )}
         <Text style={styles.additionalDetail}>
           Additional Details: {item.additionalDetail}
         </Text>
+        {item.rating && (
+          <StarRatingDisplay
+            rating={item.rating}
+            enableHalfStar={false}
+            starSize={30}
+            color="#FFD700"
+          />
+        )}
         <Text style={styles.date}>
           Date: {item.createdAt?.toDate().toLocaleString()}
         </Text>
       </View>
-      <TouchableOpacity
-        style={[
-          styles.acceptButton,
-          item.status === "accepted" && { backgroundColor: "#ccc" },
-        ]}
-        onPress={() =>
-          handleAcceptBooking(
-            item.id,
-            item.customerId,
-            item.customerName,
-            item.customerProfileImg
-          )
-        }
-        disabled={loading || item.status === "accepted"}
+      <View style={styles.btnContainer}>
+        <TouchableOpacity
+          style={[
+            styles.acceptButton,
+            item.status === "accepted" && { backgroundColor: "#ccc" },
+          ]}
+          onPress={() =>
+            handleAcceptBooking(
+              item.id,
+              item.customerId,
+              item.customerName,
+              item.customerProfileImg
+            )
+          }
+          disabled={loadingBookingStatus || item.status === "accepted"}
+        >
+          <Text style={styles.buttonText}>
+            {loadingBookingStatus
+              ? "Please wait.."
+              : item.status === "accepted"
+              ? "Accepted"
+              : "Accept"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.ifDoneButton,
+            item.ifDoneStatus === "done" && { backgroundColor: "#ccc" },
+          ]}
+          onPress={handlePress}
+          disabled={loadingIfDoneStatus || item.ifDoneStatus === "done"}
+        >
+          <Text style={styles.buttonText}>
+            {loadingBookingStatus
+              ? "Please wait.."
+              : item.ifDoneStatus === "done"
+              ? "Done"
+              : "Click to done"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={handleCancel}
       >
-        <Text style={styles.buttonText}>
-          {loading
-            ? "Please wait.."
-            : item.status === "accepted"
-            ? "Accepted"
-            : "Accept"}
-        </Text>
-      </TouchableOpacity>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Amount Paid By Customer:</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Enter amount"
+              keyboardType="numeric"
+              value={serviceAmount}
+              onChangeText={setServiceAmount}
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => handleUpdateIfDoneStatus(item.id)}
+                disabled={!serviceAmount || loadingIfDoneStatus}
+              >
+                <Text style={styles.modalButtonText}>Confirm</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleCancel}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 
@@ -175,8 +274,19 @@ const styles = StyleSheet.create({
     color: "#999",
     marginTop: 4,
   },
+  btnContainer: {
+    gap: 15,
+  },
   acceptButton: {
+    alignItems: "center",
     backgroundColor: "#28a745",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  ifDoneButton: {
+    alignItems: "center",
+    backgroundColor: "#FFBF00",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -185,5 +295,48 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
     color: "#fff",
     fontWeight: "bold",
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: 300,
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  textInput: {
+    height: 40,
+    width: "100%",
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  modalButton: {
+    flex: 1,
+    padding: 10,
+    marginHorizontal: 5,
+    backgroundColor: "#4CAF50",
+    alignItems: "center",
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: "white",
   },
 });

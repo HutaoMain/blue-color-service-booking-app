@@ -14,6 +14,8 @@ const useFetchListOfBookings = ({
 }: UseFetchListOfBookingsProps) => {
   const [data, setData] = useState<BookingInterface[]>([]);
 
+  console.log(data);
+
   const fetchData = useCallback(async () => {
     let q;
 
@@ -47,6 +49,10 @@ const useFetchListOfBookings = ({
           additionalDetail: doc.data().additionalDetail,
           status: doc.data().status,
           createdAt: doc.data().createdAt,
+          ifDoneStatus: doc.data().ifDoneStatus,
+          serviceAmountPaid: doc.data().serviceAmountPaid,
+          rating: doc.data().rating,
+          workerEmail: doc.data().workerEmail,
         });
       });
 

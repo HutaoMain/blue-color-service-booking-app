@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   FlatList,
@@ -15,8 +15,19 @@ import { useFetchConversations } from "../../utilities/useFetchConversations";
 import { ChatStackNavigationProps } from "../../typesNavigation";
 import { ConversationInterface } from "../../types";
 import Navbar from "../../components/Navbar";
+import {
+  GestureHandlerRootView,
+  Swipeable,
+  RectButton,
+} from "react-native-gesture-handler";
+import ProfileModal from "../../components/ProfileModal";
 
 const ChatListScreen = () => {
+  const [isProfileModalVisible, setProfileModalVisible] = useState(false);
+  const [selectedWorkerEmail, setSelectedWorkerEmail] = useState<string | null>(
+    null
+  );
+
   const { userData } = useFetchUserData();
 
   const { conversations, fetchConversations, refreshing } =
@@ -35,8 +46,31 @@ const ChatListScreen = () => {
     });
   };
 
+  const handleViewWorker = (workerEmail: string) => {
+    setSelectedWorkerEmail(workerEmail);
+    setProfileModalVisible(true);
+  };
+
+  // const renderRightActions = useCallback(
+  //   (workerUserId: string) => {
+  //     console.log("workeruserId:", workerUserId);
+  //     return (
+  //       <RectButton
+  //         style={styles.viewWorkerButton}
+  //         onPress={() => handleViewWorker(workerUserId)}
+  //       >
+  //         <Text style={styles.viewWorkerText}>View Worker</Text>
+  //       </RectButton>
+  //     );
+  //   },
+  //   [handleViewWorker]
+  // );
+
   const renderItem = ({ item }: { item: ConversationInterface }) => {
     const isCurrentUserUser1 = item.participants[0] === userData?.id;
+    const chatPartnerUserId = isCurrentUserUser1
+      ? item.participants[1]
+      : item.participants[0];
     const chatPartnerName = isCurrentUserUser1
       ? item.conversationName[1]
       : item.conversationName[0];
@@ -45,39 +79,39 @@ const ChatListScreen = () => {
       : item.conversationImageUrl[0];
 
     return (
-      <TouchableOpacity
-        style={styles.itemContainer}
-        onPress={() => handleChatPress(item)}
-      >
-        <Image source={{ uri: chatPartnerImage }} style={styles.profileImage} />
-        <View style={styles.textContainer}>
-          <Text style={styles.chatName}>{chatPartnerName}</Text>
-          <Text style={styles.lastMessage}>
-            {item.lastMessage.startsWith(userData?.id || "")
-              ? `You: ${item.lastMessage.slice(0, 20)}`
-              : item.lastMessage.slice(0, 20)}
-          </Text>
-        </View>
-        <View style={styles.timeUnreadCountContainer}>
-          <Text style={styles.time}>
-            {moment(item.lastMessageTimestamp?.toDate())
-              .local()
-              .format("YYYY-MM-DD hh:mm A")}
-          </Text>
-          {/* {item.unreadCount[userData?.id || ""] > 0 && (
-            <View style={styles.unreadCountContainer}>
-              <Text style={styles.unreadCount}>
-                {item.unreadCount[userData?.id || ""]}
-              </Text>
-            </View>
-          )} */}
-        </View>
-      </TouchableOpacity>
+      <View style={styles.itemContainer}>
+        <TouchableOpacity onPress={() => handleViewWorker(chatPartnerUserId)}>
+          <Image
+            source={{ uri: chatPartnerImage }}
+            style={styles.profileImage}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleChatPress(item)}
+          style={{ flexDirection: "row", marginRight: 60 }}
+        >
+          <View style={styles.textContainer}>
+            <Text style={styles.chatName}>{chatPartnerName}</Text>
+            <Text style={styles.lastMessage}>
+              {item.lastMessage.startsWith(userData?.id || "")
+                ? `You: ${item.lastMessage.slice(0, 20)}`
+                : item.lastMessage.slice(0, 20)}
+            </Text>
+          </View>
+          <View style={styles.timeUnreadCountContainer}>
+            <Text style={styles.time}>
+              {moment(item.lastMessageTimestamp?.toDate())
+                .local()
+                .format("YYYY-MM-DD hh:mm A")}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     );
   };
 
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <Navbar
         title="Chat"
         profileImageUrl={
@@ -99,7 +133,14 @@ const ChatListScreen = () => {
           }
         />
       </View>
-    </>
+      {selectedWorkerEmail && (
+        <ProfileModal
+          visible={isProfileModalVisible}
+          workerEmail={selectedWorkerEmail}
+          onClose={() => setProfileModalVisible(false)}
+        />
+      )}
+    </GestureHandlerRootView>
   );
 };
 
@@ -157,6 +198,8 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
   },
+  viewWorkerButton: {},
+  viewWorkerText: {},
 });
 
 export default ChatListScreen;

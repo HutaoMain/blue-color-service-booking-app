@@ -15,7 +15,7 @@ export const useFetchAllUsers = () => {
           id: doc.id,
           email: doc.data().email,
           fullName: doc.data().fullName,
-          age: doc.data().age,
+          birthDate: doc.data().birthDate,
           gender: doc.data().gender,
           imageUrl: doc.data().imageUrl,
           role: doc.data().role,
