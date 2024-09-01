@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import {useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,24 +8,23 @@ import {
   TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
-} from "react-native";
+} from 'react-native';
 import {
-  getAuth,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-} from "firebase/auth";
-import { HomeStackNavigationProps } from "../../typesNavigation";
-import useAuthStore from "../../zustand/AuthStore";
-import { FIREBASE_AUTH } from "../../firebaseConfig";
-import { bluegreen, yellowLabel } from "../../reusbaleVariables";
+} from 'firebase/auth';
+import {HomeStackNavigationProps} from '../../typesNavigation';
+import useAuthStore from '../../zustand/AuthStore';
+import {FIREBASE_AUTH} from '../../firebaseConfig';
+import {bluegreen, yellowLabel} from '../../reusbaleVariables';
 
 export default function LoginScreen() {
-  const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
+  const navigation = useNavigation<HomeStackNavigationProps['navigation']>();
 
-  const setUser = useAuthStore((state) => state.setUser);
+  const setUser = useAuthStore(state => state.setUser);
 
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
   const [forgotPassLoading, setForgotPassLoading] = useState<boolean>(false);
 
@@ -48,7 +47,7 @@ export default function LoginScreen() {
       const userCredential = await signInWithEmailAndPassword(
         FIREBASE_AUTH,
         email,
-        password
+        password,
       );
 
       const user = userCredential.user;
@@ -57,15 +56,15 @@ export default function LoginScreen() {
         setUser(email);
       } else {
         Alert.alert(
-          "Email not verified",
-          "Please verify your email before logging in."
+          'Email not verified',
+          'Please verify your email before logging in.',
         );
       }
 
       setLoginLoading(false);
     } catch (error) {
       setLoginLoading(false);
-      Alert.alert("Email or password is incorrect!");
+      Alert.alert('Email or password is incorrect!');
       console.log(error);
     }
   };
@@ -73,19 +72,19 @@ export default function LoginScreen() {
   const handleForgotPassword = async () => {
     setForgotPassLoading(true);
 
-    if (email === "") {
+    if (email === '') {
       return Alert.alert(
-        "Please put your email in the email text box. The system will send an email to your email."
+        'Please put your email in the email text box. The system will send an email to your email.',
       );
     }
 
     try {
       await sendPasswordResetEmail(FIREBASE_AUTH, email);
-      Alert.alert("Please check your email to reset your password.");
+      Alert.alert('Please check your email to reset your password.');
       setForgotPassLoading(false);
     } catch (error) {
       setForgotPassLoading(false);
-      Alert.alert("Not able to reset your password.");
+      Alert.alert('Not able to reset your password.');
     }
   };
 
@@ -115,19 +114,18 @@ export default function LoginScreen() {
           />
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>
-              {loginLoading ? "Please wait.." : "Login"}
+              {loginLoading ? 'Please wait..' : 'Login'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleForgotPassword}>
             <Text style={styles.forgotPassword}>
-              {forgotPassLoading ? "Please wait" : "Forgot password?"}
+              {forgotPassLoading ? 'Please wait' : 'Forgot password?'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity>
             <Text
               style={styles.signUpText}
-              onPress={() => navigation.navigate("RegisterScreen")}
-            >
+              onPress={() => navigation.navigate('RegisterScreen')}>
               Don't have an account? Sign Up
             </Text>
           </TouchableOpacity>
@@ -140,69 +138,69 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
     backgroundColor: bluegreen,
   },
   overlay: {
     flex: 1,
-    width: "100%",
-    justifyContent: "center",
+    width: '100%',
+    justifyContent: 'center',
   },
   textContainer: {
     marginHorizontal: 40,
-    justifyContent: "center",
-    alignItems: "flex-start",
+    justifyContent: 'center',
+    alignItems: 'flex-start',
     marginBottom: 30,
   },
   title: {
     fontSize: 45,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: yellowLabel,
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 36,
-    color: "#ffff",
+    color: '#ffff',
   },
   highlight: {
-    color: "red",
-    fontWeight: "bold",
+    color: 'red',
+    fontWeight: 'bold',
   },
   inputContainer: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   input: {
-    width: "80%",
+    width: '80%',
     height: 50,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 25,
     paddingHorizontal: 20,
     fontSize: 18,
     marginBottom: 15,
-    color: "#000",
+    color: '#000',
   },
   loginButton: {
-    width: "80%",
+    width: '80%',
     height: 50,
-    backgroundColor: "#1971E1",
+    backgroundColor: '#1971E1',
     borderRadius: 25,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 10,
   },
   loginButtonText: {
     fontSize: 18,
-    color: "#fff",
+    color: '#fff',
   },
   forgotPassword: {
     fontSize: 16,
-    color: "#fff",
+    color: '#fff',
     marginBottom: 10,
   },
   signUpText: {
     fontSize: 16,
-    color: "#fff",
+    color: '#fff',
   },
 });

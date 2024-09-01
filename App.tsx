@@ -1,7 +1,7 @@
-import { StyleSheet, View } from "react-native";
-import RootNavigation from "./src/navigations/RootNavigation";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { PaperProvider } from "react-native-paper";
+import React from 'react';
+import {StyleSheet, SafeAreaView} from 'react-native';
+import RootNavigation from './src/navigations/RootNavigation';
+import {PaperProvider} from 'react-native-paper';
 
 export default function App() {
   return (

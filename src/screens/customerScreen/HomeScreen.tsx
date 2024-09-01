@@ -1,3 +1,4 @@
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -7,69 +8,69 @@ import {
   FlatList,
   ScrollView,
   RefreshControl,
-} from "react-native";
-// import PagerView from "react-native-pager-view";
-import {
-  MaterialCommunityIcons,
-  MaterialIcons,
-  FontAwesome6,
-  Entypo,
-} from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import { HomeStackNavigationProps } from "../../typesNavigation";
-import useFetchUserData from "../../utilities/useFetchUserData";
-import { ashBlack, bluegreen, yellowLabel } from "../../reusbaleVariables";
-import Navbar from "../../components/Navbar";
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconFontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import IconEntypo from 'react-native-vector-icons/Entypo';
+import {useNavigation} from '@react-navigation/native';
+import {HomeStackNavigationProps} from '../../typesNavigation';
+import useFetchUserData from '../../utilities/useFetchUserData';
+import {ashBlack, bluegreen, yellowLabel} from '../../reusbaleVariables';
+import Navbar from '../../components/Navbar';
 
 interface CategoryItem {
   name: string;
-  iconFrom: any;
+  iconFrom:
+    | typeof Icon
+    | typeof IconMaterialCommunity
+    | typeof IconFontAwesome6
+    | typeof IconEntypo;
   iconName: string;
 }
 
 const categories: CategoryItem[] = [
   {
-    name: "Plumbing",
-    iconFrom: MaterialIcons,
-    iconName: "plumbing",
+    name: 'Plumbing',
+    iconFrom: Icon,
+    iconName: 'plumbing',
   },
   {
-    name: "General Handyman",
-    iconFrom: MaterialIcons,
-    iconName: "handyman",
+    name: 'General Handyman',
+    iconFrom: Icon,
+    iconName: 'handyman',
   },
   {
-    name: "Cleaning & Laundry",
-    iconFrom: MaterialIcons,
-    iconName: "cleaning-services",
+    name: 'Cleaning & Laundry',
+    iconFrom: Icon,
+    iconName: 'cleaning-services',
   },
   {
-    name: "Electrical",
-    iconFrom: MaterialIcons,
-    iconName: "electrical-services",
+    name: 'Electrical',
+    iconFrom: Icon,
+    iconName: 'electrical-services',
   },
   {
-    name: "Painting",
-    iconFrom: FontAwesome6,
-    iconName: "paint-roller",
+    name: 'Painting',
+    iconFrom: IconFontAwesome6,
+    iconName: 'paint-roller',
   },
   {
-    name: "Electronics and Gadgets",
-    iconFrom: Entypo,
-    iconName: "tablet-mobile-combo",
+    name: 'Electronics and Gadgets',
+    iconFrom: IconEntypo,
+    iconName: 'tablet-mobile-combo',
   },
   {
-    name: "Appliances Repair and Services",
-    iconFrom: MaterialCommunityIcons,
-    iconName: "washing-machine",
+    name: 'Appliances Repair and Services',
+    iconFrom: IconMaterialCommunity,
+    iconName: 'washing-machine',
   },
 ];
 
 export default function HomeScreen() {
-  const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
+  const navigation = useNavigation<HomeStackNavigationProps['navigation']>();
 
-  const { userData, refresh } = useFetchUserData();
+  const {userData, refresh} = useFetchUserData();
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -79,15 +80,14 @@ export default function HomeScreen() {
     setRefreshing(false);
   };
 
-  const renderCategoryItem = ({ item }: { item: CategoryItem }) => {
+  const renderCategoryItem = ({item}: {item: CategoryItem}) => {
     const IconComponent = item.iconFrom;
     return (
       <TouchableOpacity
         style={styles.categoryButton}
         onPress={() =>
-          navigation.navigate("FillUpScreen", { category: item.name })
-        }
-      >
+          navigation.navigate('FillUpScreen', {category: item.name})
+        }>
         <Text style={styles.categoryButtonText}>{item.name}</Text>
         <IconComponent name={item.iconName} size={40} color={yellowLabel} />
       </TouchableOpacity>
@@ -99,43 +99,42 @@ export default function HomeScreen() {
       style={styles.container}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
+      }>
       <View style={styles.headerContainer}>
         <Navbar
           title=""
           profileImageUrl={
             userData
               ? userData.imageUrl
-              : "../../assets/Profile_avatar_placeholder_large.png"
+              : '../../assets/Profile_avatar_placeholder_large.png'
           }
         />
         <Text style={styles.greeting}>
           Hi,<Text style={styles.name}> {userData?.fullName}</Text>
         </Text>
-        {userData?.role === "customer" ? (
+        {userData?.role === 'customer' ? (
           <Text style={styles.title}> What service do you need?</Text>
-        ) : userData?.role === "worker" ? (
+        ) : userData?.role === 'worker' ? (
           <Text style={styles.title}> Get your customer's booking</Text>
         ) : (
           <></>
         )}
       </View>
 
-      {userData?.role === "customer" ? (
+      {userData?.role === 'customer' ? (
         <>
           <Text style={styles.categoryTitle}>Category</Text>
           <FlatList
             horizontal
             data={categories}
             renderItem={renderCategoryItem}
-            keyExtractor={(item) => item.name}
+            keyExtractor={item => item.name}
             contentContainerStyle={styles.categoryList}
             showsHorizontalScrollIndicator={false}
           />
         </>
-      ) : userData?.role === "worker" ? (
-        <View style={{ marginBottom: 170, alignItems: "center" }}>
+      ) : userData?.role === 'worker' ? (
+        <View style={{marginBottom: 170, alignItems: 'center'}}>
           <Text style={styles.categoryTitle}>
             List of existing client bookings:
           </Text>
@@ -143,48 +142,19 @@ export default function HomeScreen() {
             style={[
               styles.categoryButton,
               {
-                width: "90%",
-                backgroundColor: userData.isWorkerApproved ? bluegreen : "gray",
+                width: '90%',
+                backgroundColor: userData.isWorkerApproved ? bluegreen : 'gray',
               },
             ]}
-            onPress={() => navigation.navigate("ListOfBookingScreen")}
-            disabled={!userData.isWorkerApproved}
-          >
+            onPress={() => navigation.navigate('ListOfBookingScreen')}
+            disabled={!userData.isWorkerApproved}>
             <Text style={styles.categoryButtonText}>Go to Client Bookings</Text>
-            <MaterialIcons name="cleaning-services" size={40} color="black" />
+            <Icon name="cleaning-services" size={40} color="black" />
           </TouchableOpacity>
         </View>
       ) : (
         <></>
       )}
-
-      {/* <View>
-        <Text style={styles.promotionTitle}>Promotions</Text>
-        <PagerView initialPage={0}>
-          <View style={styles.page} key="1">
-            <Image
-              source={require("../../assets/banner1.jpg")}
-              style={{
-                width: "100%",
-                height: 200,
-                objectFit: "cover",
-                marginHorizontal: 20,
-              }}
-            />
-          </View>
-          <View style={styles.page} key="2">
-            <Image
-              source={require("../../assets/banner2.jpg")}
-              style={{
-                width: "100%",
-                height: 200,
-                objectFit: "cover",
-                marginHorizontal: 20,
-              }}
-            />
-          </View>
-        </PagerView> 
-      </View>*/}
     </ScrollView>
   );
 }
@@ -192,7 +162,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffff",
+    backgroundColor: '#ffff',
   },
   headerContainer: {
     padding: 16,
@@ -208,18 +178,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: yellowLabel,
     marginBottom: 10,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   title: {
     fontSize: 22,
-    fontWeight: "bold",
-    color: "#ffffff",
+    fontWeight: 'bold',
+    color: '#ffffff',
   },
   categoryTitle: {
     marginTop: 20,
     marginLeft: 16,
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: ashBlack,
   },
   categoryList: {
@@ -231,25 +201,15 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 150,
     height: 150,
-    alignItems: "center",
-    justifyContent: "space-around",
+    alignItems: 'center',
+    justifyContent: 'space-around',
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: "black",
+    borderColor: 'black',
   },
   categoryButtonText: {
-    color: "black",
+    color: 'black',
     fontSize: 16,
-    textAlign: "center",
+    textAlign: 'center',
   },
-  // promotionTitle: {
-  //   marginTop: 20,
-  //   marginLeft: 16,
-  //   fontSize: 18,
-  //   fontWeight: "bold",
-  //   color: ashBlack,
-  // },
-  // page: {
-  //   marginTop: -100,
-  // },
 });

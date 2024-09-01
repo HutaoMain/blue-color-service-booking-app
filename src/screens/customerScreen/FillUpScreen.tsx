@@ -1,61 +1,62 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from 'react';
 import {
   Text,
   StyleSheet,
   TextInput,
   ScrollView,
   TouchableOpacity,
-} from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import regionData from "../../../ph-json/region.json";
-import provinceData from "../../../ph-json/province.json";
-import cityData from "../../../ph-json/city.json";
-import barangayData from "../../../ph-json/barangay.json";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
-import { useNavigation } from "@react-navigation/native";
-import { categoryOptions, CategoryOptions } from "../../categoryOptions";
-import { HomeStackNavigationProps } from "../../typesNavigation";
-import useAuthStore from "../../zustand/AuthStore";
+  Alert,
+} from 'react-native';
+import {Picker} from '@react-native-picker/picker';
+import regionData from '../../../ph-json/region.json';
+import provinceData from '../../../ph-json/province.json';
+import cityData from '../../../ph-json/city.json';
+import barangayData from '../../../ph-json/barangay.json';
+import {addDoc, collection, Timestamp} from 'firebase/firestore';
+import {useNavigation} from '@react-navigation/native';
+import {categoryOptions, CategoryOptions} from '../../categoryOptions';
+import {HomeStackNavigationProps} from '../../typesNavigation';
+import useAuthStore from '../../zustand/AuthStore';
 import {
   BarangayInterface,
   CityInterface,
   ProvinceInterface,
   RegionInterface,
-} from "../../types";
-import { FIREBASE_DB } from "../../firebaseConfig";
-import useFetchUserData from "../../utilities/useFetchUserData";
+} from '../../types';
+import {FIREBASE_DB} from '../../firebaseConfig';
+import useFetchUserData from '../../utilities/useFetchUserData';
 
-export default function FillUpScreen({ route }: HomeStackNavigationProps) {
-  const { category } = route.params;
+export default function FillUpScreen({route}: HomeStackNavigationProps) {
+  const {category} = route.params;
 
-  const navigation = useNavigation<HomeStackNavigationProps["navigation"]>();
+  const navigation = useNavigation<HomeStackNavigationProps['navigation']>();
 
-  const { userData } = useFetchUserData();
+  const {userData} = useFetchUserData();
 
   const options = categoryOptions[category as keyof CategoryOptions] || [];
 
   const [selectedOption, setSelectedOption] = useState<string>(
-    options.length > 0 ? options[0] : ""
+    options.length > 0 ? options[0] : '',
   );
 
   const [selectedRegion, setSelectedRegion] = useState<{
     code: string;
     name: string;
-  }>({ code: "13", name: "National Capital Region (NCR)" });
+  }>({code: '13', name: 'National Capital Region (NCR)'});
   const [selectedProvince, setSelectedProvince] = useState<{
     code: string;
     name: string;
-  }>({ code: "", name: "" });
+  }>({code: '', name: ''});
   const [selectedCity, setSelectedCity] = useState<{
     code: string;
     name: string;
-  }>({ code: "", name: "" });
+  }>({code: '', name: ''});
   const [selectedBarangay, setSelectedBarangay] = useState<{
     code: string;
     name: string;
-  }>({ code: "", name: "" });
+  }>({code: '', name: ''});
 
-  const [serviceDetails, setServiceDetails] = useState<string>("");
+  const [serviceDetails, setServiceDetails] = useState<string>('');
 
   const [provinces, setProvinces] = useState<ProvinceInterface[]>([]);
   const [cities, setCities] = useState<CityInterface[]>([]);
@@ -70,7 +71,7 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
   useEffect(() => {
     if (selectedRegion.code) {
       const filteredProvinces = (provinceData as ProvinceInterface[]).filter(
-        (province) => province.region_code === selectedRegion.code
+        province => province.region_code === selectedRegion.code,
       );
       setProvinces(filteredProvinces);
       setSelectedProvince(
@@ -79,7 +80,7 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
               code: filteredProvinces[0].province_code,
               name: filteredProvinces[0].province_name,
             }
-          : { code: "", name: "" }
+          : {code: '', name: ''},
       );
     } else {
       setProvinces([]);
@@ -91,7 +92,7 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
   useEffect(() => {
     if (selectedProvince.code) {
       const filteredCities = (cityData as CityInterface[]).filter(
-        (city) => city.province_code === selectedProvince.code
+        city => city.province_code === selectedProvince.code,
       );
       setCities(filteredCities);
       setSelectedCity(
@@ -100,7 +101,7 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
               code: filteredCities[0].city_code,
               name: filteredCities[0].city_name,
             }
-          : { code: "", name: "" }
+          : {code: '', name: ''},
       );
     } else {
       setCities([]);
@@ -111,7 +112,7 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
   useEffect(() => {
     if (selectedCity.code) {
       const filteredBarangays = (barangayData as BarangayInterface[]).filter(
-        (barangay) => barangay.city_code === selectedCity.code
+        barangay => barangay.city_code === selectedCity.code,
       );
       setBarangays(filteredBarangays);
       setSelectedBarangay(
@@ -120,7 +121,7 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
               code: filteredBarangays[0].brgy_code,
               name: filteredBarangays[0].brgy_name,
             }
-          : { code: "", name: "" }
+          : {code: '', name: ''},
       );
     } else {
       setBarangays([]);
@@ -140,18 +141,18 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
       categoryService: category,
       specificService: selectedOption,
       additionalDetail: serviceDetails,
-      status: "pending",
+      status: 'pending',
       createdAt: Timestamp.fromDate(new Date()),
     };
 
     try {
-      await addDoc(collection(FIREBASE_DB, "bookings"), bookingData);
-      alert("Booking submitted successfully!");
+      await addDoc(collection(FIREBASE_DB, 'bookings'), bookingData);
+      Alert.alert('Booking submitted successfully!');
 
-      navigation.navigate("HomeScreen");
+      navigation.navigate('HomeScreen');
     } catch (error) {
-      console.error("Error submitting booking: ", error);
-      alert("Failed to submit booking. Please try again.");
+      console.error('Error submitting booking: ', error);
+      Alert.alert('Failed to submit booking. Please try again.');
     }
   };
 
@@ -162,9 +163,8 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
       <Picker
         selectedValue={selectedOption}
         style={styles.picker}
-        onValueChange={(itemValue) => setSelectedOption(itemValue)}
-      >
-        {options.map((option) => (
+        onValueChange={itemValue => setSelectedOption(itemValue)}>
+        {options.map(option => (
           <Picker.Item key={option} label={option} value={option} />
         ))}
       </Picker>
@@ -175,9 +175,8 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
         style={styles.picker}
         onValueChange={(itemValue, itemIndex) => {
           const selectedRegionName = regionData[itemIndex].region_name;
-          setSelectedRegion({ code: itemValue, name: selectedRegionName });
-        }}
-      >
+          setSelectedRegion({code: itemValue, name: selectedRegionName});
+        }}>
         {regionData.map((region: RegionInterface) => (
           <Picker.Item
             key={region.region_code}
@@ -199,8 +198,7 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
                 code: itemValue,
                 name: selectedProvinceName,
               });
-            }}
-          >
+            }}>
             {provinces.map((province: ProvinceInterface) => (
               <Picker.Item
                 key={province.province_code}
@@ -220,9 +218,8 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
             style={styles.picker}
             onValueChange={(itemValue, itemIndex) => {
               const selectedCityName = cities[itemIndex].city_name;
-              setSelectedCity({ code: itemValue, name: selectedCityName });
-            }}
-          >
+              setSelectedCity({code: itemValue, name: selectedCityName});
+            }}>
             {cities.map((city: CityInterface) => (
               <Picker.Item
                 key={city.city_code}
@@ -242,9 +239,8 @@ export default function FillUpScreen({ route }: HomeStackNavigationProps) {
             style={styles.picker}
             onValueChange={(itemValue, itemIndex) => {
               const selectedBarangay = barangays[itemIndex].brgy_name;
-              setSelectedBarangay({ code: itemValue, name: selectedBarangay });
-            }}
-          >
+              setSelectedBarangay({code: itemValue, name: selectedBarangay});
+            }}>
             {barangays.map((barangay: BarangayInterface) => (
               <Picker.Item
                 key={barangay.brgy_code}
@@ -278,11 +274,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 20,
   },
   subtitle: {
@@ -300,7 +296,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
@@ -310,13 +306,13 @@ const styles = StyleSheet.create({
     height: 100,
   },
   button: {
-    width: "100%",
+    width: '100%',
     height: 45,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: "black",
+    borderColor: 'black',
     marginBottom: 50,
   },
 });

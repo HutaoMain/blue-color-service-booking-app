@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from 'react';
 import {
   Modal,
   View,
@@ -9,14 +9,15 @@ import {
   Image,
   Alert,
   StyleSheet,
-} from "react-native";
-import { StarRatingDisplay } from "react-native-star-rating-widget";
-import { useFetchWorkerRatings } from "../utilities/useFetchWorkerRatings";
-import { useFetchWorker } from "../utilities/useFetchWorker";
-import moment from "moment";
-import { addDoc, collection } from "firebase/firestore";
-import { FIREBASE_DB } from "../firebaseConfig";
-import useAuthStore from "../zustand/AuthStore";
+} from 'react-native';
+import {StarRatingDisplay} from 'react-native-star-rating-widget';
+import {useFetchWorkerRatings} from '../utilities/useFetchWorkerRatings';
+import {useFetchWorker} from '../utilities/useFetchWorker';
+import moment from 'moment';
+import {addDoc, collection} from 'firebase/firestore';
+import {FIREBASE_DB} from '../firebaseConfig';
+import useAuthStore from '../zustand/AuthStore';
+
 const ProfileModal = ({
   visible,
   workerEmail: workerId,
@@ -26,14 +27,14 @@ const ProfileModal = ({
   workerEmail: string;
   onClose: () => void;
 }) => {
-  const { userData, refresh } = useFetchWorker(workerId);
+  const {userData, refresh} = useFetchWorker(workerId);
 
-  const { refreshRatings, averageRating } = useFetchWorkerRatings(
-    userData?.email || ""
+  const {refreshRatings, averageRating} = useFetchWorkerRatings(
+    userData?.email || '',
   );
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -44,29 +45,29 @@ const ProfileModal = ({
 
   const handleReport = async () => {
     Alert.alert(
-      "Report Worker",
-      "Are you sure you want to report this worker?",
+      'Report Worker',
+      'Are you sure you want to report this worker?',
       [
-        { text: "Cancel", style: "cancel" },
+        {text: 'Cancel', style: 'cancel'},
         {
-          text: "Report",
+          text: 'Report',
           onPress: async () => {
             try {
               // Add a new report to the "reports" collection
-              const docRef = await addDoc(collection(FIREBASE_DB, "reports"), {
+              const docRef = await addDoc(collection(FIREBASE_DB, 'reports'), {
                 customerEmail: user,
                 workerEmail: userData?.email,
                 reportedAt: new Date().toISOString(),
               });
 
-              console.log("Reported worker:", userData?.email);
-              console.log("Document written with ID: ", docRef.id);
+              console.log('Reported worker:', userData?.email);
+              console.log('Document written with ID: ', docRef.id);
             } catch (error) {
-              console.error("Error reporting worker: ", error);
+              console.error('Error reporting worker: ', error);
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -84,13 +85,12 @@ const ProfileModal = ({
           style={styles.scrollView}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
+          }>
           <View style={styles.coverPhotoContainer}>
             <Image
               source={{
                 uri:
-                  userData?.imageUrl || "https://via.placeholder.com/400x200",
+                  userData?.imageUrl || 'https://via.placeholder.com/400x200',
               }}
               style={styles.coverPhoto}
             />
@@ -113,8 +113,8 @@ const ProfileModal = ({
                 <Text style={styles.infoLabel}>Birth Date:</Text>
                 <Text style={styles.infoValue}>
                   {userData?.birthDate
-                    ? moment(userData.birthDate.toDate()).format("MMMM D, YYYY")
-                    : "Not provided"}
+                    ? moment(userData.birthDate.toDate()).format('MMMM D, YYYY')
+                    : 'Not provided'}
                 </Text>
               </View>
               <View style={styles.infoRow}>
@@ -123,7 +123,7 @@ const ProfileModal = ({
                   {userData?.gender
                     ? userData.gender.charAt(0).toUpperCase() +
                       userData.gender.slice(1)
-                    : "Not specified"}
+                    : 'Not specified'}
                 </Text>
               </View>
             </View>
@@ -148,56 +148,56 @@ export default ProfileModal;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
+    borderBottomColor: '#e0e0e0',
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
   },
   closeButton: {
     padding: 8,
   },
   closeButtonText: {
     fontSize: 18,
-    color: "#666",
+    color: '#666',
   },
   scrollView: {
     flex: 1,
   },
   coverPhotoContainer: {
-    position: "relative",
+    position: 'relative',
     height: 200,
   },
   coverPhoto: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   profileInfoOverlay: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: 'rgba(0,0,0,0.6)',
     padding: 16,
   },
   profileName: {
-    color: "white",
+    color: 'white',
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 4,
   },
   profileEmail: {
-    color: "white",
+    color: 'white',
     fontSize: 14,
     marginBottom: 8,
   },
@@ -209,55 +209,55 @@ const styles = StyleSheet.create({
   },
   infoSectionTitle: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: '600',
+    color: '#333',
     marginBottom: 12,
   },
   infoCard: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: '#f5f5f5',
     borderRadius: 8,
     padding: 16,
   },
   infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 8,
   },
   infoLabel: {
-    color: "#666",
+    color: '#666',
     fontSize: 16,
   },
   infoValue: {
-    color: "#333",
+    color: '#333',
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   footer: {
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
+    borderTopColor: '#e0e0e0',
   },
   reportButton: {
-    backgroundColor: "#ff4444",
+    backgroundColor: '#ff4444',
     borderRadius: 25,
     padding: 12,
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 8,
   },
   reportButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   closeModalButton: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: '#e0e0e0',
     borderRadius: 25,
     padding: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   closeModalButtonText: {
-    color: "#333",
+    color: '#333',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

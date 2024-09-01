@@ -1,11 +1,11 @@
-import { initializeApp } from "firebase/app";
+import {initializeApp} from 'firebase/app';
 import {
   getAuth,
   initializeAuth,
   getReactNativePersistence,
-} from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+} from 'firebase/auth';
+import {getFirestore} from 'firebase/firestore';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import {
   apiKey,
   appId,
@@ -13,7 +13,7 @@ import {
   messagingSenderId,
   projectId,
   storageBucket,
-} from "./env";
+} from './env';
 
 const firebaseConfig = {
   apiKey: apiKey,
