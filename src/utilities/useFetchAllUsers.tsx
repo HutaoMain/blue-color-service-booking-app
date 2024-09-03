@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
-import { UserInterface } from "../types";
-import { collection, getDocs } from "firebase/firestore";
-import { FIREBASE_DB } from "../firebaseConfig";
+import {useCallback, useEffect, useState} from 'react';
+import {UserInterface} from '../types';
+import {collection, getDocs} from 'firebase/firestore';
+import {FIREBASE_DB} from '../firebaseConfig';
 
 export const useFetchAllUsers = () => {
   const [users, setUsers] = useState<UserInterface[]>([]);
 
   const fetchUsers = useCallback(async () => {
     try {
-      const querySnapshot = await getDocs(collection(FIREBASE_DB, "users"));
+      const querySnapshot = await getDocs(collection(FIREBASE_DB, 'users'));
       const fetchedUsers: UserInterface[] = [];
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach(doc => {
         fetchedUsers.push({
           id: doc.id,
           email: doc.data().email,
@@ -20,11 +20,12 @@ export const useFetchAllUsers = () => {
           imageUrl: doc.data().imageUrl,
           role: doc.data().role,
           isWorkerApproved: doc.data().isWorkerApproved,
+          contactNumber: doc.data().contactNumber,
         });
       });
       setUsers(fetchedUsers);
     } catch (error) {
-      console.error("Error fetching documents:", error);
+      console.error('Error fetching documents:', error);
     }
   }, []);
 
@@ -32,5 +33,5 @@ export const useFetchAllUsers = () => {
     fetchUsers();
   }, [fetchUsers]);
 
-  return { users, refreshUsers: fetchUsers };
+  return {users, refreshUsers: fetchUsers};
 };

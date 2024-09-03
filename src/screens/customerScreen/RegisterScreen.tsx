@@ -27,6 +27,7 @@ import {HomeStackNavigationProps} from '../../typesNavigation';
 import {FIREBASE_AUTH, FIREBASE_DB} from '../../firebaseConfig';
 import {cloudinaryUserName} from '../../env';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {bluegreen} from '../../reusbaleVariables';
 
 export default function RegistrationScreen() {
   const customerNavigation =
@@ -39,6 +40,7 @@ export default function RegistrationScreen() {
   const [fullName, setFullName] = useState<string>('');
   const [selectedGender, setSelectedGender] = useState<string>('male');
   const [imageUrl, setImageUrl] = useState<string>('');
+  const [contactNumber, setContactNumber] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [imageBase64, setImageBase64] = useState<string>('');
   const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
@@ -92,6 +94,16 @@ export default function RegistrationScreen() {
         Alert.alert('Password do not match');
       }
 
+      if (
+        imageUrl === '' ||
+        contactNumber === '' ||
+        fullName === '' ||
+        email === '' ||
+        password === '' ||
+        birthDate === undefined
+      )
+        return Alert.alert('Complete the fields to continue the registration!');
+
       const userCredentials = await createUserWithEmailAndPassword(
         FIREBASE_AUTH,
         email,
@@ -112,6 +124,7 @@ export default function RegistrationScreen() {
         imageUrl: imageUrl,
         gender: selectedGender,
         birthDate: birthDate,
+        contactNumber: contactNumber,
         role: isCustomer === 'customer' ? 'customer' : 'worker',
         isWorkerApproved: false,
       });
@@ -122,6 +135,21 @@ export default function RegistrationScreen() {
         customerNavigation.navigate('LoginScreen');
       }, 2000);
     } catch (error) {
+      let errorMessage = 'An error occurred during registration.';
+
+      if (typeof error === 'object' && error !== null) {
+        if ('message' in error && typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else {
+          errorMessage = JSON.stringify(error);
+        }
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else {
+        errorMessage = String(error);
+      }
+
+      Alert.alert('Registration Error', errorMessage);
       setLoading(false);
       console.log(error);
     }
@@ -166,11 +194,29 @@ export default function RegistrationScreen() {
           value={isCustomer}
           style={styles.toggleButtonRow}>
           <Tooltip title="Customer">
-            <ToggleButton icon="account" value="customer" />
+            <ToggleButton
+              style={
+                isCustomer === 'customer'
+                  ? styles.selectedIsCustomer
+                  : styles.toggleButton
+              }
+              icon="account"
+              iconColor={isCustomer === 'customer' ? 'white' : 'black'}
+              value="customer"
+            />
           </Tooltip>
 
           <Tooltip title="Worker">
-            <ToggleButton icon="briefcase" value="worker" />
+            <ToggleButton
+              style={
+                isCustomer === 'worker'
+                  ? styles.selectedIsCustomer
+                  : styles.toggleButton
+              }
+              icon="briefcase"
+              iconColor={isCustomer === 'worker' ? 'white' : 'black'}
+              value="worker"
+            />
           </Tooltip>
         </ToggleButton.Row>
 
@@ -213,6 +259,7 @@ export default function RegistrationScreen() {
             placeholder="Mobile number*"
             placeholderTextColor="#888"
             keyboardType="phone-pad"
+            onChangeText={setContactNumber}
           />
         </View>
 
@@ -250,7 +297,7 @@ export default function RegistrationScreen() {
         </View>
 
         <TouchableOpacity onPress={pickImage} style={styles.selectImage}>
-          <Text>
+          <Text style={{color: 'black'}}>
             {imageUrl
               ? 'Image picked successfully'
               : 'Pick a Profile Picture from camera roll'}
@@ -313,6 +360,7 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   input: {
+    color: 'black',
     width: '100%',
     backgroundColor: '#f9f9f9',
     padding: 15,
@@ -377,6 +425,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   label: {
+    color: 'black',
     fontSize: 16,
     marginBottom: 5,
   },
@@ -387,11 +436,19 @@ const styles = StyleSheet.create({
   },
   radioText: {
     marginRight: 20,
+    color: 'black',
   },
   toggleButtonRow: {
     marginBottom: 20,
     justifyContent: 'center',
     marginHorizontal: 20,
+    gap: 10,
+  },
+  toggleButton: {},
+  selectedIsCustomer: {
+    backgroundColor: bluegreen,
+    borderWidth: 1,
+    borderColor: 'black',
   },
   selectImage: {
     borderWidth: 1,

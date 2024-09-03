@@ -3,15 +3,26 @@ import {collection, getDocs, query, where} from 'firebase/firestore';
 import {BookingInterface} from '../types';
 import {FIREBASE_DB} from '../firebaseConfig';
 
-const useFetchListOfBookings = () => {
+interface UseFetchListOfBookingsProps {
+  filterField: string;
+  filterValue: string;
+}
+
+const useFetchListOfBookingsWithFilter = ({
+  filterField,
+  filterValue,
+}: UseFetchListOfBookingsProps) => {
   const [data, setData] = useState<BookingInterface[]>([]);
 
   const fetchData = useCallback(async () => {
-    let q;
-
-    q = query(collection(FIREBASE_DB, 'bookings'));
-
     try {
+      let q;
+
+      q = query(
+        collection(FIREBASE_DB, 'bookings'),
+        where(filterField, '==', filterValue),
+      );
+
       const querySnapshot = await getDocs(q);
       const fetchedData: BookingInterface[] = [];
 
@@ -44,7 +55,7 @@ const useFetchListOfBookings = () => {
     } catch (error) {
       console.error('Error fetching bookings data:', error);
     }
-  }, []);
+  }, [filterField, filterValue]);
 
   useEffect(() => {
     fetchData();
@@ -53,4 +64,4 @@ const useFetchListOfBookings = () => {
   return {ListOfBooking: data, refreshBookings: fetchData};
 };
 
-export default useFetchListOfBookings;
+export default useFetchListOfBookingsWithFilter;

@@ -59,19 +59,19 @@ const BottomTabNavigation = () => {
       />
 
       {userData?.role !== 'admin' && (
-        <>
-          <Tab.Screen
-            name="Chat"
-            component={ChatStackNavigation}
-            options={{headerShown: false}}
-          />
+        <Tab.Screen
+          name="Chat"
+          component={ChatStackNavigation}
+          options={{headerShown: false}}
+        />
+      )}
 
-          <Tab.Screen
-            name="History"
-            component={HistoryScreen}
-            options={{headerShown: false}}
-          />
-        </>
+      {userData?.role === 'customer' && (
+        <Tab.Screen
+          name="History"
+          component={HistoryScreen}
+          options={{headerShown: false}}
+        />
       )}
 
       {userData?.role === 'worker' && (

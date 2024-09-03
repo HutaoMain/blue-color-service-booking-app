@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
-import useFetchListOfBookings from "../../utilities/useFetchListOfBookings";
-import { BookingInterface } from "../../types";
+import React, {useState} from 'react';
+import {View, Text, StyleSheet, FlatList, RefreshControl} from 'react-native';
+import useFetchListOfBookings from '../../utilities/useFetchListOfBookings';
+import {BookingInterface} from '../../types';
 
 export default function ListOfBookingsAdminScreen() {
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const { ListOfBooking, refreshBookings } = useFetchListOfBookings({});
+  const {ListOfBooking, refreshBookings} = useFetchListOfBookings();
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -13,7 +13,7 @@ export default function ListOfBookingsAdminScreen() {
     setRefreshing(false);
   };
 
-  const renderBookingItem = ({ item }: { item: BookingInterface }) => (
+  const renderBookingItem = ({item}: {item: BookingInterface}) => (
     <View style={styles.bookingContainer}>
       <View style={styles.detailsContainer}>
         <Text style={styles.serviceName}>{item.specificService}</Text>
@@ -42,7 +42,7 @@ export default function ListOfBookingsAdminScreen() {
       <FlatList
         data={ListOfBooking}
         renderItem={renderBookingItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         contentContainerStyle={styles.list}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -55,31 +55,31 @@ export default function ListOfBookingsAdminScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 20,
-    textAlign: "center",
+    textAlign: 'center',
   },
   list: {
     paddingBottom: 20,
   },
   bookingContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     padding: 15,
     marginBottom: 15,
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 2,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   detailsContainer: {
     flex: 1,
@@ -87,26 +87,26 @@ const styles = StyleSheet.create({
   },
   serviceName: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 5,
   },
   customerName: {
     fontSize: 16,
-    color: "#666",
+    color: '#666',
   },
   location: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
     marginTop: 4,
   },
   additionalDetail: {
     fontSize: 14,
-    color: "#999",
+    color: '#999',
     marginTop: 4,
   },
   date: {
     fontSize: 14,
-    color: "#999",
+    color: '#999',
     marginTop: 4,
   },
 });

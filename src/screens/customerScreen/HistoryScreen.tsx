@@ -4,46 +4,45 @@ import {
   FlatList,
   StyleSheet,
   RefreshControl,
-  Button,
   Modal,
   TouchableOpacity,
-} from "react-native";
-import moment from "moment";
-import { useState } from "react";
-import useFetchListOfBookings from "../../utilities/useFetchListOfBookings";
-import useFetchUserData from "../../utilities/useFetchUserData";
-import { BookingInterface } from "../../types";
-import Navbar from "../../components/Navbar";
-import Rating from "../../components/Rating";
-import { bluegreen } from "../../reusbaleVariables";
-import { StarRatingDisplay } from "react-native-star-rating-widget";
+} from 'react-native';
+import moment from 'moment';
+import {useState} from 'react';
+import useFetchUserData from '../../utilities/useFetchUserData';
+import {BookingInterface} from '../../types';
+import Navbar from '../../components/Navbar';
+import Rating from '../../components/Rating';
+import {bluegreen} from '../../reusbaleVariables';
+import {StarRatingDisplay} from 'react-native-star-rating-widget';
+import useFetchListOfBookingsWithFilter from '../../utilities/useFetchListOfBookingsWithFilter';
 
 export default function HistoryScreen() {
-  const { userData } = useFetchUserData();
+  const {userData} = useFetchUserData();
 
-  const { ListOfBooking, refreshBookings } = useFetchListOfBookings({
-    filterField: "customerEmail",
-    filterValue: userData?.email,
+  const {ListOfBooking, refreshBookings} = useFetchListOfBookingsWithFilter({
+    filterField: 'customerEmail',
+    filterValue: userData?.email || '',
   });
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [selectedBookingId, setSelectedBookingId] = useState<string>("");
+  const [selectedBookingId, setSelectedBookingId] = useState<string>('');
   const [selectedCustomerEmail, setSelectedCustomerEmail] =
-    useState<string>("");
-  const [selectedWorkerEmail, setSelectedWorkerEmail] = useState<string>("");
+    useState<string>('');
+  const [selectedWorkerEmail, setSelectedWorkerEmail] = useState<string>('');
 
-  console.log("workerEmail", selectedWorkerEmail);
-  console.log("customerEmail", selectedCustomerEmail);
-  console.log("selectedBookingId", selectedBookingId);
+  console.log('workerEmail', selectedWorkerEmail);
+  console.log('customerEmail', selectedCustomerEmail);
+  console.log('selectedBookingId', selectedBookingId);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case "accepted":
+      case 'accepted':
         return styles.acceptedStatus;
-      case "pending":
+      case 'pending':
         return styles.pendingStatus;
-      case "cancelled":
+      case 'cancelled':
         return styles.cancelledStatus;
     }
   };
@@ -57,7 +56,7 @@ export default function HistoryScreen() {
   const handleRateService = (
     bookingId: string,
     customerEmail: string,
-    workerEmail: string
+    workerEmail: string,
   ) => {
     setSelectedBookingId(bookingId);
     setSelectedCustomerEmail(customerEmail);
@@ -65,23 +64,22 @@ export default function HistoryScreen() {
     setModalVisible(true);
   };
 
-  const renderItem = ({ item }: { item: BookingInterface }) => (
+  const renderItem = ({item}: {item: BookingInterface}) => (
     <View style={styles.itemContainer}>
       <Text style={styles.categoryService}>{item.categoryService}</Text>
       <Text style={styles.specificService}>{item.specificService}</Text>
       <Text style={styles.location}>
-        {item.region.name}, {item.province.name}, {item.city.name},{" "}
+        {item.region.name}, {item.province.name}, {item.city.name},{' '}
         {item.barangay.name}
       </Text>
       <Text style={styles.additionalDetail}>{item.additionalDetail}</Text>
-      {item.ifDoneStatus === "done" &&
+      {item.ifDoneStatus === 'done' &&
         (item.rating === 0 || !item.rating ? (
           <TouchableOpacity
             style={styles.ratingBtn}
             onPress={() =>
               handleRateService(item.id, item.customerEmail, item.workerEmail)
-            }
-          >
+            }>
             <Text style={styles.ratingTxt}>Rate Service</Text>
           </TouchableOpacity>
         ) : (
@@ -97,8 +95,8 @@ export default function HistoryScreen() {
         Status: {item.status}
       </Text>
       <Text style={styles.createdAt}>
-        Created At:{" "}
-        {moment(item.createdAt?.toDate()).local().format("YYYY-MM-DD hh:mm A")}
+        Created At:{' '}
+        {moment(item.createdAt?.toDate()).local().format('YYYY-MM-DD hh:mm A')}
       </Text>
     </View>
   );
@@ -110,14 +108,14 @@ export default function HistoryScreen() {
         profileImageUrl={
           userData
             ? userData.imageUrl
-            : "../../assets/Profile_avatar_placeholder_large.png"
+            : '../../assets/Profile_avatar_placeholder_large.png'
         }
       />
       <View style={styles.container}>
         <FlatList
           data={ListOfBooking}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
           contentContainerStyle={styles.listContainer}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -128,8 +126,7 @@ export default function HistoryScreen() {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
+        onRequestClose={() => setModalVisible(false)}>
         <Rating
           bookingId={selectedBookingId}
           customerEmail={selectedCustomerEmail}
@@ -144,18 +141,18 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: '#f8f8f8',
     padding: 10,
   },
   listContainer: {
     paddingBottom: 20,
   },
   itemContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     padding: 15,
     marginVertical: 8,
     borderRadius: 8,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -166,44 +163,44 @@ const styles = StyleSheet.create({
   },
   categoryService: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   specificService: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
   },
   location: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
     marginTop: 4,
   },
   additionalDetail: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
     marginTop: 4,
   },
   status: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginTop: 4,
     width: 150,
     padding: 10,
     borderRadius: 10,
-    textTransform: "capitalize",
+    textTransform: 'capitalize',
   },
   createdAt: {
     fontSize: 12,
-    color: "#999",
+    color: '#999',
     marginTop: 4,
   },
   acceptedStatus: {
-    backgroundColor: "lightgreen",
+    backgroundColor: 'lightgreen',
   },
   pendingStatus: {
-    backgroundColor: "yellow",
+    backgroundColor: 'yellow',
   },
   cancelledStatus: {
-    backgroundColor: "red",
+    backgroundColor: 'red',
   },
   ratingBtn: {
     width: 150,
@@ -213,6 +210,6 @@ const styles = StyleSheet.create({
     backgroundColor: bluegreen,
   },
   ratingTxt: {
-    color: "#ffff",
+    color: '#ffff',
   },
 });

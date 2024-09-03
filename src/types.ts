@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import {Timestamp} from 'firebase/firestore';
 
 export interface RegionInterface {
   id: number;
@@ -37,6 +37,7 @@ export interface UserInterface {
   birthDate: Timestamp;
   gender: string;
   imageUrl: string;
+  contactNumber: string;
   role: string;
   isWorkerApproved: boolean;
 }

@@ -16,7 +16,6 @@ import {addDoc, collection, Timestamp} from 'firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 import {categoryOptions, CategoryOptions} from '../../categoryOptions';
 import {HomeStackNavigationProps} from '../../typesNavigation';
-import useAuthStore from '../../zustand/AuthStore';
 import {
   BarangayInterface,
   CityInterface,
@@ -25,6 +24,7 @@ import {
 } from '../../types';
 import {FIREBASE_DB} from '../../firebaseConfig';
 import useFetchUserData from '../../utilities/useFetchUserData';
+import useFetchListOfBookingsWithFilter from '../../utilities/useFetchListOfBookingsWithFilter';
 
 export default function FillUpScreen({route}: HomeStackNavigationProps) {
   const {category} = route.params;
@@ -32,6 +32,13 @@ export default function FillUpScreen({route}: HomeStackNavigationProps) {
   const navigation = useNavigation<HomeStackNavigationProps['navigation']>();
 
   const {userData} = useFetchUserData();
+
+  const {ListOfBooking} = useFetchListOfBookingsWithFilter({
+    filterField: 'customerEmail',
+    filterValue: userData?.email || '',
+  });
+
+  console.log('ListOfBooking: ', ListOfBooking);
 
   const options = categoryOptions[category as keyof CategoryOptions] || [];
 
@@ -146,6 +153,16 @@ export default function FillUpScreen({route}: HomeStackNavigationProps) {
     };
 
     try {
+      const numberOfBookingByUser = ListOfBooking.filter(
+        item => item.status === 'pending',
+      );
+
+      console.log('numberOfBookingByUser', numberOfBookingByUser);
+
+      if (numberOfBookingByUser.length >= 3) {
+        return Alert.alert('You already have 3 pending bookings.');
+      }
+
       await addDoc(collection(FIREBASE_DB, 'bookings'), bookingData);
       Alert.alert('Booking submitted successfully!');
 
@@ -263,7 +280,7 @@ export default function FillUpScreen({route}: HomeStackNavigationProps) {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text>Submit Booking</Text>
+        <Text style={{color: 'black'}}>Submit Booking</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -277,24 +294,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   title: {
+    color: 'black',
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
   },
   subtitle: {
+    color: 'black',
     fontSize: 18,
     marginBottom: 10,
   },
   picker: {
+    color: 'black',
     height: 50,
     width: 250,
     marginBottom: 20,
   },
   label: {
+    color: 'black',
     fontSize: 16,
     marginBottom: 5,
   },
   input: {
+    color: 'black',
     height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
