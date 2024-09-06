@@ -26,6 +26,9 @@ export default function ListOfBookingScreen() {
     useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [serviceAmount, setServiceAmount] = useState('');
+  const [bookingId, setBookingId] = useState('');
+
+  console.log('bookingId: ', bookingId);
 
   const {userData, refresh} = useFetchUserData();
 
@@ -90,18 +93,26 @@ export default function ListOfBookingScreen() {
     }
   };
 
-  const handleUpdateIfDoneStatus = async (bookingId: string) => {
+  const handleUpdateIfDoneStatus = async () => {
     setLoadingIfDoneStatus(true);
-    const bookingRef = doc(FIREBASE_DB, 'bookings', bookingId);
-    await updateDoc(bookingRef, {
-      ifDoneStatus: 'done',
-      serviceAmountPaid: parseFloat(serviceAmount),
-    });
-    setLoadingIfDoneStatus(false);
-    setModalVisible(false);
+    try {
+      const bookingRef = doc(FIREBASE_DB, 'bookings', bookingId);
+      await updateDoc(bookingRef, {
+        ifDoneStatus: 'done',
+        serviceAmountPaid: parseFloat(serviceAmount),
+      });
+
+      setLoadingIfDoneStatus(false);
+      setModalVisible(false);
+      setServiceAmount('');
+      setBookingId('');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const handlePress = () => {
+  const handlePress = (bookingId: string) => {
+    setBookingId(bookingId);
     setModalVisible(true);
   };
 
@@ -110,74 +121,94 @@ export default function ListOfBookingScreen() {
     setServiceAmount('');
   };
 
-  const renderBookingItem = ({item}: {item: BookingInterface}) => (
-    <View style={styles.bookingContainer}>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.serviceName}>{item.specificService}</Text>
-        <Text style={styles.customerName}>Customer: {item.customerName}</Text>
-        <Text style={styles.location}>
-          Location: {item.barangay.name}, {item.city.name}, {item.province.name}
-        </Text>
-        {item.serviceAmountPaid && (
+  const renderBookingItem = ({item}: {item: BookingInterface}) => {
+    return (
+      <View style={styles.bookingContainer}>
+        <View style={styles.detailsContainer}>
+          <Text style={styles.serviceName}>{item.specificService}</Text>
+          <Text style={styles.customerName}>Customer: {item.customerName}</Text>
           <Text style={styles.location}>
-            Amount Paid: {item.serviceAmountPaid}
+            Location: {item.barangay?.name}, {item.city?.name},{' '}
+            {item.province?.name}
           </Text>
-        )}
-        <Text style={styles.additionalDetail}>
-          Additional Details: {item.additionalDetail}
-        </Text>
-        {item.rating && (
-          <StarRatingDisplay
-            rating={item.rating}
-            enableHalfStar={false}
-            starSize={30}
-            color="#FFD700"
-          />
-        )}
-        <Text style={styles.date}>
-          Date: {item.createdAt?.toDate().toLocaleString()}
-        </Text>
-      </View>
-      <View style={styles.btnContainer}>
-        <TouchableOpacity
-          style={[
-            styles.acceptButton,
-            item.status === 'accepted' && {backgroundColor: '#ccc'},
-          ]}
-          onPress={() =>
-            handleAcceptBooking(
-              item.id,
-              item.customerId,
-              item.customerName,
-              item.customerProfileImg,
-            )
-          }
-          disabled={loadingBookingStatus || item.status === 'accepted'}>
-          <Text style={styles.buttonText}>
-            {loadingBookingStatus
-              ? 'Please wait..'
-              : item.status === 'accepted'
-              ? 'Accepted'
-              : 'Accept'}
+          {item.serviceAmountPaid ? (
+            <Text style={styles.location}>
+              Amount Paid: {item.serviceAmountPaid}
+            </Text>
+          ) : null}
+          <Text style={styles.additionalDetail}>
+            Additional Details: {item.additionalDetail}
           </Text>
-        </TouchableOpacity>
+          {item.rating ? (
+            <StarRatingDisplay
+              rating={item.rating}
+              enableHalfStar={false}
+              starSize={30}
+              color="#FFD700"
+            />
+          ) : null}
+          <Text style={styles.date}>
+            Date: {item.createdAt?.toDate().toLocaleString()}
+          </Text>
+        </View>
+        <View style={styles.btnContainer}>
+          <TouchableOpacity
+            style={[
+              styles.acceptButton,
+              item.status === 'accepted' ? {backgroundColor: '#ccc'} : null,
+            ]}
+            onPress={() =>
+              handleAcceptBooking(
+                item.id,
+                item.customerId,
+                item.customerName,
+                item.customerProfileImg,
+              )
+            }
+            disabled={loadingBookingStatus || item.status === 'accepted'}>
+            <Text style={styles.buttonText}>
+              {loadingBookingStatus
+                ? 'Please wait..'
+                : item.status === 'accepted'
+                ? 'Accepted'
+                : 'Accept'}
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.ifDoneButton,
-            item.ifDoneStatus === 'done' && {backgroundColor: '#ccc'},
-          ]}
-          onPress={handlePress}
-          disabled={loadingIfDoneStatus || item.ifDoneStatus === 'done'}>
-          <Text style={styles.buttonText}>
-            {loadingBookingStatus
-              ? 'Please wait..'
-              : item.ifDoneStatus === 'done'
-              ? 'Done'
-              : 'Click to done'}
-          </Text>
-        </TouchableOpacity>
+          {item.status === 'accepted' && item.ifDoneStatus === undefined ? (
+            <TouchableOpacity
+              style={[
+                styles.ifDoneButton,
+                item.ifDoneStatus === 'done' ? {backgroundColor: '#ccc'} : null,
+              ]}
+              onPress={() => handlePress(item.id)}
+              disabled={loadingIfDoneStatus || item.ifDoneStatus === 'done'}>
+              <Text style={styles.buttonText}>
+                {loadingBookingStatus
+                  ? 'Please wait..'
+                  : item.ifDoneStatus === 'done'
+                  ? 'Done'
+                  : 'Click to done'}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>List of Bookings</Text>
+      <FlatList
+        data={ListOfBooking}
+        renderItem={renderBookingItem}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.list}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
 
       <Modal
         animationType="slide"
@@ -197,7 +228,7 @@ export default function ListOfBookingScreen() {
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={styles.modalButton}
-                onPress={() => handleUpdateIfDoneStatus(item.id)}
+                onPress={handleUpdateIfDoneStatus}
                 disabled={!serviceAmount || loadingIfDoneStatus}>
                 <Text style={styles.modalButtonText}>Confirm</Text>
               </TouchableOpacity>
@@ -210,21 +241,6 @@ export default function ListOfBookingScreen() {
           </View>
         </View>
       </Modal>
-    </View>
-  );
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>List of Bookings</Text>
-      <FlatList
-        data={ListOfBooking}
-        renderItem={renderBookingItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.list}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
     </View>
   );
 }
@@ -240,6 +256,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color: 'black',
   },
   list: {
     paddingBottom: 20,
@@ -325,6 +342,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     marginBottom: 10,
+    color: 'black',
   },
   textInput: {
     height: 40,
@@ -334,6 +352,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 20,
+    color: 'black',
   },
   modalButtons: {
     flexDirection: 'row',

@@ -84,11 +84,11 @@ const ChatListScreen = () => {
           style={{flexDirection: 'row', marginRight: 60}}>
           <View style={styles.textContainer}>
             <Text style={styles.chatName}>{chatPartnerName}</Text>
-            <Text style={styles.lastMessage}>
+            {/* <Text style={styles.lastMessage}>
               {item.lastMessage.startsWith(userData?.id || '')
                 ? `You: ${item.lastMessage.slice(0, 20)}`
                 : item.lastMessage.slice(0, 20)}
-            </Text>
+            </Text> */}
           </View>
           <View style={styles.timeUnreadCountContainer}>
             <Text style={styles.time}>
@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   chatName: {
+    color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
   },

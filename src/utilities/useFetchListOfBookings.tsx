@@ -1,5 +1,5 @@
 import {useState, useCallback, useEffect} from 'react';
-import {collection, getDocs, query, where} from 'firebase/firestore';
+import {collection, getDocs, query} from 'firebase/firestore';
 import {BookingInterface} from '../types';
 import {FIREBASE_DB} from '../firebaseConfig';
 

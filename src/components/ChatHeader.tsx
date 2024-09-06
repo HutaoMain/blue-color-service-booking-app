@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   chatName: {
+    color: 'black',
     fontSize: 18,
     fontWeight: 'bold',
   },

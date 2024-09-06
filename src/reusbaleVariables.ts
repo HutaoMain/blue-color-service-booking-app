@@ -5,12 +5,12 @@ import {
   getDoc,
   setDoc,
   Timestamp,
-} from "firebase/firestore";
-import { FIREBASE_DB } from "./firebaseConfig";
+} from 'firebase/firestore';
+import {FIREBASE_DB} from './firebaseConfig';
 
-export const bluegreen = "#498176";
-export const yellowLabel = "#EDB232";
-export const ashBlack = "#333";
+export const bluegreen = '#498176';
+export const yellowLabel = '#EDB232';
+export const ashBlack = '#333';
 
 export const createConversationIfNotExists = async (
   workerId: string,
@@ -18,10 +18,10 @@ export const createConversationIfNotExists = async (
   workerName: string,
   customerName: string,
   workerImageUrl: string,
-  customerImageUrl: string
+  customerImageUrl: string,
 ) => {
   const conversationId = getConversationId(workerId, customerId);
-  const conversationRef = doc(FIREBASE_DB, "conversations", conversationId);
+  const conversationRef = doc(FIREBASE_DB, 'conversations', conversationId);
   const conversationSnapshot = await getDoc(conversationRef);
 
   if (!conversationSnapshot.exists()) {
@@ -43,21 +43,23 @@ export const createConversationIfNotExists = async (
     });
 
     // Add the initial message to the messages subcollection
-    const messagesRef = collection(conversationRef, "messages");
+    const messagesRef = collection(conversationRef, 'messages');
     await addDoc(messagesRef, {
       senderId: workerId,
+      senderName: workerName,
+      senderImageUrl: workerImageUrl,
       text: initialMessage,
       timestamp: Timestamp.fromDate(new Date()),
-      type: "text",
-      status: "sent",
+      type: 'text',
+      status: 'sent',
     });
   }
 };
 
 export const getConversationId = (
   currentUserId: string,
-  anotherUserId: string
+  anotherUserId: string,
 ) => {
   const sortedIds = [currentUserId, anotherUserId].sort();
-  return sortedIds.join("-");
+  return sortedIds.join('-');
 };
