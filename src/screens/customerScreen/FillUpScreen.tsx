@@ -280,7 +280,7 @@ export default function FillUpScreen({route}: HomeStackNavigationProps) {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={{color: 'black'}}>Submit Booking</Text>
+        <Text style={{color: 'white'}}>Submit Booking</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -328,13 +328,12 @@ const styles = StyleSheet.create({
     height: 100,
   },
   button: {
+    backgroundColor: '#4CAF50',
     width: '100%',
     height: 45,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    borderWidth: 2,
-    borderColor: 'black',
     marginBottom: 50,
   },
 });

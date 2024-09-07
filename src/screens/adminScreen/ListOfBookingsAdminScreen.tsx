@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
+    color: 'black',
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   serviceName: {
+    color: 'black',
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,

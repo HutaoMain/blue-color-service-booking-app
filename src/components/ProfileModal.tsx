@@ -17,6 +17,8 @@ import moment from 'moment';
 import {addDoc, collection} from 'firebase/firestore';
 import {FIREBASE_DB} from '../firebaseConfig';
 import useAuthStore from '../zustand/AuthStore';
+import useFetchUserData from '../utilities/useFetchUserData';
+import {useFetchReportedWorker} from '../utilities/useFetchReportedWorker';
 
 const ProfileModal = ({
   visible,
@@ -27,14 +29,15 @@ const ProfileModal = ({
   workerEmail: string;
   onClose: () => void;
 }) => {
-  const {userData, refresh} = useFetchWorker(workerId);
+  const {userData: workerData, refresh} = useFetchWorker(workerId);
+  const user = useAuthStore(state => state.user);
+
+  const {reports} = useFetchReportedWorker(workerData?.email || '', user || '');
 
   const {refreshRatings, averageRating} = useFetchWorkerRatings(
-    userData?.email || '',
+    workerData?.email || '',
   );
   const [refreshing, setRefreshing] = useState<boolean>(false);
-
-  const user = useAuthStore(state => state.user);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -56,11 +59,11 @@ const ProfileModal = ({
               // Add a new report to the "reports" collection
               const docRef = await addDoc(collection(FIREBASE_DB, 'reports'), {
                 customerEmail: user,
-                workerEmail: userData?.email,
+                workerEmail: workerData?.email,
                 reportedAt: new Date().toISOString(),
               });
 
-              console.log('Reported worker:', userData?.email);
+              console.log('Reported worker:', workerData?.email);
               console.log('Document written with ID: ', docRef.id);
             } catch (error) {
               console.error('Error reporting worker: ', error);
@@ -90,13 +93,13 @@ const ProfileModal = ({
             <Image
               source={{
                 uri:
-                  userData?.imageUrl || 'https://via.placeholder.com/400x200',
+                  workerData?.imageUrl || 'https://via.placeholder.com/400x200',
               }}
               style={styles.coverPhoto}
             />
             <View style={styles.profileInfoOverlay}>
-              <Text style={styles.profileName}>{userData?.fullName}</Text>
-              <Text style={styles.profileEmail}>{userData?.email}</Text>
+              <Text style={styles.profileName}>{workerData?.fullName}</Text>
+              <Text style={styles.profileEmail}>{workerData?.email}</Text>
               <StarRatingDisplay
                 rating={averageRating || 0}
                 color="#FFD700"
@@ -112,17 +115,19 @@ const ProfileModal = ({
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Birth Date:</Text>
                 <Text style={styles.infoValue}>
-                  {userData?.birthDate
-                    ? moment(userData.birthDate.toDate()).format('MMMM D, YYYY')
+                  {workerData?.birthDate
+                    ? moment(workerData.birthDate.toDate()).format(
+                        'MMMM D, YYYY',
+                      )
                     : 'Not provided'}
                 </Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Gender:</Text>
                 <Text style={styles.infoValue}>
-                  {userData?.gender
-                    ? userData.gender.charAt(0).toUpperCase() +
-                      userData.gender.slice(1)
+                  {workerData?.gender
+                    ? workerData.gender.charAt(0).toUpperCase() +
+                      workerData.gender.slice(1)
                     : 'Not specified'}
                 </Text>
               </View>
@@ -131,9 +136,13 @@ const ProfileModal = ({
         </ScrollView>
 
         <View style={styles.footer}>
-          <TouchableOpacity onPress={handleReport} style={styles.reportButton}>
-            <Text style={styles.reportButtonText}>Report Worker</Text>
-          </TouchableOpacity>
+          {!reports ? (
+            <TouchableOpacity
+              onPress={handleReport}
+              style={styles.reportButton}>
+              <Text style={styles.reportButtonText}>Report Worker</Text>
+            </TouchableOpacity>
+          ) : null}
           <TouchableOpacity onPress={onClose} style={styles.closeModalButton}>
             <Text style={styles.closeModalButtonText}>Close</Text>
           </TouchableOpacity>

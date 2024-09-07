@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
@@ -15,8 +14,11 @@ import {
 } from 'firebase/auth';
 import {HomeStackNavigationProps} from '../../typesNavigation';
 import useAuthStore from '../../zustand/AuthStore';
-import {FIREBASE_AUTH} from '../../firebaseConfig';
+import {FIREBASE_AUTH, FIREBASE_DB} from '../../firebaseConfig';
 import {bluegreen, yellowLabel} from '../../reusbaleVariables';
+import {collection, getDocs, query, where} from 'firebase/firestore';
+import {UserInterface} from '../../types';
+import {TextInput} from 'react-native-paper';
 
 export default function LoginScreen() {
   const navigation = useNavigation<HomeStackNavigationProps['navigation']>();
@@ -25,21 +27,9 @@ export default function LoginScreen() {
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [passwordVisible, setPasswordVisible] = useState<boolean>(true);
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
   const [forgotPassLoading, setForgotPassLoading] = useState<boolean>(false);
-
-  // const handleLogin = async () => {
-  //   setLoginLoading(true);
-  //   try {
-  //     await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
-  //     setLoginLoading(false);
-  //     setUser(email);
-  //   } catch (error) {
-  //     setLoginLoading(false);
-  //     Alert.alert("Email or password is incorrect!");
-  //     console.log(error);
-  //   }
-  // };
 
   const handleLogin = async () => {
     setLoginLoading(true);
@@ -52,15 +42,46 @@ export default function LoginScreen() {
 
       const user = userCredential.user;
 
-      if (user.emailVerified) {
-        setUser(email);
-      } else {
+      const q = query(
+        collection(FIREBASE_DB, 'users'),
+        where('email', '==', user.email),
+      );
+      const querySnapshot = await getDocs(q);
+      const fetchedData: UserInterface[] = [];
+      querySnapshot.forEach(doc => {
+        fetchedData.push({
+          id: doc.id,
+          email: doc.data().email,
+          role: doc.data().role,
+          fullName: doc.data().fullName,
+          birthDate: doc.data().birthDate,
+          contactNumber: doc.data().contactNumber,
+          gender: doc.data().gender,
+          imageUrl: doc.data().imageUrl,
+          isWorkerApproved: doc.data().isWorkerApproved,
+          isDeactivated: doc.data().isDeactivated,
+        });
+      });
+
+      if (!user.emailVerified) {
         Alert.alert(
           'Email not verified',
           'Please verify your email before logging in.',
         );
+        setLoginLoading(false);
+        return;
       }
 
+      if (fetchedData[0]?.isDeactivated) {
+        Alert.alert(
+          'Account Deactivated',
+          'Your account has been deactivated.',
+        );
+        setLoginLoading(false);
+        return;
+      }
+
+      setUser(email);
       setLoginLoading(false);
     } catch (error) {
       setLoginLoading(false);
@@ -109,8 +130,14 @@ export default function LoginScreen() {
             style={styles.input}
             placeholder="Password"
             placeholderTextColor="#aaa"
-            secureTextEntry
+            secureTextEntry={passwordVisible}
             onChangeText={setPassword}
+            right={
+              <TextInput.Icon
+                icon={!passwordVisible ? 'eye' : 'eye-off'}
+                onPress={() => setPasswordVisible(!passwordVisible)}
+              />
+            }
           />
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>
@@ -175,7 +202,6 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 50,
     backgroundColor: '#fff',
-    borderRadius: 25,
     paddingHorizontal: 20,
     fontSize: 18,
     marginBottom: 15,

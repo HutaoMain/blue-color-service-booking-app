@@ -76,9 +76,16 @@ const ChatListScreen = () => {
 
     return (
       <View style={styles.itemContainer}>
-        <TouchableOpacity onPress={() => handleViewWorker(chatPartnerUserId)}>
+        {userData?.role === 'customer' ? (
+          <TouchableOpacity onPress={() => handleViewWorker(chatPartnerUserId)}>
+            <Image
+              source={{uri: chatPartnerImage}}
+              style={styles.profileImage}
+            />
+          </TouchableOpacity>
+        ) : (
           <Image source={{uri: chatPartnerImage}} style={styles.profileImage} />
-        </TouchableOpacity>
+        )}
         <TouchableOpacity
           onPress={() => handleChatPress(item)}
           style={{flexDirection: 'row', marginRight: 60}}>

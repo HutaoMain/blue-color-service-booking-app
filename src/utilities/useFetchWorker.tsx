@@ -1,19 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { FIREBASE_DB } from "../firebaseConfig";
-import { UserInterface } from "../types";
+import {useCallback, useEffect, useState} from 'react';
+import {doc, getDoc} from 'firebase/firestore';
+import {FIREBASE_DB} from '../firebaseConfig';
+import {UserInterface} from '../types';
 
 export const useFetchWorker = (userId: string) => {
   const [userData, setUserData] = useState<UserInterface | undefined>(
-    undefined
+    undefined,
   );
 
   const fetchData = useCallback(async () => {
     if (!userId) return;
 
-    console.log("worker ID ", userId);
+    console.log('worker ID ', userId);
 
-    const userRef = doc(FIREBASE_DB, "users", userId);
+    const userRef = doc(FIREBASE_DB, 'users', userId);
 
     try {
       const userDoc = await getDoc(userRef);
@@ -29,12 +29,14 @@ export const useFetchWorker = (userId: string) => {
           gender: data.gender,
           imageUrl: data.imageUrl,
           isWorkerApproved: data.isWorkerApproved,
+          contactNumber: data.contactNumber,
+          isDeactivated: data.isDeactivated,
         });
       } else {
-        console.log("No such user!");
+        console.log('No such user!');
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error('Error fetching user data:', error);
     }
   }, [userId]);
 
@@ -42,5 +44,5 @@ export const useFetchWorker = (userId: string) => {
     fetchData();
   }, [fetchData]);
 
-  return { userData, refresh: fetchData };
+  return {userData, refresh: fetchData};
 };

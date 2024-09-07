@@ -91,7 +91,7 @@ export default function RegistrationScreen() {
 
     try {
       if (password !== confirmPassword) {
-        Alert.alert('Password do not match');
+        return Alert.alert('Password do not match');
       }
 
       if (
@@ -127,6 +127,7 @@ export default function RegistrationScreen() {
         contactNumber: contactNumber,
         role: isCustomer === 'customer' ? 'customer' : 'worker',
         isWorkerApproved: false,
+        isDeactivated: false,
       });
 
       Alert.alert('Registration Completed!.');

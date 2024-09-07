@@ -34,6 +34,10 @@ export default function ListOfBookingScreen() {
 
   const {ListOfBooking, refreshBookings} = useFetchListOfBookings();
 
+  const listOfBookingFiltered = ListOfBooking.filter(
+    item => item.status !== 'cancelled',
+  );
+
   const onRefresh = async () => {
     setRefreshing(true);
     await refreshBookings();
@@ -48,7 +52,7 @@ export default function ListOfBookingScreen() {
     customerProfileImg: string,
   ) => {
     try {
-      const numberOfAcceptedBooking = ListOfBooking.filter(
+      const numberOfAcceptedBooking = listOfBookingFiltered.filter(
         item =>
           item.status === 'accepted' &&
           item.ifDoneStatus === undefined &&
@@ -201,7 +205,7 @@ export default function ListOfBookingScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>List of Bookings</Text>
       <FlatList
-        data={ListOfBooking}
+        data={listOfBookingFiltered}
         renderItem={renderBookingItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.list}

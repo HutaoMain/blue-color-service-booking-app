@@ -6,6 +6,7 @@ import {
   RefreshControl,
   Modal,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import moment from 'moment';
 import {useState} from 'react';
@@ -16,6 +17,9 @@ import Rating from '../../components/Rating';
 import {bluegreen} from '../../reusbaleVariables';
 import {StarRatingDisplay} from 'react-native-star-rating-widget';
 import useFetchListOfBookingsWithFilter from '../../utilities/useFetchListOfBookingsWithFilter';
+import ConfirmationModal from '../../components/ConfirmationModal';
+import {doc, updateDoc} from 'firebase/firestore';
+import {FIREBASE_DB} from '../../firebaseConfig';
 
 export default function HistoryScreen() {
   const {userData} = useFetchUserData();
@@ -26,15 +30,13 @@ export default function HistoryScreen() {
   });
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
+    useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedBookingId, setSelectedBookingId] = useState<string>('');
   const [selectedCustomerEmail, setSelectedCustomerEmail] =
     useState<string>('');
   const [selectedWorkerEmail, setSelectedWorkerEmail] = useState<string>('');
-
-  console.log('workerEmail', selectedWorkerEmail);
-  console.log('customerEmail', selectedCustomerEmail);
-  console.log('selectedBookingId', selectedBookingId);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -62,6 +64,29 @@ export default function HistoryScreen() {
     setSelectedCustomerEmail(customerEmail);
     setSelectedWorkerEmail(workerEmail);
     setModalVisible(true);
+  };
+
+  const handleCancelBooking = async () => {
+    try {
+      const userRef = doc(FIREBASE_DB, 'bookings', selectedBookingId);
+      await updateDoc(userRef, {
+        status: 'cancelled',
+      });
+      Alert.alert(
+        `Booking cancelled.`,
+        `Booking ID ${selectedBookingId} is already cancelled.`,
+      );
+      setIsConfirmationModalVisible(false);
+      await refreshBookings();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const openConfirmationModal = (bookingId: string) => {
+    console.log('bookingid: ', bookingId);
+    setIsConfirmationModalVisible(true);
+    setSelectedBookingId(bookingId);
   };
 
   const renderItem = ({item}: {item: BookingInterface}) => (
@@ -94,6 +119,13 @@ export default function HistoryScreen() {
       <Text style={[styles.status, getStatusStyle(item.status)]}>
         Status: {item.status}
       </Text>
+      {item.ifDoneStatus !== 'done' && item.status !== 'cancelled' ? (
+        <TouchableOpacity
+          style={styles.cancelBtn}
+          onPress={() => openConfirmationModal(item.id)}>
+          <Text style={{color: 'white'}}>Cancel Service</Text>
+        </TouchableOpacity>
+      ) : null}
       <Text style={styles.createdAt}>
         Created At:{' '}
         {moment(item.createdAt?.toDate()).local().format('YYYY-MM-DD hh:mm A')}
@@ -134,6 +166,12 @@ export default function HistoryScreen() {
           onClose={() => setModalVisible(false)}
         />
       </Modal>
+      <ConfirmationModal
+        isVisible={isConfirmationModalVisible}
+        onConfirm={() => handleCancelBooking()}
+        onCancel={() => setIsConfirmationModalVisible(false)}
+        message={`Are you sure you want to cancel your booking?`}
+      />
     </>
   );
 }
@@ -201,6 +239,15 @@ const styles = StyleSheet.create({
   },
   cancelledStatus: {
     backgroundColor: 'red',
+    color: 'white',
+  },
+  cancelBtn: {
+    width: 150,
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: '#FF0000',
+    alignItems: 'center',
   },
   ratingBtn: {
     width: 150,

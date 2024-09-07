@@ -33,6 +33,7 @@ const useFetchUserData = () => {
           gender: doc.data().gender,
           imageUrl: doc.data().imageUrl,
           isWorkerApproved: doc.data().isWorkerApproved,
+          isDeactivated: doc.data().isDeactivated,
         });
       });
 

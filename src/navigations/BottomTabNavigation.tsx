@@ -11,6 +11,7 @@ import DocumentUploadScreen from '../screens/workerScreen/DocumentUploadScreen';
 import ApplicantListStackNavigation from './ApplicantListStackNavigation';
 import ListOfBookingsAdminScreen from '../screens/adminScreen/ListOfBookingsAdminScreen';
 import ReportsListScreen from '../screens/adminScreen/ReportsListScreen';
+import WorkerList from '../screens/adminScreen/WorkerList';
 
 const BottomTabNavigation = () => {
   const Tab = createBottomTabNavigator();
@@ -39,6 +40,8 @@ const BottomTabNavigation = () => {
             iconName = focused ? 'list' : 'list-outline';
           } else if (route.name === 'Reports') {
             iconName = focused ? 'bug' : 'bug-outline';
+          } else if (route.name === 'Worker List') {
+            iconName = focused ? 'people' : 'people-outline';
           } else {
             iconName = 'ios-information-circle';
           }
@@ -99,6 +102,12 @@ const BottomTabNavigation = () => {
           <Tab.Screen
             name="Reports"
             component={ReportsListScreen}
+            options={{headerShown: false}}
+          />
+
+          <Tab.Screen
+            name="Worker List"
+            component={WorkerList}
             options={{headerShown: false}}
           />
         </>

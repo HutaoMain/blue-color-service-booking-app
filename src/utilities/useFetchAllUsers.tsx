@@ -21,6 +21,7 @@ export const useFetchAllUsers = () => {
           role: doc.data().role,
           isWorkerApproved: doc.data().isWorkerApproved,
           contactNumber: doc.data().contactNumber,
+          isDeactivated: doc.data().isDeactivated,
         });
       });
       setUsers(fetchedUsers);

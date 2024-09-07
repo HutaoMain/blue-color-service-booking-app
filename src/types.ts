@@ -40,6 +40,7 @@ export interface UserInterface {
   contactNumber: string;
   role: string;
   isWorkerApproved: boolean;
+  isDeactivated: boolean;
 }
 
 export interface BookingInterface {

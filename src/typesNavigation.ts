@@ -1,5 +1,5 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Timestamp } from "firebase/firestore";
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {Timestamp} from 'firebase/firestore';
 
 export type AuthStackNavigationType = {
   LoginScreen: undefined;
@@ -19,10 +19,12 @@ export type HomeStackNavigationType = {
   HistoryScreen: undefined;
   ListOfBookingsAdminScreen: undefined;
   ReportsListScreen: undefined;
+  WorkerList: undefined;
 };
+
 export type HomeStackNavigationProps = NativeStackScreenProps<
   HomeStackNavigationType,
-  "FillUpScreen"
+  'FillUpScreen'
 >;
 
 // Worker Registration Stack Navigation
@@ -32,7 +34,7 @@ export type WorkerRegistrationNavigationType = {
 };
 export type WorkerRegistrationNavigationProps = NativeStackScreenProps<
   WorkerRegistrationNavigationType,
-  "WorkerServiceSelectionScreen"
+  'WorkerServiceSelectionScreen'
 >;
 
 // Chat Stack Navigation
@@ -47,7 +49,7 @@ export type ChatStackNavigationType = {
 };
 export type ChatStackNavigationProps = NativeStackScreenProps<
   ChatStackNavigationType,
-  "ChatScreen"
+  'ChatScreen'
 >;
 
 // ApplicantList Stack Navigation
@@ -67,5 +69,5 @@ export type ApplicantListNavigationType = {
 };
 export type ApplicantListNavigationProps = NativeStackScreenProps<
   ApplicantListNavigationType,
-  "ViewApplicantDocuments"
+  'ViewApplicantDocuments'
 >;
