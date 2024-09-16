@@ -31,6 +31,7 @@ export const useFetchWorker = (userId: string) => {
           isWorkerApproved: data.isWorkerApproved,
           contactNumber: data.contactNumber,
           isDeactivated: data.isDeactivated,
+          workTitle: data.workTitle,
         });
       } else {
         console.log('No such user!');

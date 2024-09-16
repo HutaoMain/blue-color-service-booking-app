@@ -21,11 +21,14 @@ export default function ListOfBookingsAdminScreen() {
         <Text style={styles.location}>
           Location: {item.barangay.name}, {item.city.name}, {item.province.name}
         </Text>
-        {item.serviceAmountPaid && (
-          <Text style={styles.location}>
-            Amount Paid: {item.serviceAmountPaid}
-          </Text>
-        )}
+        {item.serviceAmountPaid ? (
+          <>
+            <Text style={styles.location}>Worker: {item.workerEmail}</Text>
+            <Text style={styles.location}>
+              Amount Paid: {item.serviceAmountPaid}
+            </Text>
+          </>
+        ) : null}
         <Text style={styles.additionalDetail}>
           Additional Details: {item.additionalDetail}
         </Text>

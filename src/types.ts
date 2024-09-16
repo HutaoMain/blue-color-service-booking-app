@@ -41,6 +41,7 @@ export interface UserInterface {
   role: string;
   isWorkerApproved: boolean;
   isDeactivated: boolean;
+  workTitle: string;
 }
 
 export interface BookingInterface {

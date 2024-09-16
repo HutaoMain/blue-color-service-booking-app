@@ -10,7 +10,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Alert,
-  Platform,
 } from 'react-native';
 import {RadioButton, ToggleButton, Tooltip} from 'react-native-paper';
 import {
@@ -28,10 +27,14 @@ import {FIREBASE_AUTH, FIREBASE_DB} from '../../firebaseConfig';
 import {cloudinaryUserName} from '../../env';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {bluegreen} from '../../reusbaleVariables';
+import {Picker} from '@react-native-picker/picker';
+import {CategoryOptions, categoryOptions} from '../../categoryOptions';
 
 export default function RegistrationScreen() {
   const customerNavigation =
     useNavigation<HomeStackNavigationProps['navigation']>();
+
+  // Convert category options into picker format
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -45,6 +48,14 @@ export default function RegistrationScreen() {
   const [imageBase64, setImageBase64] = useState<string>('');
   const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState<
+    keyof CategoryOptions | null
+  >(null);
+
+  const categoryItems = Object.keys(categoryOptions).map(category => ({
+    label: category,
+    value: category as keyof CategoryOptions, // Type assertion to fix the error
+  }));
 
   const usersCollectionRef = collection(FIREBASE_DB, 'users');
 
@@ -128,6 +139,7 @@ export default function RegistrationScreen() {
         role: isCustomer === 'customer' ? 'customer' : 'worker',
         isWorkerApproved: false,
         isDeactivated: false,
+        workTitle: selectedCategory,
       });
 
       Alert.alert('Registration Completed!.');
@@ -297,6 +309,30 @@ export default function RegistrationScreen() {
           <Text style={styles.radioText}>Female</Text>
         </View>
 
+        {isCustomer === 'worker' ? (
+          <>
+            <Text style={{fontSize: 18, marginBottom: 10}}>
+              What is your work specialty?
+            </Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={selectedCategory}
+                onValueChange={value => {
+                  setSelectedCategory(value);
+                }}>
+                <Picker.Item label="Select a Specialty" value={null} />
+                {categoryItems.map(item => (
+                  <Picker.Item
+                    key={item.value}
+                    label={item.label}
+                    value={item.value}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </>
+        ) : null}
+
         <TouchableOpacity onPress={pickImage} style={styles.selectImage}>
           <Text style={{color: 'black'}}>
             {imageUrl
@@ -463,5 +499,11 @@ const styles = StyleSheet.create({
   inputText: {
     fontSize: 16,
     color: '#333',
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 15,
   },
 });

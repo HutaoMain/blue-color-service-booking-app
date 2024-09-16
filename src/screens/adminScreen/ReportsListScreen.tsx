@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useMemo} from 'react';
 import {
   View,
   Text,
@@ -6,15 +6,41 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 import {useFetchReports} from '../../utilities/useFetchReports';
 import {ReportInterface} from '../../types';
 import Navbar from '../../components/Navbar';
 import useFetchUserData from '../../utilities/useFetchUserData';
 import WorkerRating from '../../components/WorkerRating';
 
+type SortType = 'dateAsc' | 'dateDesc' | 'nameAsc' | 'nameDesc';
+
 const ReportsListScreen = () => {
   const {reports, loading, error, refresh} = useFetchReports();
   const {userData} = useFetchUserData();
+  const [sortBy, setSortBy] = useState<SortType>('dateDesc');
+
+  const sortedReports = useMemo(() => {
+    if (!reports) return [];
+    return [...reports].sort((a, b) => {
+      switch (sortBy) {
+        case 'dateAsc':
+          return (
+            new Date(a.reportedAt).getTime() - new Date(b.reportedAt).getTime()
+          );
+        case 'dateDesc':
+          return (
+            new Date(b.reportedAt).getTime() - new Date(a.reportedAt).getTime()
+          );
+        case 'nameAsc':
+          return a.workerEmail.localeCompare(b.workerEmail);
+        case 'nameDesc':
+          return b.workerEmail.localeCompare(a.workerEmail);
+        default:
+          return 0;
+      }
+    });
+  }, [reports, sortBy]);
 
   const renderItem = ({item}: {item: ReportInterface}) => {
     return (
@@ -29,6 +55,20 @@ const ReportsListScreen = () => {
     );
   };
 
+  const renderSortPicker = () => (
+    <View style={styles.pickerContainer}>
+      <Picker
+        selectedValue={sortBy}
+        onValueChange={(itemValue: SortType) => setSortBy(itemValue)}
+        style={styles.picker}>
+        <Picker.Item label="Date (Newest First)" value="dateDesc" />
+        <Picker.Item label="Date (Oldest First)" value="dateAsc" />
+        <Picker.Item label="Name (A-Z)" value="nameAsc" />
+        <Picker.Item label="Name (Z-A)" value="nameDesc" />
+      </Picker>
+    </View>
+  );
+
   if (loading) {
     return <ActivityIndicator style={styles.loader} size="large" />;
   }
@@ -42,7 +82,7 @@ const ReportsListScreen = () => {
   }
 
   return (
-    <>
+    <View style={styles.container}>
       <Navbar
         profileImageUrl={
           userData
@@ -51,19 +91,23 @@ const ReportsListScreen = () => {
         }
         title="Report List"
       />
+      {renderSortPicker()}
       <FlatList
-        data={reports}
+        data={sortedReports}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         refreshing={loading}
         onRefresh={refresh}
         contentContainerStyle={styles.listContainer}
       />
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   listContainer: {
     padding: 20,
   },
@@ -100,6 +144,13 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     fontSize: 16,
+  },
+  pickerContainer: {
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 10,
+  },
+  picker: {
+    height: 50,
   },
 });
 

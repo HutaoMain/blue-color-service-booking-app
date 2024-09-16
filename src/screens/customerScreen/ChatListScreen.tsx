@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   FlatList,
@@ -47,21 +47,6 @@ const ChatListScreen = () => {
     setProfileModalVisible(true);
   };
 
-  // const renderRightActions = useCallback(
-  //   (workerUserId: string) => {
-  //     console.log("workeruserId:", workerUserId);
-  //     return (
-  //       <RectButton
-  //         style={styles.viewWorkerButton}
-  //         onPress={() => handleViewWorker(workerUserId)}
-  //       >
-  //         <Text style={styles.viewWorkerText}>View Worker</Text>
-  //       </RectButton>
-  //     );
-  //   },
-  //   [handleViewWorker]
-  // );
-
   const renderItem = ({item}: {item: ConversationInterface}) => {
     const isCurrentUserUser1 = item.participants[0] === userData?.id;
     const chatPartnerUserId = isCurrentUserUser1
@@ -91,11 +76,6 @@ const ChatListScreen = () => {
           style={{flexDirection: 'row', marginRight: 60}}>
           <View style={styles.textContainer}>
             <Text style={styles.chatName}>{chatPartnerName}</Text>
-            {/* <Text style={styles.lastMessage}>
-              {item.lastMessage.startsWith(userData?.id || '')
-                ? `You: ${item.lastMessage.slice(0, 20)}`
-                : item.lastMessage.slice(0, 20)}
-            </Text> */}
           </View>
           <View style={styles.timeUnreadCountContainer}>
             <Text style={styles.time}>

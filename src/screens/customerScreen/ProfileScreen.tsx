@@ -158,6 +158,15 @@ export default function ProfileScreen() {
 
   const toggleCloseIsEditing = () => {
     setIsEditing(false);
+    setEditedData({
+      fullName: data?.fullName || '',
+      birthDate: data?.birthDate
+        ? moment(data?.birthDate.toDate()).format('YYYY-MM-DD')
+        : '',
+      gender: data?.gender || '',
+      contactNumber: data?.contactNumber || '',
+    });
+    setImageUrl('');
   };
 
   return (
@@ -217,14 +226,21 @@ export default function ProfileScreen() {
               )}
             </View>
             <Text style={styles.profileEmail}>{data?.email}</Text>
-            {data?.role === 'worker' && (
-              <StarRatingDisplay
-                rating={averageRating || 0}
-                enableHalfStar={false}
-                starSize={30}
-                color="#FFD700"
-              />
-            )}
+            {data?.role === 'worker' ? (
+              <>
+                <Text
+                  style={{fontSize: 25, marginVertical: 10, color: 'black'}}>
+                  {data?.workTitle}
+                </Text>
+
+                <StarRatingDisplay
+                  rating={averageRating || 0}
+                  enableHalfStar={false}
+                  starSize={30}
+                  color="#FFD700"
+                />
+              </>
+            ) : null}
           </View>
 
           <HorizontalLine />
