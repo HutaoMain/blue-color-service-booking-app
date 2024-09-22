@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   label: {
+    color: 'black',
     fontSize: 16,
     marginVertical: 8,
   },
@@ -108,5 +109,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: 'black',
+    color: 'black',
   },
 });

@@ -143,11 +143,14 @@ export default function HomeScreen() {
               styles.categoryButton,
               {
                 width: '90%',
-                backgroundColor: userData.isWorkerApproved ? bluegreen : 'gray',
+                backgroundColor:
+                  userData.workerApplicationStatus === 'approve'
+                    ? bluegreen
+                    : 'gray',
               },
             ]}
             onPress={() => navigation.navigate('ListOfBookingScreen')}
-            disabled={!userData.isWorkerApproved}>
+            disabled={userData.workerApplicationStatus !== 'approve'}>
             <Text style={styles.categoryButtonText}>Go to Client Bookings</Text>
             <Icon name="cleaning-services" size={40} color="black" />
           </TouchableOpacity>

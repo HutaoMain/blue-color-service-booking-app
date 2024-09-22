@@ -45,7 +45,7 @@ export default function ApplicantList() {
 
   const handleStatusChange = async (
     email: string,
-    isWorkerApproved: boolean,
+    workerApplicationStatus: string,
   ) => {
     try {
       const q = query(
@@ -56,7 +56,9 @@ export default function ApplicantList() {
 
       if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0].ref;
-        await updateDoc(userDoc, {isWorkerApproved: isWorkerApproved});
+        await updateDoc(userDoc, {
+          workerApplicationStatus: workerApplicationStatus,
+        });
         console.log('User status updated successfully.');
         Alert.alert('User status updated successfully.');
         refreshDocuments();
@@ -67,10 +69,11 @@ export default function ApplicantList() {
       console.error('Error updating user status:', error);
     }
   };
-  const handleSelect = (value: boolean) => {
+
+  const handleSelect = (workerApplicationStatus: string) => {
     const document = documents.find(doc => doc.id === selectedDocument);
     if (document) {
-      handleStatusChange(document.email, value);
+      handleStatusChange(document.email, workerApplicationStatus);
     }
     closeMenu();
   };
@@ -119,22 +122,33 @@ export default function ApplicantList() {
                 <Button
                   onPress={() => openMenu(document.id)}
                   style={
-                    user?.isWorkerApproved
+                    user?.workerApplicationStatus === 'approve'
                       ? [{backgroundColor: '#4CAF50'}, styles.btn]
-                      : styles.btn
+                      : user?.workerApplicationStatus === 'pending'
+                      ? [{backgroundColor: '#efc549'}, styles.btn]
+                      : [{backgroundColor: '#f44336'}, styles.btn]
                   }>
-                  <Text
-                    style={
-                      user?.isWorkerApproved
-                        ? {color: 'white'}
-                        : {color: 'black'}
-                    }>
-                    {user?.isWorkerApproved ? 'Approved' : 'Not Approved'}
+                  <Text style={{color: 'white'}}>
+                    {user?.workerApplicationStatus === 'approve'
+                      ? 'Approved'
+                      : user?.workerApplicationStatus === 'reject'
+                      ? 'Rejected'
+                      : 'Pending'}
                   </Text>
                 </Button>
               }>
-              <Menu.Item onPress={() => handleSelect(true)} title="Approve" />
-              <Menu.Item onPress={() => handleSelect(false)} title="Reject" />
+              <Menu.Item
+                onPress={() => handleSelect('approve')}
+                title="Approve"
+              />
+              <Menu.Item
+                onPress={() => handleSelect('reject')}
+                title="Reject"
+              />
+              <Menu.Item
+                onPress={() => handleSelect('pending')}
+                title="Pending"
+              />
             </Menu>
           </View>
         );

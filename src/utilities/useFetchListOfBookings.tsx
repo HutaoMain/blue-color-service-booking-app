@@ -1,5 +1,5 @@
 import {useState, useCallback, useEffect} from 'react';
-import {collection, getDocs, query} from 'firebase/firestore';
+import {collection, getDocs, query, orderBy} from 'firebase/firestore';
 import {BookingInterface} from '../types';
 import {FIREBASE_DB} from '../firebaseConfig';
 
@@ -7,9 +7,10 @@ const useFetchListOfBookings = () => {
   const [data, setData] = useState<BookingInterface[]>([]);
 
   const fetchData = useCallback(async () => {
-    let q;
-
-    q = query(collection(FIREBASE_DB, 'bookings'));
+    const q = query(
+      collection(FIREBASE_DB, 'bookings'),
+      orderBy('createdAt', 'desc'),
+    );
 
     try {
       const querySnapshot = await getDocs(q);

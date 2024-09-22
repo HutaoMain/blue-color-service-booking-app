@@ -28,7 +28,7 @@ export const useFetchWorker = (userId: string) => {
           birthDate: data.birthDate,
           gender: data.gender,
           imageUrl: data.imageUrl,
-          isWorkerApproved: data.isWorkerApproved,
+          workerApplicationStatus: data.workerApplicationStatus,
           contactNumber: data.contactNumber,
           isDeactivated: data.isDeactivated,
           workTitle: data.workTitle,

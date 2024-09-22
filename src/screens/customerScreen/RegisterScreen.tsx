@@ -137,7 +137,7 @@ export default function RegistrationScreen() {
         birthDate: birthDate,
         contactNumber: contactNumber,
         role: isCustomer === 'customer' ? 'customer' : 'worker',
-        isWorkerApproved: false,
+        workerApplicationStatus: 'pending',
         isDeactivated: false,
         workTitle: selectedCategory,
       });

@@ -100,7 +100,7 @@ const ProfileModal = ({
             <View style={styles.profileInfoOverlay}>
               <Text style={styles.profileName}>{workerData?.fullName}</Text>
               <Text style={styles.profileEmail}>{workerData?.email}</Text>
-              <Text style={{fontSize: 25, marginVertical: 10, color: 'black'}}>
+              <Text style={{fontSize: 25, marginVertical: 10, color: 'white'}}>
                 {workerData?.workTitle}
               </Text>
               <StarRatingDisplay

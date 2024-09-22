@@ -58,8 +58,9 @@ export default function LoginScreen() {
           contactNumber: doc.data().contactNumber,
           gender: doc.data().gender,
           imageUrl: doc.data().imageUrl,
-          isWorkerApproved: doc.data().isWorkerApproved,
+          workerApplicationStatus: doc.data().workerApplicationStatus,
           isDeactivated: doc.data().isDeactivated,
+          workTitle: doc.data().workTitle,
         });
       });
 
@@ -120,6 +121,7 @@ export default function LoginScreen() {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
+            textColor="black"
             placeholder="Email"
             placeholderTextColor="#aaa"
             keyboardType="email-address"
@@ -128,6 +130,7 @@ export default function LoginScreen() {
           />
           <TextInput
             style={styles.input}
+            textColor="black"
             placeholder="Password"
             placeholderTextColor="#aaa"
             secureTextEntry={passwordVisible}
@@ -205,7 +208,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     fontSize: 18,
     marginBottom: 15,
-    color: '#000',
   },
   loginButton: {
     width: '80%',

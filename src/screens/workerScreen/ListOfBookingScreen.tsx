@@ -34,7 +34,11 @@ export default function ListOfBookingScreen() {
 
   const {ListOfBooking, refreshBookings} = useFetchListOfBookings();
 
-  const listOfBookingFiltered = ListOfBooking.filter(
+  const listOfAvailableBookings = ListOfBooking.filter(
+    item => item.status === 'pending',
+  );
+
+  const listOfBookingFiltered = listOfAvailableBookings.filter(
     item => item.status !== 'cancelled',
   );
 
@@ -146,7 +150,6 @@ export default function ListOfBookingScreen() {
           {item.rating ? (
             <StarRatingDisplay
               rating={item.rating}
-              enableHalfStar={false}
               starSize={30}
               color="#FFD700"
             />
@@ -287,6 +290,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: 'black',
   },
   customerName: {
     fontSize: 16,

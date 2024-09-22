@@ -8,6 +8,7 @@ import HistoryScreen from '../screens/customerScreen/HistoryScreen';
 import ListOfBookingsAdminScreen from '../screens/adminScreen/ListOfBookingsAdminScreen';
 import ReportsListScreen from '../screens/adminScreen/ReportsListScreen';
 import WorkerList from '../screens/adminScreen/WorkerList';
+import TransactionHistory from '../screens/workerScreen/TransactionHistory';
 
 const HomeStackNavigation = () => {
   const HomeStack = createNativeStackNavigator<HomeStackNavigationType>();
@@ -48,6 +49,11 @@ const HomeStackNavigation = () => {
         name="WorkerList"
         component={WorkerList}
         options={{title: 'Worker List'}}
+      />
+      <HomeStack.Screen
+        name="TransactionHistory"
+        component={TransactionHistory}
+        options={{title: 'Transaction History'}}
       />
     </HomeStack.Navigator>
   );

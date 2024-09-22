@@ -39,7 +39,7 @@ export interface UserInterface {
   imageUrl: string;
   contactNumber: string;
   role: string;
-  isWorkerApproved: boolean;
+  workerApplicationStatus: string;
   isDeactivated: boolean;
   workTitle: string;
 }

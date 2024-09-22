@@ -19,7 +19,7 @@ export const useFetchAllUsers = () => {
           gender: doc.data().gender,
           imageUrl: doc.data().imageUrl,
           role: doc.data().role,
-          isWorkerApproved: doc.data().isWorkerApproved,
+          workerApplicationStatus: doc.data().workerApplicationStatus,
           contactNumber: doc.data().contactNumber,
           isDeactivated: doc.data().isDeactivated,
           workTitle: doc.data().workTitle,

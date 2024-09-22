@@ -12,6 +12,7 @@ import ApplicantListStackNavigation from './ApplicantListStackNavigation';
 import ListOfBookingsAdminScreen from '../screens/adminScreen/ListOfBookingsAdminScreen';
 import ReportsListScreen from '../screens/adminScreen/ReportsListScreen';
 import WorkerList from '../screens/adminScreen/WorkerList';
+import TransactionHistory from '../screens/workerScreen/TransactionHistory';
 
 const BottomTabNavigation = () => {
   const Tab = createBottomTabNavigator();
@@ -42,6 +43,8 @@ const BottomTabNavigation = () => {
             iconName = focused ? 'bug' : 'bug-outline';
           } else if (route.name === 'Worker List') {
             iconName = focused ? 'people' : 'people-outline';
+          } else if (route.name === 'Transactions') {
+            iconName = focused ? 'archive' : 'archive-outline';
           } else {
             iconName = 'ios-information-circle';
           }
@@ -78,11 +81,19 @@ const BottomTabNavigation = () => {
       )}
 
       {userData?.role === 'worker' && (
-        <Tab.Screen
-          name="Documents"
-          component={DocumentUploadScreen}
-          options={{headerShown: false}}
-        />
+        <>
+          <Tab.Screen
+            name="Documents"
+            component={DocumentUploadScreen}
+            options={{headerShown: false}}
+          />
+
+          <Tab.Screen
+            name="Transactions"
+            component={TransactionHistory}
+            options={{headerShown: false}}
+          />
+        </>
       )}
 
       {userData?.role === 'admin' && (

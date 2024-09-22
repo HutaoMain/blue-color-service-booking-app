@@ -61,10 +61,18 @@ const ReportsListScreen = () => {
         selectedValue={sortBy}
         onValueChange={(itemValue: SortType) => setSortBy(itemValue)}
         style={styles.picker}>
-        <Picker.Item label="Date (Newest First)" value="dateDesc" />
-        <Picker.Item label="Date (Oldest First)" value="dateAsc" />
-        <Picker.Item label="Name (A-Z)" value="nameAsc" />
-        <Picker.Item label="Name (Z-A)" value="nameDesc" />
+        <Picker.Item
+          color="black"
+          label="Date (Newest First)"
+          value="dateDesc"
+        />
+        <Picker.Item
+          color="black"
+          label="Date (Oldest First)"
+          value="dateAsc"
+        />
+        <Picker.Item color="black" label="Name (A-Z)" value="nameAsc" />
+        <Picker.Item color="black" label="Name (Z-A)" value="nameDesc" />
       </Picker>
     </View>
   );
@@ -151,6 +159,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
+    color: 'black',
   },
 });
 

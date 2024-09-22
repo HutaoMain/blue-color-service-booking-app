@@ -110,7 +110,6 @@ export default function HistoryScreen() {
         ) : (
           <StarRatingDisplay
             rating={item.rating}
-            enableHalfStar={false}
             starSize={30}
             color="#FFD700"
           />
@@ -200,6 +199,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   categoryService: {
+    color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
   },

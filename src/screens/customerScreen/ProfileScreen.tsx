@@ -235,7 +235,6 @@ export default function ProfileScreen() {
 
                 <StarRatingDisplay
                   rating={averageRating || 0}
-                  enableHalfStar={false}
                   starSize={30}
                   color="#FFD700"
                 />

@@ -54,11 +54,22 @@ export default function WorkerCard({user}: WorkerCardProps) {
           <View
             style={[
               styles.statusIndicator,
-              {backgroundColor: user.isWorkerApproved ? 'green' : 'red'},
+              {
+                backgroundColor:
+                  user.workerApplicationStatus === 'approve'
+                    ? 'green'
+                    : user.workerApplicationStatus === 'pending'
+                    ? '#efc549'
+                    : 'red',
+              },
             ]}
           />
           <Text style={styles.statusText}>
-            {user.isWorkerApproved ? 'Approved' : 'Not Approved'}
+            {user.workerApplicationStatus === 'approve'
+              ? 'Approved'
+              : user.workerApplicationStatus === 'pending'
+              ? 'Pending'
+              : 'Rejected'}
           </Text>
         </View>
         {user.isDeactivated ? (
@@ -117,6 +128,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 4,
+    color: 'black',
   },
   role: {
     fontSize: 16,
@@ -142,6 +154,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     fontWeight: 'bold',
+    color: 'black',
   },
   deactivatedText: {
     fontSize: 14,

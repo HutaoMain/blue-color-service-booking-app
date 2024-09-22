@@ -32,7 +32,7 @@ const useFetchUserData = () => {
           contactNumber: doc.data().contactNumber,
           gender: doc.data().gender,
           imageUrl: doc.data().imageUrl,
-          isWorkerApproved: doc.data().isWorkerApproved,
+          workerApplicationStatus: doc.data().workerApplicationStatus,
           isDeactivated: doc.data().isDeactivated,
           workTitle: doc.data().workTitle,
         });

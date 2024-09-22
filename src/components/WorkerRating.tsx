@@ -13,7 +13,6 @@ export default function WorkerRating({workerEmail}: {workerEmail: string}) {
       <Text>Current Worker Rating:</Text>
       <StarRatingDisplay
         rating={averageRating || 0}
-        enableHalfStar={false}
         starSize={30}
         color="#FFD700"
       />
