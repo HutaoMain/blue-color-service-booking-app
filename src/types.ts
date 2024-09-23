@@ -78,6 +78,16 @@ export interface BookingInterface {
   };
 }
 
+export interface ChatInterface {
+  id: string;
+  senderId: string;
+  text: string;
+  senderName: string;
+  senderImageUrl: string;
+  timestamp: Timestamp;
+  unread: boolean;
+}
+
 export interface ConversationInterface {
   conversationId: string;
   participants: string[]; // [user1Id, user2Id]
@@ -85,7 +95,7 @@ export interface ConversationInterface {
   lastMessageTimestamp: Timestamp;
   conversationName: string[]; // [user1Name, user2Name]
   conversationImageUrl: string[]; // [user1ImageUrl, user2ImageUrl]
-  unreadCount: Record<string, number>;
+  unreadCount: number;
   createdAt: Timestamp;
 }
 

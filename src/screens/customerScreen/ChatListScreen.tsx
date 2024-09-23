@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   FlatList,
@@ -8,7 +8,7 @@ import {
   StyleSheet,
   RefreshControl,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import moment from 'moment';
 import useFetchUserData from '../../utilities/useFetchUserData';
 import {useFetchConversations} from '../../utilities/useFetchConversations';
@@ -29,7 +29,17 @@ const ChatListScreen = () => {
     userData?.id || '',
   );
 
+  console.log(conversations);
+
   const navigation = useNavigation<ChatStackNavigationProps['navigation']>();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchConversations();
+    });
+
+    return unsubscribe;
+  }, [navigation, fetchConversations]);
 
   const handleChatPress = (conversation: ConversationInterface) => {
     conversation.participants[0] === userData?.id;
@@ -83,6 +93,11 @@ const ChatListScreen = () => {
                 .local()
                 .format('YYYY-MM-DD hh:mm A')}
             </Text>
+            {item.unreadCount > 0 && (
+              <View style={styles.unreadBadge}>
+                <Text style={styles.unreadCount}>{item.unreadCount}</Text>
+              </View>
+            )}
           </View>
         </TouchableOpacity>
       </View>
@@ -174,12 +189,24 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 6,
   },
-  unreadCount: {
-    color: '#fff',
-    fontSize: 12,
+  // unreadCount: {
+  //   color: '#fff',
+  //   fontSize: 12,
+  // },
+
+  unreadBadge: {
+    backgroundColor: 'red',
+    borderRadius: 10,
+    padding: 5,
+    minWidth: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  viewWorkerButton: {},
-  viewWorkerText: {},
+  unreadCount: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
 });
 
 export default ChatListScreen;

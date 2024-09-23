@@ -3,11 +3,14 @@ import {
   addDoc,
   collection,
   doc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
   Timestamp,
   updateDoc,
+  where,
+  writeBatch,
 } from 'firebase/firestore';
 import useFetchUserData from '../../utilities/useFetchUserData';
 import {FIREBASE_DB} from '../../firebaseConfig';
@@ -21,19 +24,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
-interface ChatInterface {
-  id: string;
-  senderId: string;
-  text: string;
-  senderName: string;
-  senderImageUrl: string;
-  timestamp: Timestamp;
-}
+import {ChatInterface} from '../../types';
+import {useTabRefresh} from '../../utilities/TabRefresherProvider';
 
 export default function ChatScreen({route}: {route: any}) {
   const {id, participants, conversationName, conversationImageUrl} =
     route.params;
+
+  const {triggerTabRefresh} = useTabRefresh();
 
   const {userData} = useFetchUserData();
 
@@ -44,6 +42,32 @@ export default function ChatScreen({route}: {route: any}) {
   const chatPartnerIndex = userData?.id === participants[0] ? 1 : 0;
   const chatPartnerName = conversationName[chatPartnerIndex];
   const chatPartnerImageUrl = conversationImageUrl[chatPartnerIndex];
+
+  const markMessagesAsRead = async () => {
+    const conversationRef = doc(FIREBASE_DB, 'conversations', id);
+    const messagesRef = collection(conversationRef, 'messages');
+    const q = query(
+      messagesRef,
+      where('senderId', '!=', userData?.id),
+      where('unread', '==', true),
+    );
+
+    const unreadMessages = await getDocs(q);
+    const batch = writeBatch(FIREBASE_DB);
+
+    console.log('unreadMessages Count: ', unreadMessages.size);
+
+    unreadMessages.forEach(doc => {
+      batch.update(doc.ref, {unread: false});
+    });
+
+    await batch.commit();
+
+    // Reset unread count for current user
+    await updateDoc(conversationRef, {
+      [`unreadCount.${userData?.id}`]: 0,
+    });
+  };
 
   useEffect(() => {
     if (!id || !userData?.id) return;
@@ -60,9 +84,13 @@ export default function ChatScreen({route}: {route: any}) {
         senderId: doc.data().senderId,
         senderName: doc.data().senderName,
         senderImageUrl: doc.data().senderImageUrl,
+        unread: doc.data().unread,
       }));
       setMessages(allMessages);
     });
+
+    markMessagesAsRead();
+    triggerTabRefresh();
 
     return () => unsub();
   }, [userData?.id, loader]);
@@ -82,12 +110,8 @@ export default function ChatScreen({route}: {route: any}) {
         senderName: userData?.fullName,
         senderImageUrl: userData?.imageUrl,
         timestamp: Timestamp.fromDate(new Date()),
+        unread: true,
       });
-
-      // await updateDoc(conversationRef, {
-      //   lastMessage: text,
-      //   lastMessageTimestamp: Timestamp.fromDate(new Date()),
-      // });
 
       setText('');
       setLoader(false);

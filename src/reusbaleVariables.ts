@@ -35,10 +35,6 @@ export const createConversationIfNotExists = async (
       lastMessageTimestamp: Timestamp.fromDate(new Date()),
       conversationName: [workerName, customerName],
       conversationImageUrl: [workerImageUrl, customerImageUrl],
-      unreadCount: {
-        [workerId]: 0,
-        [customerId]: 1,
-      },
       createdAt: Timestamp.fromDate(new Date()),
     });
 

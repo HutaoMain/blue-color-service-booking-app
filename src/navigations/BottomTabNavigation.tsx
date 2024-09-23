@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HomeStackNavigation from './HomeStackNavigation';
@@ -13,11 +13,29 @@ import ListOfBookingsAdminScreen from '../screens/adminScreen/ListOfBookingsAdmi
 import ReportsListScreen from '../screens/adminScreen/ReportsListScreen';
 import WorkerList from '../screens/adminScreen/WorkerList';
 import TransactionHistory from '../screens/workerScreen/TransactionHistory';
+import {Badge} from 'react-native-paper';
+import {useFetchConversations} from '../utilities/useFetchConversations';
+import {StyleSheet, View} from 'react-native';
+import {useTabRefresh} from '../utilities/TabRefresherProvider';
 
 const BottomTabNavigation = () => {
   const Tab = createBottomTabNavigator();
 
   const {userData} = useFetchUserData();
+
+  const {conversations, fetchConversations} = useFetchConversations(
+    userData?.id || '',
+  );
+
+  const {refreshTab} = useTabRefresh();
+
+  useEffect(() => {
+    fetchConversations();
+  }, [refreshTab]);
+
+  const conversationUnreadMessages = conversations.filter(
+    item => item.unreadCount > 0,
+  );
 
   return (
     <Tab.Navigator
@@ -29,6 +47,16 @@ const BottomTabNavigation = () => {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Chat') {
             iconName = focused ? 'chatbox' : 'chatbox-outline';
+            return (
+              <View>
+                <Icon name={iconName} size={size} color={color} />
+                {conversationUnreadMessages.length > 0 && (
+                  <Badge style={styles.badge} size={18}>
+                    {conversationUnreadMessages.length}
+                  </Badge>
+                )}
+              </View>
+            );
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           } else if (route.name === 'History') {
@@ -134,3 +162,12 @@ const BottomTabNavigation = () => {
 };
 
 export default BottomTabNavigation;
+
+const styles = StyleSheet.create({
+  badge: {
+    position: 'absolute',
+    right: -10,
+    top: -3,
+    backgroundColor: 'red', // Badge background color
+  },
+});

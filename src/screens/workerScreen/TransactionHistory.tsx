@@ -26,7 +26,7 @@ export default function TransactionHistory() {
     switch (status) {
       case 'accepted':
         return styles.acceptedStatus;
-      case 'pending':
+      case 'ongoing':
         return styles.pendingStatus;
       case 'cancelled':
         return styles.cancelledStatus;
@@ -55,9 +55,15 @@ export default function TransactionHistory() {
 
       <StarRatingDisplay rating={item.rating} starSize={30} color="#FFD700" />
 
-      <Text style={[styles.status, getStatusStyle(item.status)]}>
-        Status: {item.ifDoneStatus}
-      </Text>
+      {item.ifDoneStatus === 'done' ? (
+        <Text style={[styles.status, getStatusStyle(item.status)]}>
+          Status: {item.ifDoneStatus}
+        </Text>
+      ) : (
+        <Text style={[styles.status, getStatusStyle('ongoing')]}>
+          Status: Ongoing
+        </Text>
+      )}
 
       <Text style={styles.createdAt}>
         Created At:{' '}
@@ -159,7 +165,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgreen',
   },
   pendingStatus: {
-    backgroundColor: 'yellow',
+    backgroundColor: '#efc549',
   },
   cancelledStatus: {
     backgroundColor: 'red',
