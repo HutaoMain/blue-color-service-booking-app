@@ -98,6 +98,13 @@ export default function HistoryScreen() {
         {item.barangay.name}
       </Text>
       <Text style={styles.additionalDetail}>{item.additionalDetail}</Text>
+
+      {item.ifDoneStatus === 'done' ? (
+        <Text style={styles.additionalDetail}>
+          Status: {item.serviceAmountPaid}
+        </Text>
+      ) : null}
+
       {item.ifDoneStatus === 'done' &&
         (item.rating === 0 || !item.rating ? (
           <TouchableOpacity

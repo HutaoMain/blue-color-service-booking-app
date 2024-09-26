@@ -25,7 +25,6 @@ export default function ListOfBookingScreen() {
   const [loadingIfDoneStatus, setLoadingIfDoneStatus] =
     useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [serviceAmount, setServiceAmount] = useState('');
   const [bookingId, setBookingId] = useState('');
 
   console.log('bookingId: ', bookingId);
@@ -101,32 +100,9 @@ export default function ListOfBookingScreen() {
     }
   };
 
-  const handleUpdateIfDoneStatus = async () => {
-    setLoadingIfDoneStatus(true);
-    try {
-      const bookingRef = doc(FIREBASE_DB, 'bookings', bookingId);
-      await updateDoc(bookingRef, {
-        ifDoneStatus: 'done',
-        serviceAmountPaid: parseFloat(serviceAmount),
-      });
-
-      setLoadingIfDoneStatus(false);
-      setModalVisible(false);
-      setServiceAmount('');
-      setBookingId('');
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handlePress = (bookingId: string) => {
     setBookingId(bookingId);
     setModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setModalVisible(false);
-    setServiceAmount('');
   };
 
   const renderBookingItem = ({item}: {item: BookingInterface}) => {
@@ -216,38 +192,6 @@ export default function ListOfBookingScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={handleCancel}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Amount Paid By Customer:</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter amount"
-              keyboardType="numeric"
-              value={serviceAmount}
-              onChangeText={setServiceAmount}
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleUpdateIfDoneStatus}
-                disabled={!serviceAmount || loadingIfDoneStatus}>
-                <Text style={styles.modalButtonText}>Confirm</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleCancel}>
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
@@ -332,50 +276,5 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     color: '#fff',
     fontWeight: 'bold',
-  },
-
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    width: 300,
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 18,
-    marginBottom: 10,
-    color: 'black',
-  },
-  textInput: {
-    height: 40,
-    width: '100%',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-    color: 'black',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  modalButton: {
-    flex: 1,
-    padding: 10,
-    marginHorizontal: 5,
-    backgroundColor: '#4CAF50',
-    alignItems: 'center',
-    borderRadius: 5,
-  },
-  modalButtonText: {
-    color: 'white',
   },
 });

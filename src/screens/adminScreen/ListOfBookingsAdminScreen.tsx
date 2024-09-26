@@ -1,7 +1,15 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, FlatList, RefreshControl} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native';
 import useFetchListOfBookings from '../../utilities/useFetchListOfBookings';
 import {BookingInterface} from '../../types';
+import {StarRatingDisplay} from 'react-native-star-rating-widget';
 
 export default function ListOfBookingsAdminScreen() {
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -32,6 +40,38 @@ export default function ListOfBookingsAdminScreen() {
         <Text style={styles.additionalDetail}>
           Additional Details: {item.additionalDetail}
         </Text>
+        {item.rating ? (
+          <StarRatingDisplay
+            rating={item.rating}
+            starSize={30}
+            color="#FFD700"
+          />
+        ) : (
+          <StarRatingDisplay rating={0} starSize={30} color="#FFD700" />
+        )}
+
+        <View style={styles.btnContainer}>
+          <TouchableOpacity
+            style={
+              item.status === 'pending'
+                ? [{backgroundColor: '#FFBF00'}, styles.statusButton]
+                : item.status === 'cancelled'
+                ? [{backgroundColor: 'red'}, styles.statusButton]
+                : [{backgroundColor: '#28a745'}, styles.statusButton]
+            }
+            disabled={true}>
+            <Text style={styles.buttonText}>{item.status}</Text>
+          </TouchableOpacity>
+
+          {item.ifDoneStatus === 'done' ? (
+            <TouchableOpacity style={[styles.ifDoneButton]} disabled={true}>
+              <Text style={styles.buttonText}>
+                Work Status: {item.ifDoneStatus}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
         <Text style={styles.date}>
           Date: {item.createdAt?.toDate().toLocaleString()}
         </Text>
@@ -61,6 +101,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     padding: 20,
   },
+  statusButton: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  ifDoneButton: {
+    alignItems: 'center',
+    backgroundColor: '#28a745',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    textTransform: 'capitalize',
+    fontWeight: 'bold',
+  },
   title: {
     color: 'black',
     fontSize: 24,
@@ -70,6 +128,10 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingBottom: 20,
+  },
+  btnContainer: {
+    marginTop: 10,
+    gap: 15,
   },
   bookingContainer: {
     backgroundColor: '#fff',

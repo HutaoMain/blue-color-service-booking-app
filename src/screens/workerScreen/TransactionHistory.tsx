@@ -1,4 +1,12 @@
-import {View, Text, StyleSheet, RefreshControl, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  RefreshControl,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
 import React, {useState} from 'react';
 import {StarRatingDisplay} from 'react-native-star-rating-widget';
 import useFetchListOfBookingsWithFilter from '../../utilities/useFetchListOfBookingsWithFilter';
@@ -7,9 +15,20 @@ import {BookingInterface} from '../../types';
 import moment from 'moment';
 import Navbar from '../../components/Navbar';
 import {bluegreen} from '../../reusbaleVariables';
+import {TextInput} from 'react-native';
+import {doc, updateDoc} from 'firebase/firestore';
+import {FIREBASE_DB} from '../../firebaseConfig';
 
 export default function TransactionHistory() {
   const {userData} = useFetchUserData();
+
+  const [loadingBookingStatus, setLoadingBookingStatus] =
+    useState<boolean>(false);
+  const [loadingIfDoneStatus, setLoadingIfDoneStatus] =
+    useState<boolean>(false);
+  const [bookingId, setBookingId] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [serviceAmount, setServiceAmount] = useState('');
 
   const {ListOfBooking, refreshBookings} = useFetchListOfBookingsWithFilter({
     filterField: 'workerEmail',
@@ -17,20 +36,32 @@ export default function TransactionHistory() {
   });
 
   const listOfBookingsFiltered = ListOfBooking.filter(
-    item => item.status !== 'pending' && item.status !== 'cancelled',
+    item => item.status === 'accepted',
   );
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case 'accepted':
-        return styles.acceptedStatus;
-      case 'ongoing':
-        return styles.pendingStatus;
-      case 'cancelled':
-        return styles.cancelledStatus;
+  const handleUpdateIfDoneStatus = async () => {
+    setLoadingIfDoneStatus(true);
+    try {
+      const bookingRef = doc(FIREBASE_DB, 'bookings', bookingId);
+      await updateDoc(bookingRef, {
+        ifDoneStatus: 'done',
+        serviceAmountPaid: parseFloat(serviceAmount),
+      });
+
+      setLoadingIfDoneStatus(false);
+      setModalVisible(false);
+      setServiceAmount('');
+      setBookingId('');
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  const handlePress = (bookingId: string) => {
+    setBookingId(bookingId);
+    setModalVisible(true);
   };
 
   const onRefresh = async () => {
@@ -39,7 +70,34 @@ export default function TransactionHistory() {
     setRefreshing(false);
   };
 
+  const handleCancel = () => {
+    setModalVisible(false);
+    setServiceAmount('');
+  };
+
   const renderItem = ({item}: {item: BookingInterface}) => (
+    // <View style={styles.itemContainer}>
+    //   <Text style={styles.customerName}>{item.customerName}</Text>
+    //   <Text style={styles.categoryService}>{item.categoryService}</Text>
+    //   <Text style={styles.specificService}>{item.specificService}</Text>
+    //   <Text style={styles.location}>
+    //     {item.region.name}, {item.province.name}, {item.city.name},{' '}
+    //     {item.barangay.name}
+    //   </Text>
+    //   <Text style={styles.additionalDetail}>{item.additionalDetail}</Text>
+    //   <Text style={styles.additionalDetail}>
+    //     Amount: PHP {item.serviceAmountPaid}.00
+    //   </Text>
+
+    //   <StarRatingDisplay rating={item.rating} starSize={30} color="#FFD700" />
+    //   <Text style={[styles.status, styles.acceptedStatus]}>
+    //     Status: {item.ifDoneStatus}
+    //   </Text>
+    //   <Text style={styles.createdAt}>
+    //     Created At:{' '}
+    //     {moment(item.createdAt?.toDate()).local().format('YYYY-MM-DD hh:mm A')}
+    //   </Text>
+    // </View>
     <View style={styles.itemContainer}>
       <Text style={styles.customerName}>{item.customerName}</Text>
       <Text style={styles.categoryService}>{item.categoryService}</Text>
@@ -54,17 +112,33 @@ export default function TransactionHistory() {
       </Text>
 
       <StarRatingDisplay rating={item.rating} starSize={30} color="#FFD700" />
+      <Text style={[styles.status, styles.acceptedStatus]}>
+        Status: {item.status}
+      </Text>
 
       {item.ifDoneStatus === 'done' ? (
-        <Text style={[styles.status, getStatusStyle(item.status)]}>
-          Status: {item.ifDoneStatus}
+        <Text style={[styles.status, styles.acceptedStatus]}>
+          Work Status: {item.ifDoneStatus}
         </Text>
-      ) : (
-        <Text style={[styles.status, getStatusStyle('ongoing')]}>
-          Status: Ongoing
-        </Text>
-      )}
+      ) : null}
 
+      {item.status === 'accepted' && item.ifDoneStatus === undefined ? (
+        <TouchableOpacity
+          style={[
+            styles.ifDoneButton,
+            item.ifDoneStatus === 'done' ? {backgroundColor: '#ccc'} : null,
+          ]}
+          onPress={() => handlePress(item.id)}
+          disabled={loadingIfDoneStatus || item.ifDoneStatus === 'done'}>
+          <Text style={styles.buttonText}>
+            {loadingBookingStatus
+              ? 'Please wait..'
+              : item.ifDoneStatus === 'done'
+              ? 'Done'
+              : 'Click to done'}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
       <Text style={styles.createdAt}>
         Created At:{' '}
         {moment(item.createdAt?.toDate()).local().format('YYYY-MM-DD hh:mm A')}
@@ -92,6 +166,38 @@ export default function TransactionHistory() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         />
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={handleCancel}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Amount Paid By Customer:</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter amount"
+                keyboardType="numeric"
+                value={serviceAmount}
+                onChangeText={setServiceAmount}
+              />
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleUpdateIfDoneStatus}
+                  disabled={!serviceAmount || loadingIfDoneStatus}>
+                  <Text style={styles.modalButtonText}>Confirm</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleCancel}>
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </>
   );
@@ -167,10 +273,6 @@ const styles = StyleSheet.create({
   pendingStatus: {
     backgroundColor: '#efc549',
   },
-  cancelledStatus: {
-    backgroundColor: 'red',
-    color: 'white',
-  },
   cancelBtn: {
     width: 150,
     marginTop: 10,
@@ -188,5 +290,61 @@ const styles = StyleSheet.create({
   },
   ratingTxt: {
     color: '#ffff',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: 300,
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: 10,
+    color: 'black',
+  },
+  textInput: {
+    height: 40,
+    width: '100%',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    color: 'black',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    padding: 10,
+    marginHorizontal: 5,
+    backgroundColor: '#4CAF50',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: 'white',
+  },
+  ifDoneButton: {
+    alignItems: 'center',
+    backgroundColor: '#FFBF00',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  buttonText: {
+    textTransform: 'capitalize',
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
