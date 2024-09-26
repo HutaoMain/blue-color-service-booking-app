@@ -101,7 +101,7 @@ export default function HistoryScreen() {
 
       {item.ifDoneStatus === 'done' ? (
         <Text style={styles.additionalDetail}>
-          Status: {item.serviceAmountPaid}
+          Amount Paid: {item.serviceAmountPaid}
         </Text>
       ) : null}
 
