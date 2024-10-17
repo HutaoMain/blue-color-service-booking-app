@@ -7,6 +7,7 @@ import {
   Modal,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 import moment from 'moment';
 import {useState} from 'react';
@@ -20,6 +21,7 @@ import useFetchListOfBookingsWithFilter from '../../utilities/useFetchListOfBook
 import ConfirmationModal from '../../components/ConfirmationModal';
 import {doc, updateDoc} from 'firebase/firestore';
 import {FIREBASE_DB} from '../../firebaseConfig';
+import UploadReceipt from '../../components/UploadReceipt';
 
 export default function HistoryScreen() {
   const {userData} = useFetchUserData();
@@ -37,11 +39,23 @@ export default function HistoryScreen() {
   const [selectedCustomerEmail, setSelectedCustomerEmail] =
     useState<string>('');
   const [selectedWorkerEmail, setSelectedWorkerEmail] = useState<string>('');
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [modalImageFullScreenImageUrl, setModalImageFullScreenUrl] =
+    useState<string>('');
+
+  const handleImagePress = (imageUrl: string) => {
+    setModalImageFullScreenUrl(imageUrl);
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case 'accepted':
-        return styles.acceptedStatus;
+      case 'ongoing':
+        return styles.ongoingStatus;
       case 'pending':
         return styles.pendingStatus;
       case 'cancelled':
@@ -122,9 +136,16 @@ export default function HistoryScreen() {
           />
         ))}
       {/* add a button here then create another reusable component where the user must rate a star*/}
-      <Text style={[styles.status, getStatusStyle(item.status)]}>
-        Status: {item.status}
-      </Text>
+      {item.ifDoneStatus === 'done' ? (
+        <Text style={[styles.status, {backgroundColor: 'lightgreen'}]}>
+          Status: Done
+        </Text>
+      ) : (
+        <Text style={[styles.status, getStatusStyle(item.status)]}>
+          Status: {item.status}
+        </Text>
+      )}
+
       {item.ifDoneStatus !== 'done' && item.status !== 'cancelled' ? (
         <TouchableOpacity
           style={styles.cancelBtn}
@@ -132,10 +153,42 @@ export default function HistoryScreen() {
           <Text style={{color: 'white'}}>Cancel Service</Text>
         </TouchableOpacity>
       ) : null}
+
+      {item.ifDoneStatus === 'done' && !item.receiptImageUrl ? (
+        <UploadReceipt bookingId={item.id} />
+      ) : item.ifDoneStatus === 'done' && item.receiptImageUrl ? (
+        <View style={{marginVertical: 10}}>
+          <Text>Receipt: </Text>
+          <TouchableOpacity
+            onPress={() => handleImagePress(item.receiptImageUrl)}>
+            <Image
+              source={{uri: item.receiptImageUrl}}
+              style={{height: 200, width: '100%'}}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>
+      ) : null}
+
       <Text style={styles.createdAt}>
         Created At:{' '}
         {moment(item.createdAt?.toDate()).local().format('YYYY-MM-DD hh:mm A')}
       </Text>
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCloseModal}>
+        <TouchableOpacity
+          style={styles.modalContainer}
+          onPress={handleCloseModal}>
+          <Image
+            source={{uri: item.receiptImageUrl}}
+            style={styles.fullscreenImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 
@@ -171,6 +224,21 @@ export default function HistoryScreen() {
           workerEmail={selectedWorkerEmail}
           onClose={() => setModalVisible(false)}
         />
+      </Modal>
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCloseModal}>
+        <TouchableOpacity
+          style={styles.modalContainer}
+          onPress={handleCloseModal}>
+          <Image
+            source={{uri: modalImageFullScreenImageUrl}}
+            style={styles.fullscreenImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
       </Modal>
       <ConfirmationModal
         isVisible={isConfirmationModalVisible}
@@ -238,7 +306,7 @@ const styles = StyleSheet.create({
     color: '#999',
     marginTop: 4,
   },
-  acceptedStatus: {
+  ongoingStatus: {
     backgroundColor: 'lightgreen',
   },
   pendingStatus: {
@@ -265,5 +333,15 @@ const styles = StyleSheet.create({
   },
   ratingTxt: {
     color: '#ffff',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullscreenImage: {
+    width: '100%',
+    height: '100%',
   },
 });

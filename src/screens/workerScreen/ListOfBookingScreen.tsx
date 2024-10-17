@@ -55,16 +55,16 @@ export default function ListOfBookingScreen() {
     customerProfileImg: string,
   ) => {
     try {
-      const numberOfAcceptedBooking = listOfBookingFiltered.filter(
+      const numberOfOngoingBooking = listOfBookingFiltered.filter(
         item =>
-          item.status === 'accepted' &&
+          item.status === 'ongoing' &&
           item.ifDoneStatus === undefined &&
           item.workerEmail === userData?.email,
       );
 
-      console.log('numberOfAcceptedBooking: ', numberOfAcceptedBooking.length);
+      console.log('numberOfOngoingBooking: ', numberOfOngoingBooking.length);
 
-      if (numberOfAcceptedBooking.length >= 1) {
+      if (numberOfOngoingBooking.length >= 1) {
         return Alert.alert(
           'You already have 1 pending task/booking. Please complete to accept another booking.',
         );
@@ -84,11 +84,11 @@ export default function ListOfBookingScreen() {
 
       const bookingRef = doc(FIREBASE_DB, 'bookings', bookingId);
       await updateDoc(bookingRef, {
-        status: 'accepted',
+        status: 'ongoing',
         workerEmail: userData?.email,
       });
 
-      Alert.alert('Booking Accepted', 'The booking has been accepted.');
+      Alert.alert('Booking Accepted', 'The booking has been ongoing.');
       await refreshBookings();
       setLoadingBookingStatus(false);
       setLoadingIfDoneStatus(false);
@@ -138,7 +138,7 @@ export default function ListOfBookingScreen() {
           <TouchableOpacity
             style={[
               styles.acceptButton,
-              item.status === 'accepted' ? {backgroundColor: '#ccc'} : null,
+              item.status === 'ongoing' ? {backgroundColor: '#ccc'} : null,
             ]}
             onPress={() =>
               handleAcceptBooking(
@@ -148,17 +148,17 @@ export default function ListOfBookingScreen() {
                 item.customerProfileImg,
               )
             }
-            disabled={loadingBookingStatus || item.status === 'accepted'}>
+            disabled={loadingBookingStatus || item.status === 'ongoing'}>
             <Text style={styles.buttonText}>
               {loadingBookingStatus
                 ? 'Please wait..'
-                : item.status === 'accepted'
-                ? 'Accepted'
+                : item.status === 'ongoing'
+                ? 'Ongoing'
                 : 'Accept'}
             </Text>
           </TouchableOpacity>
 
-          {item.status === 'accepted' && item.ifDoneStatus === undefined ? (
+          {item.status === 'ongoing' && item.ifDoneStatus === undefined ? (
             <TouchableOpacity
               style={[
                 styles.ifDoneButton,

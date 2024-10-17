@@ -1,19 +1,16 @@
 import React, {useState, useCallback} from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import {launchImageLibrary} from 'react-native-image-picker';
-
-interface Document {
-  name: string;
-  type: string;
-  uri: string;
-}
+import {ImageInterface} from '../types';
 
 const useDocumentPicker = () => {
-  const [licenses, setLicenses] = useState<Document | null>(null);
-  const [certificates, setCertificates] = useState<Document | null>(null);
-  const [validId, setValidId] = useState<Document | null>(null);
+  const [licenses, setLicenses] = useState<ImageInterface | null>(null);
+  const [certificates, setCertificates] = useState<ImageInterface | null>(null);
+  const [validId, setValidId] = useState<ImageInterface | null>(null);
 
-  const pickDocument = async (setFile: (file: Document | null) => void) => {
+  const pickDocument = async (
+    setFile: (file: ImageInterface | null) => void,
+  ) => {
     try {
       const result = await DocumentPicker.pick({
         type: [DocumentPicker.types.pdf],

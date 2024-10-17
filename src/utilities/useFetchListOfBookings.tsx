@@ -35,6 +35,7 @@ const useFetchListOfBookings = () => {
           ifDoneStatus: doc.data().ifDoneStatus,
           serviceAmountPaid: doc.data().serviceAmountPaid,
           rating: doc.data().rating,
+          receiptImageUrl: doc.data().receiptImageUrl,
           workerEmail: doc.data().workerEmail,
         });
       });

@@ -6,6 +6,8 @@ import {
   FlatList,
   RefreshControl,
   TouchableOpacity,
+  Image,
+  Modal,
 } from 'react-native';
 import useFetchListOfBookings from '../../utilities/useFetchListOfBookings';
 import {BookingInterface} from '../../types';
@@ -14,6 +16,18 @@ import {StarRatingDisplay} from 'react-native-star-rating-widget';
 export default function ListOfBookingsAdminScreen() {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const {ListOfBooking, refreshBookings} = useFetchListOfBookings();
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [modalImageFullScreenImageUrl, setModalImageFullScreenUrl] =
+    useState<string>('');
+
+  const handleImagePress = (imageUrl: string) => {
+    setModalImageFullScreenUrl(imageUrl);
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -51,17 +65,19 @@ export default function ListOfBookingsAdminScreen() {
         )}
 
         <View style={styles.btnContainer}>
-          <TouchableOpacity
-            style={
-              item.status === 'pending'
-                ? [{backgroundColor: '#FFBF00'}, styles.statusButton]
-                : item.status === 'cancelled'
-                ? [{backgroundColor: 'red'}, styles.statusButton]
-                : [{backgroundColor: '#28a745'}, styles.statusButton]
-            }
-            disabled={true}>
-            <Text style={styles.buttonText}>{item.status}</Text>
-          </TouchableOpacity>
+          {item.ifDoneStatus !== 'done' ? (
+            <TouchableOpacity
+              style={
+                item.status === 'pending'
+                  ? [{backgroundColor: '#FFBF00'}, styles.statusButton]
+                  : item.status === 'cancelled'
+                  ? [{backgroundColor: 'red'}, styles.statusButton]
+                  : [{backgroundColor: '#28a745'}, styles.statusButton]
+              }
+              disabled={true}>
+              <Text style={styles.buttonText}>{item.status}</Text>
+            </TouchableOpacity>
+          ) : null}
 
           {item.ifDoneStatus === 'done' ? (
             <TouchableOpacity style={[styles.ifDoneButton]} disabled={true}>
@@ -71,6 +87,20 @@ export default function ListOfBookingsAdminScreen() {
             </TouchableOpacity>
           ) : null}
         </View>
+
+        {item.ifDoneStatus === 'done' && item.receiptImageUrl ? (
+          <View style={{marginVertical: 10}}>
+            <Text>Receipt: </Text>
+            <TouchableOpacity
+              onPress={() => handleImagePress(item.receiptImageUrl)}>
+              <Image
+                source={{uri: item.receiptImageUrl}}
+                style={{height: 200, width: '100%'}}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
+        ) : null}
 
         <Text style={styles.date}>
           Date: {item.createdAt?.toDate().toLocaleString()}
@@ -91,6 +121,21 @@ export default function ListOfBookingsAdminScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCloseModal}>
+        <TouchableOpacity
+          style={styles.modalContainer}
+          onPress={handleCloseModal}>
+          <Image
+            source={{uri: modalImageFullScreenImageUrl}}
+            style={styles.fullscreenImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -175,5 +220,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
     marginTop: 4,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullscreenImage: {
+    width: '100%',
+    height: '100%',
   },
 });

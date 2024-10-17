@@ -58,6 +58,7 @@ export interface BookingInterface {
   ifDoneStatus: string;
   serviceAmountPaid: string;
   rating: number;
+  receiptImageUrl: string;
   createdAt: Timestamp;
 
   barangay: {
@@ -125,4 +126,10 @@ export interface ReportInterface {
   customerEmail: string;
   workerEmail: string;
   reportedAt: string;
+}
+
+export interface ImageInterface {
+  name: string;
+  type: string;
+  uri: string;
 }

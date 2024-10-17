@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
+  Image,
 } from 'react-native';
 import React, {useState} from 'react';
 import {StarRatingDisplay} from 'react-native-star-rating-widget';
@@ -29,6 +30,18 @@ export default function TransactionHistory() {
   const [bookingId, setBookingId] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [serviceAmount, setServiceAmount] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [modalImageFullScreenUrl, setModalImageFullScreenUrl] =
+    useState<string>('');
+
+  const handleImagePress = (imageUrl: string) => {
+    setModalImageFullScreenUrl(imageUrl);
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
 
   const {ListOfBooking, refreshBookings} = useFetchListOfBookingsWithFilter({
     filterField: 'workerEmail',
@@ -36,7 +49,7 @@ export default function TransactionHistory() {
   });
 
   const listOfBookingsFiltered = ListOfBooking.filter(
-    item => item.status === 'accepted',
+    item => item.status === 'ongoing',
   );
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -110,19 +123,19 @@ export default function TransactionHistory() {
       <Text style={styles.additionalDetail}>
         Amount: PHP {item.serviceAmountPaid}.00
       </Text>
-
       <StarRatingDisplay rating={item.rating} starSize={30} color="#FFD700" />
-      <Text style={[styles.status, styles.acceptedStatus]}>
-        Status: {item.status}
-      </Text>
 
       {item.ifDoneStatus === 'done' ? (
-        <Text style={[styles.status, styles.acceptedStatus]}>
-          Work Status: {item.ifDoneStatus}
+        <Text style={[styles.status, {backgroundColor: 'lightgreen'}]}>
+          Status: Done
         </Text>
-      ) : null}
+      ) : (
+        <Text style={[styles.status, styles.ongoingStatus]}>
+          Status: {item.status}
+        </Text>
+      )}
 
-      {item.status === 'accepted' && item.ifDoneStatus === undefined ? (
+      {item.status === 'ongoing' && item.ifDoneStatus === undefined ? (
         <TouchableOpacity
           style={[
             styles.ifDoneButton,
@@ -138,6 +151,19 @@ export default function TransactionHistory() {
               : 'Click to done'}
           </Text>
         </TouchableOpacity>
+      ) : null}
+      {item.ifDoneStatus === 'done' && item.receiptImageUrl ? (
+        <View style={{marginVertical: 10}}>
+          <Text>Receipt: </Text>
+          <TouchableOpacity
+            onPress={() => handleImagePress(item.receiptImageUrl)}>
+            <Image
+              source={{uri: item.receiptImageUrl}}
+              style={{height: 200, width: '100%'}}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>
       ) : null}
       <Text style={styles.createdAt}>
         Created At:{' '}
@@ -197,6 +223,22 @@ export default function TransactionHistory() {
               </View>
             </View>
           </View>
+        </Modal>
+
+        <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={handleCloseModal}>
+          <TouchableOpacity
+            style={styles.modalContainer}
+            onPress={handleCloseModal}>
+            <Image
+              source={{uri: modalImageFullScreenUrl}}
+              style={styles.fullscreenImage}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         </Modal>
       </View>
     </>
@@ -267,7 +309,7 @@ const styles = StyleSheet.create({
     color: '#999',
     marginTop: 4,
   },
-  acceptedStatus: {
+  ongoingStatus: {
     backgroundColor: 'lightgreen',
   },
   pendingStatus: {
@@ -346,5 +388,9 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     color: '#fff',
     fontWeight: 'bold',
+  },
+  fullscreenImage: {
+    width: '100%',
+    height: '100%',
   },
 });
