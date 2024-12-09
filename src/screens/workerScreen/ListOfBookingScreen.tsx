@@ -7,8 +7,6 @@ import {
   FlatList,
   Alert,
   RefreshControl,
-  Modal,
-  TextInput,
 } from 'react-native';
 import {doc, updateDoc} from 'firebase/firestore';
 import {FIREBASE_DB} from '../../firebaseConfig';
@@ -17,6 +15,8 @@ import useFetchUserData from '../../utilities/useFetchUserData';
 import {createConversationIfNotExists} from '../../reusbaleVariables';
 import {BookingInterface} from '../../types';
 import {StarRatingDisplay} from 'react-native-star-rating-widget';
+import {useNavigation} from '@react-navigation/native';
+import {HomeStackNavigationProps} from '../../typesNavigation';
 
 export default function ListOfBookingScreen() {
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -26,6 +26,8 @@ export default function ListOfBookingScreen() {
     useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [bookingId, setBookingId] = useState('');
+
+  const navigation = useNavigation<HomeStackNavigationProps['navigation']>();
 
   console.log('bookingId: ', bookingId);
 
@@ -141,12 +143,16 @@ export default function ListOfBookingScreen() {
               item.status === 'ongoing' ? {backgroundColor: '#ccc'} : null,
             ]}
             onPress={() =>
-              handleAcceptBooking(
-                item.id,
-                item.customerId,
-                item.customerName,
-                item.customerProfileImg,
-              )
+              navigation.navigate('ReminderScreen', {
+                handleSubmit: () =>
+                  handleAcceptBooking(
+                    item.id,
+                    item.customerId,
+                    item.customerName,
+                    item.customerProfileImg,
+                  ),
+                message: `Reminder: Please double-check your availability for the scheduled visit date before confirming your booking. Thank you!`,
+              })
             }
             disabled={loadingBookingStatus || item.status === 'ongoing'}>
             <Text style={styles.buttonText}>

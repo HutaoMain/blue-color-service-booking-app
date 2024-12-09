@@ -9,6 +9,7 @@ import ListOfBookingsAdminScreen from '../screens/adminScreen/ListOfBookingsAdmi
 import ReportsListScreen from '../screens/adminScreen/ReportsListScreen';
 import WorkerList from '../screens/adminScreen/WorkerList';
 import TransactionHistory from '../screens/workerScreen/TransactionHistory';
+import ReminderScreen from '../screens/customerScreen/ReminderScreen';
 
 const HomeStackNavigation = () => {
   const HomeStack = createNativeStackNavigator<HomeStackNavigationType>();
@@ -25,6 +26,12 @@ const HomeStackNavigation = () => {
         component={FillUpScreen}
         options={{title: 'Service Booking'}}
       />
+      <HomeStack.Screen
+        name="ReminderScreen"
+        component={ReminderScreen}
+        options={{title: 'Service Booking'}}
+      />
+
       <HomeStack.Screen
         name="ListOfBookingScreen"
         component={ListOfBookingScreen}

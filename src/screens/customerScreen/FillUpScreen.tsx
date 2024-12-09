@@ -279,8 +279,16 @@ export default function FillUpScreen({route}: HomeStackNavigationProps) {
         numberOfLines={4}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={{color: 'white'}}>Submit Booking</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() =>
+          navigation.navigate('ReminderScreen', {
+            handleSubmit,
+            message:
+              "Reminder: Please double check your availability for today's visit before confirming your booking. Customer is liable to pay for the service charge upon cancellation. Thank you!",
+          })
+        }>
+        <Text style={{color: 'white'}}>Proceed</Text>
       </TouchableOpacity>
     </ScrollView>
   );

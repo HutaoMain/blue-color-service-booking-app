@@ -1,3 +1,4 @@
+import {RouteProp} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Timestamp} from 'firebase/firestore';
 
@@ -14,6 +15,10 @@ export type HomeStackNavigationType = {
   RegisterScreen: undefined;
   FillUpScreen: {
     category: string;
+  };
+  ReminderScreen: {
+    handleSubmit: () => void;
+    message: string;
   };
   ListOfBookingScreen: undefined;
   HistoryScreen: undefined;
@@ -72,3 +77,16 @@ export type ApplicantListNavigationProps = NativeStackScreenProps<
   ApplicantListNavigationType,
   'ViewApplicantDocuments'
 >;
+
+export type ReminderScreenProps = NativeStackScreenProps<
+  HomeStackNavigationType,
+  'ReminderScreen'
+>;
+
+// Alternatively, you can destructure route and navigation separately if needed:
+export type ReminderScreenRouteProp = RouteProp<
+  HomeStackNavigationType,
+  'ReminderScreen'
+>;
+
+export type ReminderScreenNavigationProp = ReminderScreenProps['navigation'];

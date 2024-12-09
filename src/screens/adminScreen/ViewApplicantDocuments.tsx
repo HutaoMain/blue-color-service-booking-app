@@ -1,7 +1,17 @@
-import React from 'react';
-import {View, Text, StyleSheet, Image, Platform} from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Platform,
+  Linking,
+  Modal,
+  Alert,
+} from 'react-native';
 import {Button} from 'react-native-paper';
 import RNFetchBlob from 'rn-fetch-blob';
+import PDF from 'react-native-pdf';
 import {ApplicantListNavigationProps} from '../../typesNavigation';
 
 interface DownloadFromUrlInterface {
@@ -20,6 +30,9 @@ export default function ViewApplicantDocuments({
     licenseFileName,
     validIdUrl,
   } = route.params;
+
+  const [pdfModalVisible, setPdfModalVisible] = useState(false);
+  const [currentPdfUrl, setCurrentPdfUrl] = useState('');
 
   const downloadFromUrl = async ({url, fileName}: DownloadFromUrlInterface) => {
     const {config, fs} = RNFetchBlob;
@@ -50,33 +63,62 @@ export default function ViewApplicantDocuments({
     }
   };
 
+  const viewDocument = async (url: string) => {
+    try {
+      if (url.toLowerCase().endsWith('.pdf')) {
+        setCurrentPdfUrl(url);
+        setPdfModalVisible(true);
+      } else {
+        Alert.alert('For PDF Only.');
+      }
+    } catch (error) {
+      console.error('Error opening URL:', error);
+    }
+  };
+
+  console.log('URL: ', currentPdfUrl);
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Worker Email: {email}</Text>
 
       <Text style={styles.label}>Certificate: {certificateFileName}</Text>
-      <Button
-        style={styles.btn}
-        onPress={() =>
-          downloadFromUrl({
-            url: certificateUrl,
-            fileName: certificateFileName,
-          })
-        }>
-        Download Certificate
-      </Button>
+      <View style={styles.buttonContainer}>
+        <Button
+          style={[styles.btn, styles.downloadBtn]}
+          onPress={() =>
+            downloadFromUrl({
+              url: certificateUrl,
+              fileName: certificateFileName,
+            })
+          }>
+          Download
+        </Button>
+        <Button
+          style={[styles.btn, styles.viewBtn]}
+          onPress={() => viewDocument(certificateUrl)}>
+          View
+        </Button>
+      </View>
 
       <Text style={styles.label}>License: {licenseFileName}</Text>
-      <Button
-        style={styles.btn}
-        onPress={() =>
-          downloadFromUrl({
-            url: licenseUrl,
-            fileName: licenseFileName,
-          })
-        }>
-        Download License
-      </Button>
+      <View style={styles.buttonContainer}>
+        <Button
+          style={[styles.btn, styles.downloadBtn]}
+          onPress={() =>
+            downloadFromUrl({
+              url: licenseUrl,
+              fileName: licenseFileName,
+            })
+          }>
+          Download
+        </Button>
+        <Button
+          style={[styles.btn, styles.viewBtn]}
+          onPress={() => viewDocument(licenseUrl)}>
+          View
+        </Button>
+      </View>
 
       <Text style={styles.label}>Valid ID: </Text>
       <Image
@@ -84,6 +126,35 @@ export default function ViewApplicantDocuments({
         style={styles.image}
         resizeMode="contain"
       />
+
+      {/* PDF Modal */}
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={pdfModalVisible}
+        onRequestClose={() => setPdfModalVisible(false)}>
+        <View style={styles.modalContainer}>
+          <Button
+            style={styles.closeButton}
+            onPress={() => setPdfModalVisible(false)}>
+            Close
+          </Button>
+          <PDF
+            trustAllCerts={false}
+            source={{uri: currentPdfUrl, cache: true}}
+            onLoadComplete={(numberOfPages, filePath) => {
+              console.log(`Number of pages: ${numberOfPages}`);
+            }}
+            onPageChanged={(page, numberOfPages) => {
+              console.log(`Current page: ${page}`);
+            }}
+            onError={error => {
+              console.log(error);
+            }}
+            style={styles.pdf}
+          />
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -99,16 +170,43 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 8,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  btn: {
+    width: '48%',
+    borderRadius: 5,
+    borderWidth: 1,
+  },
+  downloadBtn: {
+    borderColor: 'green',
+    backgroundColor: 'rgba(0,255,0,0.1)',
+  },
+  viewBtn: {
+    borderColor: 'blue',
+    backgroundColor: 'rgba(0,0,255,0.1)',
+  },
   image: {
     width: '100%',
     height: 200,
     marginVertical: 16,
   },
-  btn: {
-    marginTop: 8,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: 'black',
-    color: 'black',
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  pdf: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    margin: 10,
+    borderColor: 'red',
   },
 });
