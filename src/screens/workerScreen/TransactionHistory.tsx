@@ -89,28 +89,6 @@ export default function TransactionHistory() {
   };
 
   const renderItem = ({item}: {item: BookingInterface}) => (
-    // <View style={styles.itemContainer}>
-    //   <Text style={styles.customerName}>{item.customerName}</Text>
-    //   <Text style={styles.categoryService}>{item.categoryService}</Text>
-    //   <Text style={styles.specificService}>{item.specificService}</Text>
-    //   <Text style={styles.location}>
-    //     {item.region.name}, {item.province.name}, {item.city.name},{' '}
-    //     {item.barangay.name}
-    //   </Text>
-    //   <Text style={styles.additionalDetail}>{item.additionalDetail}</Text>
-    //   <Text style={styles.additionalDetail}>
-    //     Amount: PHP {item.serviceAmountPaid}.00
-    //   </Text>
-
-    //   <StarRatingDisplay rating={item.rating} starSize={30} color="#FFD700" />
-    //   <Text style={[styles.status, styles.acceptedStatus]}>
-    //     Status: {item.ifDoneStatus}
-    //   </Text>
-    //   <Text style={styles.createdAt}>
-    //     Created At:{' '}
-    //     {moment(item.createdAt?.toDate()).local().format('YYYY-MM-DD hh:mm A')}
-    //   </Text>
-    // </View>
     <View style={styles.itemContainer}>
       <Text style={styles.customerName}>{item.customerName}</Text>
       <Text style={styles.categoryService}>{item.categoryService}</Text>
@@ -126,7 +104,15 @@ export default function TransactionHistory() {
       <StarRatingDisplay rating={item.rating} starSize={30} color="#FFD700" />
 
       {item.ifDoneStatus === 'done' ? (
-        <Text style={[styles.status, {backgroundColor: 'lightgreen'}]}>
+        <Text
+          style={[
+            styles.status,
+            {
+              backgroundColor: 'lightgreen',
+              color: 'black',
+              textAlign: 'center',
+            },
+          ]}>
           Status: Done
         </Text>
       ) : (
@@ -135,6 +121,7 @@ export default function TransactionHistory() {
         </Text>
       )}
 
+      {/* changes here */}
       {item.status === 'ongoing' && item.ifDoneStatus === undefined ? (
         <TouchableOpacity
           style={[
@@ -311,6 +298,8 @@ const styles = StyleSheet.create({
   },
   ongoingStatus: {
     backgroundColor: 'lightgreen',
+    color: 'black',
+    textAlign: 'center',
   },
   pendingStatus: {
     backgroundColor: '#efc549',

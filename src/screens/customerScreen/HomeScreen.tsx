@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   title: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#ffffff',
   },

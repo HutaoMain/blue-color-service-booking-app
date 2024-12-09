@@ -1,10 +1,19 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
+import React, {useState} from 'react';
 import {ReminderScreenProps} from '../../typesNavigation';
 import useFetchUserData from '../../utilities/useFetchUserData';
 
 export default function ReminderScreen({route}: ReminderScreenProps) {
   const {handleSubmit, message} = route.params;
+
+  const [notes, setNotes] = useState<string>('');
+  const [amountToBePaid, setAmountToBePaid] = useState<string>('');
 
   const {userData: data} = useFetchUserData();
 
@@ -16,16 +25,28 @@ export default function ReminderScreen({route}: ReminderScreenProps) {
     <View style={styles.container}>
       <View style={styles.serviceSelectedContainer}>
         <Text style={styles.serviceSelectedTitle}>Service Selected</Text>
-        <View style={styles.serviceSelectedContent}>
-          <View>
-            <Text style={styles.text}>General Checkup</Text>
-            <Text style={styles.text}>Initial Inspection</Text>
+        {data?.role === 'customer' ? (
+          <View style={styles.serviceSelectedContent}>
+            <View>
+              <Text style={styles.text}>General Checkup</Text>
+              <Text style={styles.text}>Initial Inspection</Text>
+            </View>
+            <View>
+              <Text style={styles.text}>Service Charge</Text>
+              <Text style={styles.serviceCharge}>₱ 150</Text>
+            </View>
           </View>
-          <View style={styles.serviceChargeContainer}>
-            <Text style={styles.text}>Service Charge</Text>
-            <Text style={styles.serviceCharge}>₱ 150</Text>
+        ) : (
+          <View style={styles.serviceSelectedContent}>
+            <TextInput
+              multiline
+              numberOfLines={10}
+              placeholder="please enter notes and final cost"
+              value={notes}
+              onChangeText={setNotes}
+            />
           </View>
-        </View>
+        )}
       </View>
       <View style={styles.messageContainer}>
         <Text style={styles.message}>{message}</Text>
@@ -57,10 +78,6 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: '#EDEDED',
     color: 'black',
-  },
-
-  serviceChargeContainer: {
-    marginTop: 90,
   },
   serviceSelectedContent: {
     justifyContent: 'space-between',

@@ -135,9 +135,17 @@ export default function HistoryScreen() {
             color="#FFD700"
           />
         ))}
-      {/* add a button here then create another reusable component where the user must rate a star*/}
+
       {item.ifDoneStatus === 'done' ? (
-        <Text style={[styles.status, {backgroundColor: 'lightgreen'}]}>
+        <Text
+          style={[
+            styles.status,
+            {
+              backgroundColor: 'lightgreen',
+              color: 'black',
+              textAlign: 'center',
+            },
+          ]}>
           Status: Done
         </Text>
       ) : (
@@ -308,13 +316,18 @@ const styles = StyleSheet.create({
   },
   ongoingStatus: {
     backgroundColor: 'lightgreen',
+    color: 'black',
+    textAlign: 'center',
   },
   pendingStatus: {
     backgroundColor: 'yellow',
+    color: 'black',
+    textAlign: 'center',
   },
   cancelledStatus: {
     backgroundColor: 'red',
     color: 'white',
+    textAlign: 'center',
   },
   cancelBtn: {
     width: 150,
@@ -333,6 +346,7 @@ const styles = StyleSheet.create({
   },
   ratingTxt: {
     color: '#ffff',
+    textAlign: 'center',
   },
   modalContainer: {
     flex: 1,

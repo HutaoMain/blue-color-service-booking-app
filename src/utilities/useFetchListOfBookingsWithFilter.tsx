@@ -1,5 +1,5 @@
 import {useState, useCallback, useEffect} from 'react';
-import {collection, getDocs, query, where} from 'firebase/firestore';
+import {collection, getDocs, orderBy, query, where} from 'firebase/firestore';
 import {BookingInterface} from '../types';
 import {FIREBASE_DB} from '../firebaseConfig';
 
@@ -21,6 +21,7 @@ const useFetchListOfBookingsWithFilter = ({
       q = query(
         collection(FIREBASE_DB, 'bookings'),
         where(filterField, '==', filterValue),
+        orderBy('createdAt', 'desc'),
       );
 
       const querySnapshot = await getDocs(q);
