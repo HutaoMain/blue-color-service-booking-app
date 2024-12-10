@@ -98,11 +98,13 @@ export default function ReminderScreen({route}: ReminderScreenProps) {
         </>
       ) : null}
       <View style={styles.messageContainer}>
-        <Text style={styles.message}>{message}</Text>
         {data?.role === 'customer' ? (
-          <TouchableOpacity style={styles.button} onPress={handleConfirm}>
-            <Text style={styles.buttonText}>Submit Booking</Text>
-          </TouchableOpacity>
+          <>
+            <Text style={styles.message}>{message}</Text>
+            <TouchableOpacity style={styles.button} onPress={handleConfirm}>
+              <Text style={styles.buttonText}>Submit Booking</Text>
+            </TouchableOpacity>
+          </>
         ) : (
           <TouchableOpacity
             style={styles.button}

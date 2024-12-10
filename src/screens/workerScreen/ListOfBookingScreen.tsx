@@ -143,17 +143,12 @@ export default function ListOfBookingScreen() {
               item.status === 'ongoing' ? {backgroundColor: '#ccc'} : null,
             ]}
             onPress={() =>
-              navigation.navigate('ReminderScreen', {
-                handleSubmit: () =>
-                  handleAcceptBooking(
-                    item.id,
-                    item.customerId,
-                    item.customerName,
-                    item.customerProfileImg,
-                  ),
-                message: `Reminder: Please double-check your availability for the scheduled visit date before confirming your booking. Thank you!`,
-                bookingId: '',
-              })
+              handleAcceptBooking(
+                item.id,
+                item.customerId,
+                item.customerName,
+                item.customerProfileImg,
+              )
             }
             disabled={loadingBookingStatus || item.status === 'ongoing'}>
             <Text style={styles.buttonText}>
