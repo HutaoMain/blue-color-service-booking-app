@@ -16,20 +16,15 @@ import {BookingInterface} from '../../types';
 import moment from 'moment';
 import Navbar from '../../components/Navbar';
 import {bluegreen} from '../../reusbaleVariables';
-import {TextInput} from 'react-native';
-import {doc, updateDoc} from 'firebase/firestore';
-import {FIREBASE_DB} from '../../firebaseConfig';
+
+import {HomeStackNavigationProps} from '../../typesNavigation';
+import {useNavigation} from '@react-navigation/native';
 
 export default function TransactionHistory() {
   const {userData} = useFetchUserData();
 
-  const [loadingBookingStatus, setLoadingBookingStatus] =
-    useState<boolean>(false);
-  const [loadingIfDoneStatus, setLoadingIfDoneStatus] =
-    useState<boolean>(false);
-  const [bookingId, setBookingId] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [serviceAmount, setServiceAmount] = useState('');
+  const navigate = useNavigation<HomeStackNavigationProps['navigation']>();
+
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [modalImageFullScreenUrl, setModalImageFullScreenUrl] =
     useState<string>('');
@@ -54,38 +49,14 @@ export default function TransactionHistory() {
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const handleUpdateIfDoneStatus = async () => {
-    setLoadingIfDoneStatus(true);
-    try {
-      const bookingRef = doc(FIREBASE_DB, 'bookings', bookingId);
-      await updateDoc(bookingRef, {
-        ifDoneStatus: 'done',
-        serviceAmountPaid: parseFloat(serviceAmount),
-      });
-
-      setLoadingIfDoneStatus(false);
-      setModalVisible(false);
-      setServiceAmount('');
-      setBookingId('');
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handlePress = (bookingId: string) => {
-    setBookingId(bookingId);
-    setModalVisible(true);
+    console.log(bookingId);
   };
 
   const onRefresh = async () => {
     setRefreshing(true);
     await refreshBookings();
     setRefreshing(false);
-  };
-
-  const handleCancel = () => {
-    setModalVisible(false);
-    setServiceAmount('');
   };
 
   const renderItem = ({item}: {item: BookingInterface}) => (
@@ -128,14 +99,17 @@ export default function TransactionHistory() {
             styles.ifDoneButton,
             item.ifDoneStatus === 'done' ? {backgroundColor: '#ccc'} : null,
           ]}
-          onPress={() => handlePress(item.id)}
-          disabled={loadingIfDoneStatus || item.ifDoneStatus === 'done'}>
+          // onPress={() => handlePress(item.id)}
+          onPress={() =>
+            navigate.navigate('ReminderScreen', {
+              handleSubmit: () => handlePress(item.id),
+              message: ``,
+              bookingId: item.id,
+            })
+          }
+          disabled={item.ifDoneStatus === 'done'}>
           <Text style={styles.buttonText}>
-            {loadingBookingStatus
-              ? 'Please wait..'
-              : item.ifDoneStatus === 'done'
-              ? 'Done'
-              : 'Click to done'}
+            {item.ifDoneStatus === 'done' ? 'Done' : 'Click to done'}
           </Text>
         </TouchableOpacity>
       ) : null}
@@ -180,7 +154,8 @@ export default function TransactionHistory() {
           }
         />
 
-        <Modal
+        {/* remove */}
+        {/* <Modal
           animationType="slide"
           transparent={true}
           visible={modalVisible}
@@ -210,7 +185,7 @@ export default function TransactionHistory() {
               </View>
             </View>
           </View>
-        </Modal>
+        </Modal> */}
 
         <Modal
           visible={isModalVisible}

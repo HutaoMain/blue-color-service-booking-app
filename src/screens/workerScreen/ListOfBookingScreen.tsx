@@ -152,6 +152,7 @@ export default function ListOfBookingScreen() {
                     item.customerProfileImg,
                   ),
                 message: `Reminder: Please double-check your availability for the scheduled visit date before confirming your booking. Thank you!`,
+                bookingId: '',
               })
             }
             disabled={loadingBookingStatus || item.status === 'ongoing'}>

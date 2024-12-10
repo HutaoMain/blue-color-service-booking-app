@@ -286,6 +286,7 @@ export default function FillUpScreen({route}: HomeStackNavigationProps) {
             handleSubmit,
             message:
               "Reminder: Please double check your availability for today's visit before confirming your booking. Customer is liable to pay for the service charge upon cancellation. Thank you!",
+            bookingId: '',
           })
         }>
         <Text style={{color: 'white'}}>Proceed</Text>

@@ -19,6 +19,7 @@ export type HomeStackNavigationType = {
   ReminderScreen: {
     handleSubmit: () => void;
     message: string;
+    bookingId: string;
   };
   ListOfBookingScreen: undefined;
   HistoryScreen: undefined;
